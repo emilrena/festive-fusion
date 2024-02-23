@@ -1,19 +1,21 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
-import 'package:festive_fusion/USER/functions.dart';
 import 'package:flutter/material.dart';
 
-class Registration extends StatefulWidget {
-  const Registration({super.key});
+class DsgEdit extends StatefulWidget {
+  const DsgEdit({super.key});
 
   @override
-  State<Registration> createState() => _RegistrationState();
+  State<DsgEdit> createState() => _DsgEditState();
 }
 
-class _RegistrationState extends State<Registration> {
+class _DsgEditState extends State<DsgEdit> {
   String gender="";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Center(child: Text('DsgEdit')),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 20,bottom: 20),
@@ -214,10 +216,9 @@ class _RegistrationState extends State<Registration> {
                         ),),
                         SizedBox(height: 50,),
                         ElevatedButton(onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return Functions_user();
-                          },));
-                        }, child: Text('REGISTOR')),
+                          
+                          
+                        }, child: Text('ok')),
                     
                       ],
                     ),
