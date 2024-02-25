@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class DesignerMessage extends StatefulWidget {
-  const DesignerMessage({super.key});
+class Makeup_Message extends StatefulWidget {
+  const Makeup_Message({super.key});
 
   @override
-  State<DesignerMessage> createState() => _DesignerMessageState();
+  State<Makeup_Message> createState() => _Makeup_MessageState();
 }
 
-class _DesignerMessageState extends State<DesignerMessage> {
+class _Makeup_MessageState extends State<Makeup_Message> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

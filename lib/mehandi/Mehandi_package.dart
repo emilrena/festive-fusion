@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class Services_ extends StatefulWidget {
-  const Services_({super.key});
+class Mehndi_package_add extends StatefulWidget {
+  const Mehndi_package_add({super.key});
 
   @override
-  State<Services_> createState() => _Services_State();
+  State<Mehndi_package_add> createState() => _Mehndi_package_addState();
 }
 
-class _Services_State extends State<Services_> {
+class _Mehndi_package_addState extends State<Mehndi_package_add> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
     
       appBar: AppBar(
-        title: Center(child: Text('Services')),
+        title: Center(child: Text('PACKAGE')),
       ),
       body: Container(
-                    decoration: BoxDecoration(image: DecorationImage(image: AssetImage('Assets/image1.jpg'),fit: BoxFit.cover),
+                    decoration: BoxDecoration(image: DecorationImage(image: AssetImage('Assets/mehandi.png'),fit: BoxFit.cover),
                     ),
         child: SafeArea(
           child: Padding(
