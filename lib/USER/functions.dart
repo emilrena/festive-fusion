@@ -22,12 +22,18 @@ import 'package:festive_fusion/Rental/Rental_PackageEdit.dart';
 import 'package:festive_fusion/Rental/Rental_PackageView.dart';
 import 'package:festive_fusion/Rental/Rental_Registration.dart';
 import 'package:festive_fusion/Rental/Rental_UploadImage.dart';
+import 'package:festive_fusion/USER/DesignerProffesinalsView.dart';
+import 'package:festive_fusion/USER/MakeupProffesionals.dart';
+import 'package:festive_fusion/USER/MehandiProffesionalsView.dart';
+import 'package:festive_fusion/USER/RentalProffesionals.dart';
+import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/UserPayment.dart';
 // import 'package:festive_fusion/USER/User_Edit_Profile.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:festive_fusion/USER/edit_profile.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/USER/package.dart';
+import 'package:festive_fusion/demolist.dart';
 import 'package:festive_fusion/mehandi/Mehandi_PackageView.dart';
 import 'package:festive_fusion/mehandi/Mehandi_Upload_image.dart';
 import 'package:festive_fusion/mehandi/Mehandi_editProfile.dart';
@@ -85,6 +91,38 @@ class _Functions_userState extends State<Functions_user> {
                     return Edit();
                   }));
                 }, child: Text('Edit profile'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentalProffesional_View();
+                  }));
+                }, child: Text('MEHANDI PROFESSIONALS'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerProffesional_View();
+                  }));
+                }, child: Text('DESIGNER PROFESSIONALS'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentalProffesional_View();
+                  }));
+                }, child: Text('RENTAL PROFESSIONALS'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return UserHome();
+                  }));
+                }, child: Text('USER HOME'),),
+
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupProffesional_View();
+                  }));
+                }, child: Text('MAKEUP PROFESSIONALS'),),
+
                 SizedBox(height: 20,),
                 Text('Designer Module'),
           
@@ -260,9 +298,16 @@ class _Functions_userState extends State<Functions_user> {
                 ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return Rental_Upload_pic();
+                    return Rental_Upload_pic(); 
                   }));
                 }, child: Text('Rental upload image'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MyWidget(); 
+                  }));
+                }, child: Text('List'),),
+                
               ],
             ),
           ),
