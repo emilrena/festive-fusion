@@ -1,7 +1,10 @@
 import 'dart:developer';
 
+import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
 import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/ADMIN/AdminMehandiView.dart';
+import 'package:festive_fusion/ADMIN/AdminRentalView.dart';
+import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
 import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
 import 'package:festive_fusion/Designers/Designer_registration.dart';
 import 'package:festive_fusion/Designers/EditService.dart';
@@ -328,6 +331,25 @@ class _Functions_userState extends State<Functions_user> {
                     return AdminMehandiView();
                   }));
                 }, child: Text('ADMIN MAKEUP ARTIST VIEW'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return AdminDesignerView();
+                  }));
+                }, child: Text('ADMIN DESIGNER ARTIST VIEW'),),
+                
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return AdminRentalView();
+                  }));
+                }, child: Text('ADMIN RENTAL ARTIST VIEW'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerFullProfile();
+                  }));
+                }, child: Text('DESIGNER PROFILE VIEW'),),
                 
               ],
             ),

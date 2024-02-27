@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class AdminMehandiView extends StatefulWidget {
-  const AdminMehandiView({super.key});
+class AdminRentalView extends StatefulWidget {
+  const AdminRentalView({super.key});
 
   @override
-  State<AdminMehandiView> createState() => _AdminMehandiViewState();
+  State<AdminRentalView> createState() => _AdminRentalViewState();
 }
 
-class _AdminMehandiViewState extends State<AdminMehandiView> {
+class _AdminRentalViewState extends State<AdminRentalView> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -54,11 +54,11 @@ class _AdminMehandiViewState extends State<AdminMehandiView> {
                       },
                     ),
                   ),
-                  leading: CircleAvatar(backgroundImage: AssetImage('Assets/mehandi.png')),
+                  leading: CircleAvatar(backgroundImage: AssetImage('Assets/p3.jpg')),
                   trailing:ElevatedButton(onPressed: (){},
                             style:ElevatedButton.styleFrom(padding:EdgeInsets.symmetric(vertical: 8.0,horizontal: 16.0), 
                             backgroundColor:Colors.deepPurple,
-                            ), child: Text('VIEW'
+                            ), child: Text('view'
                            , style: TextStyle(color: const Color.fromARGB(255, 231, 234, 236),fontSize: 10),
                             
                             )) 
