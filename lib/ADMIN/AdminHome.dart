@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class UserHome extends StatefulWidget {
-  const UserHome({super.key});
+class AdminHome extends StatefulWidget {
+  const AdminHome({super.key});
 
   @override
-  State<UserHome> createState() => _UserHomeState();
+  State<AdminHome> createState() => _AdminHomeState();
 }
 
-class _UserHomeState extends State<UserHome> {
+class _AdminHomeState extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
