@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class UserPckg extends StatefulWidget {
-  const UserPckg({super.key});
+class MakeupPackages extends StatefulWidget {
+  const MakeupPackages({super.key});
 
   @override
-  State<UserPckg> createState() => _UserPckgState();
+  State<MakeupPackages> createState() => _MakeupPackagesState();
 }
 
-class _UserPckgState extends State<UserPckg> {
+class _MakeupPackagesState extends State<MakeupPackages> {
   List c=[
     Colors.brown,Colors.red,Colors.purple
   ];
@@ -73,7 +73,7 @@ class _UserPckgState extends State<UserPckg> {
                 child: SizedBox(height: 20,width: 10,
                   child: Row(
                     children: [
-                      ClipRRect(borderRadius:BorderRadius.circular(20) ,child:Image.asset('Assets/image1.jpg',)),
+                      ClipRRect(borderRadius:BorderRadius.circular(20) ,child:Image.asset('Assets/makeup.webp',)),
                     ],
                   )),
                   ),

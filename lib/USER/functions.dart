@@ -5,7 +5,11 @@ import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/ADMIN/AdminMehandiView.dart';
 import 'package:festive_fusion/ADMIN/AdminRentalView.dart';
 import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
+import 'package:festive_fusion/ADMIN/MakeupArtistFullView.dart';
+import 'package:festive_fusion/ADMIN/MehandiArtistFullView.dart';
+import 'package:festive_fusion/ADMIN/RentalArtistFullView.dart';
 import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
+import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/Designer_registration.dart';
 import 'package:festive_fusion/Designers/EditService.dart';
 import 'package:festive_fusion/Designers/message.dart';
@@ -13,6 +17,8 @@ import 'package:festive_fusion/Designers/packageAdd.dart';
 import 'package:festive_fusion/Designers/packageview.dart';
 // import 'package:festive_fusion/Designers/service.dart';
 import 'package:festive_fusion/Designers/upload_image.dart';
+import 'package:festive_fusion/ImagePickerDemo.dart';
+import 'package:festive_fusion/Makeup/MakeupHome.dart';
 import 'package:festive_fusion/Makeup/Makeup_PackageEdit.dart';
 import 'package:festive_fusion/Makeup/Makeup_Upload_Image.dart';
 import 'package:festive_fusion/Makeup/Makeup_editProfile.dart';
@@ -20,6 +26,7 @@ import 'package:festive_fusion/Makeup/Makeup_message.dart';
 import 'package:festive_fusion/Makeup/Makeup_package.dart';
 import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:festive_fusion/Makeup/Makeup_registration.dart';
+import 'package:festive_fusion/Rental/RentalHome.dart';
 import 'package:festive_fusion/Rental/Rental_EditProfile.dart';
 import 'package:festive_fusion/Rental/Rental_Message.dart';
 import 'package:festive_fusion/Rental/Rental_Package.dart';
@@ -28,9 +35,17 @@ import 'package:festive_fusion/Rental/Rental_PackageView.dart';
 import 'package:festive_fusion/Rental/Rental_Registration.dart';
 import 'package:festive_fusion/Rental/Rental_UploadImage.dart';
 import 'package:festive_fusion/USER/DesignerProffesinalsView.dart';
+import 'package:festive_fusion/USER/DesignerWork.dart';
+import 'package:festive_fusion/USER/MakeupPackages.dart';
 import 'package:festive_fusion/USER/MakeupProffesionals.dart';
+import 'package:festive_fusion/USER/MakeupWork.dart';
+import 'package:festive_fusion/USER/MehandiPackage.dart';
 import 'package:festive_fusion/USER/MehandiProffesionalsView.dart';
+import 'package:festive_fusion/USER/MehandiWork.dart';
+import 'package:festive_fusion/USER/RentalCategory.dart';
 import 'package:festive_fusion/USER/RentalProffesionals.dart';
+import 'package:festive_fusion/USER/RentalWork.dart';
+
 import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/UserPayment.dart';
 // import 'package:festive_fusion/USER/User_Edit_Profile.dart';
@@ -39,6 +54,8 @@ import 'package:festive_fusion/USER/edit_profile.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/USER/package.dart';
 import 'package:festive_fusion/demolist.dart';
+import 'package:festive_fusion/gridDemo.dart';
+import 'package:festive_fusion/mehandi/MehandiHome.dart';
 import 'package:festive_fusion/mehandi/Mehandi_PackageView.dart';
 import 'package:festive_fusion/mehandi/Mehandi_Upload_image.dart';
 import 'package:festive_fusion/mehandi/Mehandi_editProfile.dart';
@@ -72,6 +89,50 @@ class _Functions_userState extends State<Functions_user> {
                     return Message();
                   }));
                 }, child: Text('enquiry'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerWork();
+                  }));
+                }, child: Text('designer work'),),
+               
+                 
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentalCategory();
+                  }));
+                }, child: Text('Rental category view'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MehandiWorkView();
+                  }));
+                }, child: Text('Mehandi  work view'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentalWorkView();
+                  }));
+                }, child: Text('Rental Work view'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupWorkView();
+                  }));
+                }, child: Text('makup work view'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MehandiPackages();
+                  }));
+                }, child: Text('mehandi package view'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupPackages();
+                  }));
+                }, child: Text('makeup package view'),),
              ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
@@ -137,6 +198,7 @@ class _Functions_userState extends State<Functions_user> {
                     return DesignerMessage();
                   }));
                 }, child: Text('designer message'),),
+                
                  ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
@@ -167,6 +229,13 @@ class _Functions_userState extends State<Functions_user> {
                     return Desgn_Reg();
                   }));
                 }, child: Text('DESIGNER REGISTRATION'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerHome();
+                  }));
+                }, child: Text('designer home'),),
+                
           
                  ElevatedButton
                 (onPressed: (){
@@ -176,6 +245,13 @@ class _Functions_userState extends State<Functions_user> {
                 }, child: Text('UPLOAD PIC AND DESCRIBE'),),
                 SizedBox(height: 20,),
                 Text('mehandi'),
+
+                  ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MehandiHome();
+                  }));
+                }, child: Text('MEHANDI HOME'),),
                  ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
@@ -220,6 +296,13 @@ class _Functions_userState extends State<Functions_user> {
                 }, child: Text('mehandi upload image'),),
                 SizedBox(height: 20,),
                 Text('MAKEUP MODULE'),
+
+                  ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupHome();
+                  }));
+                }, child: Text('MAKEUP HOME'),),
                  ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
@@ -264,6 +347,13 @@ class _Functions_userState extends State<Functions_user> {
                 }, child: Text('MAKEUP UPLOAD IMAGE'),),
                   SizedBox(height: 20,),
                 Text('RENTAL MODULE'),
+
+                  ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentHome();
+                  }));
+                }, child: Text('RENTAL HOME'),),
                  ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
@@ -350,7 +440,36 @@ class _Functions_userState extends State<Functions_user> {
                     return DesignerFullProfile();
                   }));
                 }, child: Text('DESIGNER PROFILE VIEW'),),
-                
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupFullProfile();
+                  }));
+                }, child: Text('MAKEUP PROFILE VIEW'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MehandiFullProfile();
+                  }));
+                }, child: Text('MEHANDI PROFILE VIEW'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentalFullProfile();
+                  }));
+                }, child: Text('RENTAL PROFILE VIEW'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return ImagePickerPage();
+                  }));
+                }, child: Text('image picker'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return GRidPage();
+                  }));
+                }, child: Text('grid view'),),
               ],
             ),
           ),
