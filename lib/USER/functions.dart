@@ -18,6 +18,7 @@ import 'package:festive_fusion/Designers/packageview.dart';
 // import 'package:festive_fusion/Designers/service.dart';
 import 'package:festive_fusion/Designers/upload_image.dart';
 import 'package:festive_fusion/ImagePickerDemo.dart';
+import 'package:festive_fusion/Makeup/BookingNotification.dart';
 import 'package:festive_fusion/Makeup/MakeupHome.dart';
 import 'package:festive_fusion/Makeup/Makeup_PackageEdit.dart';
 import 'package:festive_fusion/Makeup/Makeup_Upload_Image.dart';
@@ -26,6 +27,7 @@ import 'package:festive_fusion/Makeup/Makeup_message.dart';
 import 'package:festive_fusion/Makeup/Makeup_package.dart';
 import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:festive_fusion/Makeup/Makeup_registration.dart';
+import 'package:festive_fusion/Makeup/Proceed.dart';
 import 'package:festive_fusion/Rental/RentalHome.dart';
 import 'package:festive_fusion/Rental/Rental_EditProfile.dart';
 import 'package:festive_fusion/Rental/Rental_Message.dart';
@@ -34,9 +36,12 @@ import 'package:festive_fusion/Rental/Rental_PackageEdit.dart';
 import 'package:festive_fusion/Rental/Rental_PackageView.dart';
 import 'package:festive_fusion/Rental/Rental_Registration.dart';
 import 'package:festive_fusion/Rental/Rental_UploadImage.dart';
+import 'package:festive_fusion/USER/BokkedImage.dart';
 import 'package:festive_fusion/USER/DesignerProffesinalsView.dart';
 import 'package:festive_fusion/USER/DesignerWork.dart';
+// import 'package:festive_fusion/USER/MakeupBooked.dart';
 import 'package:festive_fusion/USER/MakeupPackages.dart';
+import 'package:festive_fusion/USER/MakeupPayment.dart';
 import 'package:festive_fusion/USER/MakeupProffesionals.dart';
 import 'package:festive_fusion/USER/MakeupWork.dart';
 import 'package:festive_fusion/USER/MehandiPackage.dart';
@@ -139,6 +144,12 @@ class _Functions_userState extends State<Functions_user> {
                     return Booked();
                   }));
                 }, child: Text('Booking'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return AfterBooked();
+                  }));
+                }, child: Text('AFTER BOOKED'),),
                 ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
@@ -235,6 +246,12 @@ class _Functions_userState extends State<Functions_user> {
                     return DesignerHome();
                   }));
                 }, child: Text('designer home'),),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupPayment();
+                  }));
+                }, child: Text('makeup payment'),),
                 
           
                  ElevatedButton
@@ -345,6 +362,18 @@ class _Functions_userState extends State<Functions_user> {
                     return Makeup_Upload_pic();
                   }));
                 }, child: Text('MAKEUP UPLOAD IMAGE'),),
+                  ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Proceed();
+                  }));
+                }, child: Text('MAKEUP proceed'),),
+                   ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupNotification();
+                  }));
+                }, child: Text('MAKEUP NOTIFICATION'),),
                   SizedBox(height: 20,),
                 Text('RENTAL MODULE'),
 

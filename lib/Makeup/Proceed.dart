@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MakeupNotification extends StatefulWidget {
-  const MakeupNotification({Key? key}) : super(key: key);
+class Proceed extends StatefulWidget {
+  const Proceed({Key? key}) : super(key: key);
 
   @override
-  State<MakeupNotification> createState() => _MakeupNotificationState();
+  State<Proceed> createState() => _ProceedState();
 }
 
-class _MakeupNotificationState extends State<MakeupNotification> {
+class _ProceedState extends State<Proceed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,9 +87,9 @@ class _MakeupNotificationState extends State<MakeupNotification> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(right: 50),
-                          child: IconButton(onPressed: (){}, icon: Icon(Icons.check),color: Colors.deepPurple,),
+                          child:ElevatedButton(onPressed: (){}, child: Text('Finished work'))
                         ),
-                     IconButton(onPressed: (){}, icon: Icon(Icons.cancel),color: Colors.deepPurple,)
+                    
                       ],
                     )
               ],
