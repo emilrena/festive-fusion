@@ -1,3 +1,4 @@
+import 'package:festive_fusion/USER/MakeupWork.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -54,8 +55,12 @@ class _MakeupProffesional_ViewState extends State<MakeupProffesional_View> {
                       },
                     ),
                   ),
-                  leading: CircleAvatar(backgroundImage: AssetImage('Assets/p4.jpg')),
-                  trailing:ElevatedButton(onPressed: (){},
+                  leading: CircleAvatar(backgroundImage: AssetImage('Assets/p4.jpg'),radius: 30,),
+                  trailing:ElevatedButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return MakeupWorkView();
+                          },));
+                  },
                             style:ElevatedButton.styleFrom(padding:EdgeInsets.symmetric(vertical: 8.0,horizontal: 16.0), 
                             backgroundColor:Colors.deepPurple,
                             ), child: Text('CHOOSE'

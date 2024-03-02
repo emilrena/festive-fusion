@@ -1,7 +1,8 @@
+import 'package:festive_fusion/USER/BokkedImage.dart';
 import 'package:flutter/material.dart';
 
-class MakeupPayment extends StatelessWidget {
-  MakeupPayment({Key? key}) : super(key: key);
+class Payment extends StatelessWidget {
+  Payment({Key? key}) : super(key: key);
 
   final List<String> _list = ['FULL AMOUNT', 'ADVANCE', ];
   final List<String> _list1 = ['GPAY', 'PHONEPAY', ];
@@ -107,7 +108,11 @@ class MakeupPayment extends StatelessWidget {
               
             ),
             SizedBox(height: 20,),
-            ElevatedButton(onPressed: (){}, child: Text('BOOK '),style:ElevatedButton.styleFrom(
+            ElevatedButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return AfterBooked();
+                          },));
+            }, child: Text('BOOK '),style:ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0.0)
                     ),

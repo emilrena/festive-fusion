@@ -1,4 +1,5 @@
 import 'package:festive_fusion/Navigationbar.dart';
+import 'package:festive_fusion/USER/functions.dart';
 import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -99,7 +100,7 @@ class _LoginState extends State<Login> {
                     TextButton(
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return Registration();
+                            return Functions_user();
                           },));
                         }, child: Text('Not Registered yet?Sign up'))
                   ],

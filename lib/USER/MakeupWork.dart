@@ -1,3 +1,5 @@
+import 'package:festive_fusion/Makeup/Makeup_message.dart';
+import 'package:festive_fusion/USER/MakeupPackages.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
@@ -23,7 +25,19 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
         ),
       ),
       body: Column(
-        children: [
+        children: [ Padding(
+             padding: const EdgeInsets.only(left: 30),
+             child: Row(mainAxisAlignment: MainAxisAlignment.start,
+               children: [
+                 CircleAvatar(backgroundImage: AssetImage('Assets/p3.jpg'),radius: 30,),
+                 IconButton(onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Makeup_Message();
+                          },));
+                 }, icon: Icon(Icons.message))
+               ],
+             ),
+           ),
           Row(
             children: [
               Padding(
@@ -38,9 +52,13 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 40),
+                padding: const EdgeInsets.only(left: 60),
                 child: ElevatedButton
-                (onPressed: (){}, child: Text('PACKAGES',style: TextStyle(color: Colors.black87),),
+                (onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return MakeupPackages();
+                          },));
+                }, child: Text('PACKAGES',style: TextStyle(color: Colors.black87),),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0.0)

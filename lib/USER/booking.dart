@@ -1,3 +1,5 @@
+import 'package:festive_fusion/USER/MakeupPayment.dart';
+import 'package:festive_fusion/USER/package.dart';
 import 'package:flutter/material.dart';
 
 class Booked extends StatefulWidget {
@@ -60,7 +62,11 @@ class _BookedState extends State<Booked> {
             
                                 Row(mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    TextButton(onPressed: (){}, child: Text('CHANGE')),
+                                    TextButton(onPressed: (){
+                                      Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return UserPckg();
+                          },));
+                                    }, child: Text('CHANGE')),
                                   ],
                                 ),
                                  SizedBox(height: 20,),
@@ -75,7 +81,11 @@ class _BookedState extends State<Booked> {
                                     TextButton(onPressed: (){}, child: Text('CHANGE')),
                                   ],
                                 ),
-                                ElevatedButton(onPressed: (){}, child: Text(' NEXT ',style:TextStyle(color: Colors.deepPurple),))
+                                ElevatedButton(onPressed: (){
+                                  Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Payment();
+                          },));
+                                }, child: Text(' NEXT ',style:TextStyle(color: Colors.deepPurple),))
                                  ],
               ),
             ),

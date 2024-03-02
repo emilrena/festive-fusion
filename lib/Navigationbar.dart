@@ -30,15 +30,16 @@ class _NavigationbarState extends State<Navigationbar> {
       body: Center(child:option.
       elementAt(selectedindex),),
 bottomNavigationBar: BottomNavigationBar(items: [
-  BottomNavigationBarItem(icon: Icon(Icons.book_online,color: Colors.black87,),label: 'booking'),
+  BottomNavigationBarItem(icon: Icon(Icons.book_online,),label: 'booking'),
 
-  BottomNavigationBarItem(icon: Icon(Icons.home,color: Colors.black87,),label: 'home'),
+  BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
 
-  BottomNavigationBarItem(icon: Icon(Icons.person,color: Colors.black87,),label: 'person')
+  BottomNavigationBarItem(icon: Icon(Icons.person,),label: 'person')
 ],
 type: BottomNavigationBarType.shifting,
 currentIndex: selectedindex,
 selectedItemColor: Colors.deepPurpleAccent,
+unselectedItemColor: Colors.blue,
 iconSize: 20,
 onTap: ontop,
 elevation: 5

@@ -1,4 +1,5 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/functions.dart';
 import 'package:flutter/material.dart';
 
@@ -215,7 +216,7 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(height: 50,),
                         ElevatedButton(onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return Functions_user();
+                            return UserHome();
                           },));
                         }, child: Text('REGISTOR')),
                     

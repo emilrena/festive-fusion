@@ -39,6 +39,7 @@ import 'package:festive_fusion/Rental/Rental_UploadImage.dart';
 import 'package:festive_fusion/USER/BokkedImage.dart';
 import 'package:festive_fusion/USER/DesignerProffesinalsView.dart';
 import 'package:festive_fusion/USER/DesignerWork.dart';
+import 'package:festive_fusion/USER/Feedbackpopup.dart';
 // import 'package:festive_fusion/USER/MakeupBooked.dart';
 import 'package:festive_fusion/USER/MakeupPackages.dart';
 import 'package:festive_fusion/USER/MakeupPayment.dart';
@@ -68,6 +69,7 @@ import 'package:festive_fusion/mehandi/Mehandi_message.dart';
 import 'package:festive_fusion/mehandi/Mehandi_package.dart';
 import 'package:festive_fusion/mehandi/Mehandi_packageEdit.dart';
 import 'package:festive_fusion/mehandi/Mehandi_registration.dart';
+import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
 
 class Functions_user extends StatefulWidget {
@@ -249,7 +251,7 @@ class _Functions_userState extends State<Functions_user> {
                 ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return MakeupPayment();
+                    return Payment();
                   }));
                 }, child: Text('makeup payment'),),
                 
@@ -499,6 +501,21 @@ class _Functions_userState extends State<Functions_user> {
                     return GRidPage();
                   }));
                 }, child: Text('grid view'),),
+
+                Text('user'),
+                ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Registration();
+                  }));
+                }, child: Text('USER'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return PopupP();
+                  }));
+                }, child: Text('POPUP'),),
+
               ],
             ),
           ),

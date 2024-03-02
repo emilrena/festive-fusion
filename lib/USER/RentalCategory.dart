@@ -1,3 +1,5 @@
+import 'package:festive_fusion/USER/RentalCategoryItems.dart';
+import 'package:festive_fusion/USER/RentalWork.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -26,7 +28,11 @@ class _RentalCategoryState extends State<RentalCategory> {
           Padding(
             padding: const EdgeInsets.only(left: 40),
             child: ElevatedButton
-            (onPressed: (){}, child: Text('WORKS',style: TextStyle(color: const Color.fromARGB(255, 15, 15, 15)),),
+            (onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return RentalWorkView();
+                          },));
+            }, child: Text('WORKS',style: TextStyle(color: const Color.fromARGB(255, 15, 15, 15)),),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0.0)
@@ -37,7 +43,9 @@ class _RentalCategoryState extends State<RentalCategory> {
           Padding(
             padding: const EdgeInsets.only(left: 40),
             child: ElevatedButton
-            (onPressed: (){}, child: Text('CATEGORY',style: TextStyle(color: Color.fromARGB(221, 75, 2, 82)),),
+            (onPressed: (){
+               
+            }, child: Text('CATEGORY',style: TextStyle(color: Color.fromARGB(221, 75, 2, 82)),),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0.0)
@@ -60,27 +68,33 @@ class _RentalCategoryState extends State<RentalCategory> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Container(
-                    height: 100,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      
-                        color:a==0? Color.fromARGB(255, 204, 193, 200):Color.fromRGBO(179, 124, 154, 1),
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                //  child: Container(
-                //   height: 50,width: 50,color: Colors.amberAccent,
-                //  ),
-                 border: Border.all(
-                            color: Color.fromARGB(255, 94, 87, 1), // Change this to the desired color
-                            width: 2.0, // Change this to the desired border width
+                  InkWell(onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Items();
+                          },));
+                  },
+                    child: Container(
+                      height: 100,
+                      width: 300,
+                      decoration: BoxDecoration(
+                        
+                          color:a==0? Color.fromARGB(255, 204, 193, 200):Color.fromRGBO(179, 124, 154, 1),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                                    //  child: Container(
+                                    //   height: 50,width: 50,color: Colors.amberAccent,
+                                    //  ),
+                                     border: Border.all(
+                              color: Color.fromARGB(255, 94, 87, 1), // Change this to the desired color
+                              width: 2.0, // Change this to the desired border width
+                            ),
                           ),
-                        ),
-                child: SizedBox(height: 20,width: 10,
-                  child: Row(
-                    children: [
-                      ClipRRect(borderRadius:BorderRadius.circular(20) ,child:Image.asset('Assets/wrk3.jpg',)),
-                    ],
-                  )),
+                                    child: SizedBox(height: 20,width: 10,
+                    child: Row(
+                      children: [
+                        ClipRRect(borderRadius:BorderRadius.circular(20) ,child:Image.asset('Assets/wrk3.jpg',)),
+                      ],
+                    )),
+                    ),
                   ),
                 ],
               ),

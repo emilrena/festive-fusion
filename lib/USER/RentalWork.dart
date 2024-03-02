@@ -1,3 +1,5 @@
+import 'package:festive_fusion/Rental/Rental_Message.dart';
+import 'package:festive_fusion/USER/RentalCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
@@ -24,6 +26,19 @@ class _RentalWorkViewState extends State<RentalWorkView> {
       ),
       body: Column(
         children: [
+           Padding(
+             padding: const EdgeInsets.only(left: 30),
+             child: Row(mainAxisAlignment: MainAxisAlignment.start,
+               children: [
+                 CircleAvatar(backgroundImage: AssetImage('Assets/p3.jpg'),radius: 30,),
+                 IconButton(onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Rental_Message();
+                          },));
+                 }, icon: Icon(Icons.message))
+               ],
+             ),
+           ),
           Row(
             children: [
               Padding(
@@ -38,9 +53,13 @@ class _RentalWorkViewState extends State<RentalWorkView> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 40),
+                padding: const EdgeInsets.only(left: 60),
                 child: ElevatedButton
-                (onPressed: (){}, child: Text('CATEGORY ',style: TextStyle(color: Colors.black87),),
+                (onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return RentalCategory();
+                          },));
+                }, child: Text('CATEGORY ',style: TextStyle(color: Colors.black87),),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0.0)
