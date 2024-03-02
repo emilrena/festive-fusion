@@ -28,6 +28,7 @@ import 'package:festive_fusion/Makeup/Makeup_package.dart';
 import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:festive_fusion/Makeup/Makeup_registration.dart';
 import 'package:festive_fusion/Makeup/Proceed.dart';
+// import 'package:festive_fusion/NotiBar.dart';
 import 'package:festive_fusion/Rental/RentalHome.dart';
 import 'package:festive_fusion/Rental/Rental_EditProfile.dart';
 import 'package:festive_fusion/Rental/Rental_Message.dart';
@@ -515,6 +516,7 @@ class _Functions_userState extends State<Functions_user> {
                     return PopupP();
                   }));
                 }, child: Text('POPUP'),),
+               
 
               ],
             ),

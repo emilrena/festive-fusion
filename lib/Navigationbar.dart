@@ -1,3 +1,4 @@
+import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/registration.dart';
@@ -11,10 +12,10 @@ class Navigationbar extends StatefulWidget {
 }
 
 class _NavigationbarState extends State<Navigationbar> {
-  int selectedindex=0;
+  int selectedindex=1;
    static const List<dynamic>option=[
     Booked(),
-    Message(),
+    UserHome(),
     Registration(),
 
    ];
@@ -38,8 +39,8 @@ bottomNavigationBar: BottomNavigationBar(items: [
 ],
 type: BottomNavigationBarType.shifting,
 currentIndex: selectedindex,
-selectedItemColor: Colors.deepPurpleAccent,
-unselectedItemColor: Colors.blue,
+selectedItemColor: Color.fromARGB(255, 194, 47, 174),
+unselectedItemColor: const Color.fromARGB(255, 13, 13, 14),
 iconSize: 20,
 onTap: ontop,
 elevation: 5
