@@ -1,14 +1,16 @@
-import 'package:festive_fusion/Makeup/Proceed.dart';
+import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
+import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
+import 'package:festive_fusion/mehandi/MehandiNav.dart';
 import 'package:flutter/material.dart';
 
-class MakeupNotification extends StatefulWidget {
-  const MakeupNotification({Key? key}) : super(key: key);
+class RentalProceed extends StatefulWidget {
+  const RentalProceed({Key? key}) : super(key: key);
 
   @override
-  State<MakeupNotification> createState() => _MakeupNotificationState();
+  State<RentalProceed> createState() => _RentalProceedState();
 }
 
-class _MakeupNotificationState extends State<MakeupNotification> {
+class _RentalProceedState extends State<RentalProceed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,18 +90,16 @@ class _MakeupNotificationState extends State<MakeupNotification> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(right: 50),
-                          child: IconButton(onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return Proceed();
-                          },));
-                          }, icon: Icon(Icons.check),color: Colors.deepPurple,),
+                          child:ElevatedButton(onPressed: (){
+                              Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MehandiNav();
+                  }));
+                          }, child: Text('Finished work'))
                         ),
-                     IconButton(onPressed: (){}, icon: Icon(Icons.cancel),color: Colors.deepPurple,)
+                    
                       ],
-                  
                     )
-             
-             ],
+              ],
             ),
           );
         },

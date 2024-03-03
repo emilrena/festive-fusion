@@ -1,3 +1,4 @@
+import 'package:festive_fusion/mehandi/Mehandi_PackageView.dart';
 import 'package:flutter/material.dart';
 
 class Mehndi_package_add extends StatefulWidget {
@@ -52,7 +53,12 @@ class _Mehndi_package_addState extends State<Mehndi_package_add> {
                 SizedBox(height: 20,),
                 Row(mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(onPressed: (){}, 
+                    ElevatedButton(onPressed: (){
+
+                      Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Mehndi_package_view();
+                          },));
+                    }, 
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 206, 197, 221))),
                     child: Text('SUBMIT',style: TextStyle(color: Colors.black87),)),
                   ],

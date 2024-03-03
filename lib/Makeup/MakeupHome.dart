@@ -1,3 +1,5 @@
+import 'package:festive_fusion/Makeup/Makeup_message.dart';
+import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
@@ -42,7 +44,11 @@ class _MakeupHomeState extends State<MakeupHome> {
             Padding(
               padding: const EdgeInsets.only(left: 30),
               child: ElevatedButton
-              (onPressed: (){}, child: Text('  PACKAGES  ',style: TextStyle(color: Colors.deepPurple),),
+              (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Package_View();
+                  }));
+              }, child: Text('  PACKAGES  ',style: TextStyle(color: Colors.deepPurple),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.6),
@@ -53,7 +59,11 @@ class _MakeupHomeState extends State<MakeupHome> {
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: ElevatedButton
-              (onPressed: (){}, child: Text('   ENQUIRY   ',style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),),
+              (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Message();
+                  }));
+              }, child: Text('   ENQUIRY   ',style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.6)

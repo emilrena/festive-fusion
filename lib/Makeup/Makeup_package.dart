@@ -1,3 +1,4 @@
+import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:flutter/material.dart';
 
 class Makeup_Package_Add extends StatefulWidget {
@@ -52,7 +53,11 @@ class _Makeup_Package_AddState extends State<Makeup_Package_Add> {
                 SizedBox(height: 20,),
                 Row(mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(onPressed: (){}, 
+                    ElevatedButton(onPressed: (){
+                        Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupNav();
+                  }));
+                    }, 
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 206, 197, 221))),
                     child: Text('SUBMIT',style: TextStyle(color: Colors.black87),)),
                   ],

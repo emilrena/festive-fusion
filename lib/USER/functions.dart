@@ -527,11 +527,30 @@ class _Functions_userState extends State<Functions_user> {
                  ElevatedButton
                 (onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return DesignerHome();
+                    return Desgn_Reg();
                   }));
                 }, child: Text('designers'),),
 
-               
+               ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Mehandi_Reg();
+                  }));
+                }, child: Text('Mehandi'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Rental_Registration();
+                  }));
+                }, child: Text('Rental'),),
+                  ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Registration();
+                  }));
+                }, child: Text('Makup'),),
+
+
 
               ],
             ),

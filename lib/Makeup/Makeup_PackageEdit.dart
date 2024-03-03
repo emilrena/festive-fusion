@@ -1,3 +1,4 @@
+import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:flutter/material.dart';
 
 class Makeup_Package_Edit extends StatefulWidget {
@@ -52,7 +53,11 @@ class _Makeup_Package_EditState extends State<Makeup_Package_Edit> {
                 SizedBox(height: 20,),
                 Row(mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(onPressed: (){}, 
+                    ElevatedButton(onPressed: (){
+                        Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Package_View();
+                  }));
+                    }, 
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 206, 197, 221))),
                     child: Text('OK',style: TextStyle(color: Colors.black87),)),
                   ],

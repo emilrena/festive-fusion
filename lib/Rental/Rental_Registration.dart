@@ -1,4 +1,5 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'package:festive_fusion/Rental/RentalNav.dart';
 import 'package:flutter/material.dart';
 
 class Rental_Registration extends StatefulWidget {
@@ -202,7 +203,9 @@ class _Rental_RegistrationState extends State<Rental_Registration> {
                         ),),
                         SizedBox(height: 50,),
                         ElevatedButton(onPressed: () {
-                          
+                         Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return RentalNav();
+                  }));  
                           
                         }, child: Text('register')),
                     

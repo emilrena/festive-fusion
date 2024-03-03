@@ -1,4 +1,5 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:flutter/material.dart';
 
 class Makeup_Registration extends StatefulWidget {
@@ -202,7 +203,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         ),),
                         SizedBox(height: 50,),
                         ElevatedButton(onPressed: () {
-                          
+                          Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MakeupNav();
+                  }));
                           
                         }, child: Text('register')),
                     

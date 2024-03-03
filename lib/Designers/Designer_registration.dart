@@ -1,4 +1,5 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:flutter/material.dart';
 
 class Desgn_Reg extends StatefulWidget {
@@ -202,7 +203,10 @@ class _Desgn_RegState extends State<Desgn_Reg> {
                         ),),
                         SizedBox(height: 50,),
                         ElevatedButton(onPressed: () {
-                          
+                           
+                       Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerNav();
+                  }));
                           
                         }, child: Text('register')),
                     

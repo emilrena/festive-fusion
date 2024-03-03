@@ -1,3 +1,6 @@
+import 'package:festive_fusion/USER/MehandiPackage.dart';
+import 'package:festive_fusion/mehandi/Mehandi_PackageView.dart';
+import 'package:festive_fusion/mehandi/Mehandi_message.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
@@ -43,7 +46,9 @@ class _MehandiHomeState extends State<MehandiHome> {
               padding: const EdgeInsets.only(left: 30),
               child: ElevatedButton
               (onPressed: (){
-                
+                 Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Mehndi_package_view();
+                  }));
               }, child: Text('  PACKAGES  ',style: TextStyle(color: Colors.deepPurple),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -55,7 +60,11 @@ class _MehandiHomeState extends State<MehandiHome> {
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: ElevatedButton
-              (onPressed: (){}, child: Text('   ENQUIRY   ',style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),),
+              (onPressed: (){
+                 Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Mehandi_Message();
+                  }));
+              }, child: Text('   ENQUIRY   ',style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.6)

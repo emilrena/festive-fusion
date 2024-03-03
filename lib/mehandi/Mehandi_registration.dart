@@ -1,4 +1,5 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'package:festive_fusion/mehandi/MehandiNav.dart';
 import 'package:flutter/material.dart';
 
 class Mehandi_Reg extends StatefulWidget {
@@ -202,7 +203,9 @@ class _Mehandi_RegState extends State<Mehandi_Reg> {
                         ),),
                         SizedBox(height: 50,),
                         ElevatedButton(onPressed: () {
-                          
+                           Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return MehandiNav();
+                  }));
                           
                         }, child: Text('register')),
                     

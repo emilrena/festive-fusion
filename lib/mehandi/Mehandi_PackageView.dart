@@ -1,3 +1,5 @@
+import 'package:festive_fusion/mehandi/Mehandi_package.dart';
+import 'package:festive_fusion/mehandi/Mehandi_packageEdit.dart';
 import 'package:flutter/material.dart';
 
 class Mehndi_package_view extends StatefulWidget {
@@ -33,41 +35,38 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
                     Column(
                       children: [
                         SizedBox(height: 20,),
-                        Icon(Icons.delete),
+                        InkWell(onTap: (){Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Mehndi_package_add();
+                          },));
+                          
+                        },
+                          child: Icon(Icons.delete)),
                         SizedBox(
                           height: 50,
                         ),
-                        Icon(Icons.change_circle)
-                      ],
-                    )
-                  ]),
-            )
-              
-              ,SizedBox(height: 30,),
-              Container(
-               height: 150,width: 300,
-                decoration: BoxDecoration(color: Color.fromARGB(255, 204, 193, 200),
-                
-                  borderRadius: BorderRadius.all(Radius.circular(20))
-                ),child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Column(
-                      children: [
-                        SizedBox(height: 20,),
-                        Icon(Icons.delete),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        Icon(Icons.change_circle)
+                        InkWell(onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Mehndi_package_edit();
+                          },));
+
+                        },
+                          child: Icon(Icons.change_circle))
                       ],
                     )
                   ]),
             ),
+            
               SizedBox(height: 20,),
               Row(mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton(onPressed: (){}, icon: Icon(Icons.add,color: Colors.black87,))
+                  IconButton(onPressed: (){
+
+     Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return Mehndi_package_add();
+                          },));
+
+
+                  }, icon: Icon(Icons.add,color: Colors.black87,))
                 ],
               )
           

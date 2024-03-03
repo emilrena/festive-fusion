@@ -1,3 +1,5 @@
+import 'package:festive_fusion/Makeup/Makeup_PackageEdit.dart';
+import 'package:festive_fusion/Makeup/Makeup_package.dart';
 import 'package:flutter/material.dart';
 
 class Makeup_Package_View extends StatefulWidget {
@@ -59,7 +61,12 @@ class _Makeup_Package_ViewState extends State<Makeup_Package_View> {
                         SizedBox(
                           height: 50,
                         ),
-                        Icon(Icons.change_circle)
+                        InkWell(onTap: (){
+                            Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Package_Edit();
+                  }));
+                        },
+                          child: Icon(Icons.change_circle))
                       ],
                     )
                   ]),
@@ -67,7 +74,11 @@ class _Makeup_Package_ViewState extends State<Makeup_Package_View> {
               SizedBox(height: 20,),
               Row(mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton(onPressed: (){}, icon: Icon(Icons.add,color: Colors.black87,))
+                  IconButton(onPressed: (){
+                      Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Package_Add();
+                  }));
+                  }, icon: Icon(Icons.add,color: Colors.black87,))
                 ],
               )
           

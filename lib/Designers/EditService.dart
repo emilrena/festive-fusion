@@ -1,3 +1,5 @@
+import 'package:festive_fusion/Designers/DesignerHome.dart';
+import 'package:festive_fusion/Designers/packageview.dart';
 import 'package:flutter/material.dart';
 
 class EditServices_ extends StatefulWidget {
@@ -52,7 +54,11 @@ class _EditServices_State extends State<EditServices_> {
                 SizedBox(height: 20,),
                 Row(mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(onPressed: (){}, 
+                    ElevatedButton(onPressed: (){
+                       Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Vservice();
+                  }));
+                    }, 
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 206, 197, 221))),
                     child: Text('OK',style: TextStyle(color: Colors.black87),)),
                   ],

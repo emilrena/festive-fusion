@@ -1,3 +1,4 @@
+import 'package:festive_fusion/Rental/Rental_Message.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
@@ -42,7 +43,9 @@ class _RentHomeState extends State<RentHome> {
             Padding(
               padding: const EdgeInsets.only(left: 30),
               child: ElevatedButton
-              (onPressed: (){}, child: Text('  CATEGORY  ',style: TextStyle(color: Colors.deepPurple),),
+              (onPressed: (){
+                
+              }, child: Text('  CATEGORY  ',style: TextStyle(color: Colors.deepPurple),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.6),
@@ -53,7 +56,11 @@ class _RentHomeState extends State<RentHome> {
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: ElevatedButton
-              (onPressed: (){}, child: Text('   ENQUIRY   ',style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),),
+              (onPressed: (){
+                 Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Rental_Message();
+                  }));
+              }, child: Text('   ENQUIRY   ',style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.6)

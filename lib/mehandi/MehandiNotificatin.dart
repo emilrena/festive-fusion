@@ -1,14 +1,15 @@
-import 'package:festive_fusion/Makeup/Proceed.dart';
+import 'package:festive_fusion/Designers/DesignerHome.dart';
+import 'package:festive_fusion/Designers/DesignerProceeds.dart';
 import 'package:flutter/material.dart';
 
-class MakeupNotification extends StatefulWidget {
-  const MakeupNotification({Key? key}) : super(key: key);
+class MehandiNotificaton extends StatefulWidget {
+  const MehandiNotificaton({Key? key}) : super(key: key);
 
   @override
-  State<MakeupNotification> createState() => _MakeupNotificationState();
+  State<MehandiNotificaton> createState() => _MehandiNotificatonState();
 }
 
-class _MakeupNotificationState extends State<MakeupNotification> {
+class _MehandiNotificatonState extends State<MehandiNotificaton> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,12 +90,16 @@ class _MakeupNotificationState extends State<MakeupNotification> {
                         Padding(
                           padding: const EdgeInsets.only(right: 50),
                           child: IconButton(onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return Proceed();
-                          },));
+                              Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerProceed();
+                  }));
                           }, icon: Icon(Icons.check),color: Colors.deepPurple,),
                         ),
-                     IconButton(onPressed: (){}, icon: Icon(Icons.cancel),color: Colors.deepPurple,)
+                     IconButton(onPressed: (){
+                        Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerHome();
+                  }));
+                     }, icon: Icon(Icons.cancel),color: Colors.deepPurple,)
                       ],
                   
                     )
