@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_grid/responsive_grid.dart';
 
 class MakeupHome extends StatefulWidget {
   const MakeupHome({super.key});
@@ -62,6 +63,21 @@ class _MakeupHomeState extends State<MakeupHome> {
             ),
           ],
         ),
+         SizedBox(height: 10,),
+          Expanded(
+            child: ResponsiveGridList(
+                    desiredItemWidth: 150,
+                    minSpacing: 10,
+                    children: List.generate(20, (index)=> index+1).map((i) {
+            return Container(
+              height: 150,
+              alignment: Alignment(0, 0),
+              color: Color.fromARGB(255, 165, 146, 159),
+              child: Text(i.toString()),
+            );
+                    }).toList()
+                ),
+          )
           ],
         ),
       ),

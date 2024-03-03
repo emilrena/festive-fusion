@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_grid/responsive_grid.dart';
 
 class MehandiHome extends StatefulWidget {
   const MehandiHome({super.key});
@@ -41,7 +42,9 @@ class _MehandiHomeState extends State<MehandiHome> {
             Padding(
               padding: const EdgeInsets.only(left: 30),
               child: ElevatedButton
-              (onPressed: (){}, child: Text('  PACKAGES  ',style: TextStyle(color: Colors.deepPurple),),
+              (onPressed: (){
+                
+              }, child: Text('  PACKAGES  ',style: TextStyle(color: Colors.deepPurple),),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.6),
@@ -62,6 +65,21 @@ class _MehandiHomeState extends State<MehandiHome> {
             ),
           ],
         ),
+         SizedBox(height: 10,),
+          Expanded(
+            child: ResponsiveGridList(
+                    desiredItemWidth: 150,
+                    minSpacing: 10,
+                    children: List.generate(20, (index)=> index+1).map((i) {
+            return Container(
+              height: 150,
+              alignment: Alignment(0, 0),
+              color: Color.fromARGB(255, 165, 146, 159),
+              child: Text(i.toString()),
+            );
+                    }).toList()
+                ),
+          )
           ],
         ),
       ),

@@ -524,6 +524,13 @@ class _Functions_userState extends State<Functions_user> {
                     return AdminNav();
                   }));
                 }, child: Text('admin'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return DesignerHome();
+                  }));
+                }, child: Text('designers'),),
+
                
 
               ],
