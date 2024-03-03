@@ -1,3 +1,4 @@
+import 'package:festive_fusion/USER/RentalProffesionals.dart';
 import 'package:flutter/material.dart';
 
 class RentalFullProfile extends StatefulWidget {
@@ -38,7 +39,11 @@ class _RentalFullProfileState extends State<RentalFullProfile> {
             Text('phone no:9497422413'),
           
             SizedBox(height: 40,),
-            ElevatedButton(onPressed: (){},
+            ElevatedButton(onPressed: (){
+              Navigator.pop(context, MaterialPageRoute(builder:(context) {
+                            return RentalProffesional_View();
+                          },));
+            },
                                 style:ElevatedButton.styleFrom(padding:EdgeInsets.symmetric(vertical: 8.0,horizontal: 16.0), 
                                 backgroundColor:Colors.deepPurple,
                                 ), child: Text('BLOCK'

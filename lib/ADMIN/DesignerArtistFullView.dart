@@ -1,3 +1,4 @@
+import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
 import 'package:flutter/material.dart';
 
 class DesignerFullProfile extends StatefulWidget {
@@ -38,7 +39,9 @@ class _DesignerFullProfileState extends State<DesignerFullProfile> {
             Text('phone no:9497422413'),
           
             SizedBox(height: 40,),
-            ElevatedButton(onPressed: (){},
+            ElevatedButton(onPressed: (){
+              Navigator.pop(context);
+            },
                                 style:ElevatedButton.styleFrom(padding:EdgeInsets.symmetric(vertical: 8.0,horizontal: 16.0), 
                                 backgroundColor:Colors.deepPurple,
                                 ), child: Text('BLOCK'

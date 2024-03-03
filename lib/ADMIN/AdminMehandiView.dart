@@ -1,3 +1,4 @@
+import 'package:festive_fusion/ADMIN/MehandiArtistFullView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -55,7 +56,11 @@ class _AdminMehandiViewState extends State<AdminMehandiView> {
                     ),
                   ),
                   leading: CircleAvatar(backgroundImage: AssetImage('Assets/mehandi.png')),
-                  trailing:ElevatedButton(onPressed: (){},
+                  trailing:ElevatedButton(onPressed: (){
+                     Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return MehandiFullProfile();
+                          },));
+                  },
                             style:ElevatedButton.styleFrom(padding:EdgeInsets.symmetric(vertical: 8.0,horizontal: 16.0), 
                             backgroundColor:Colors.deepPurple,
                             ), child: Text('VIEW'

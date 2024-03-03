@@ -1,3 +1,7 @@
+import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
+import 'package:festive_fusion/ADMIN/AdminMakeupView.dart';
+import 'package:festive_fusion/ADMIN/AdminMehandiView.dart';
+import 'package:festive_fusion/ADMIN/AdminRentalView.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -53,11 +57,17 @@ class _AdminHomeState extends State<AdminHome> {
                           //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                               padding: const EdgeInsets.only(left: 40),
-                              child: Text(
-                                'Designers',
-                                style: GoogleFonts.irishGrover(
-                                    color: Color.fromARGB(255, 20, 20, 20),
-                                    fontSize: 25),
+                              child: InkWell(onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return AdminDesignerView();
+                          },));
+                              },
+                                child: Text(
+                                  'Designers',
+                                  style: GoogleFonts.irishGrover(
+                                      color: Color.fromARGB(255, 20, 20, 20),
+                                      fontSize: 25),
+                                ),
                               )),
                         ],
                       )
@@ -86,11 +96,17 @@ class _AdminHomeState extends State<AdminHome> {
                           //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                             padding: const EdgeInsets.only(left: 40),
-                            child: Text(
-                              'Rentals',
-                              style: GoogleFonts.irishGrover(
-                                  color: Color.fromARGB(255, 20, 20, 20),
-                                  fontSize: 25),
+                            child: InkWell(onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return AdminRentalView();
+                          },));
+                            },
+                              child: Text(
+                                'Rentals',
+                                style: GoogleFonts.irishGrover(
+                                    color: Color.fromARGB(255, 20, 20, 20),
+                                    fontSize: 25),
+                              ),
                             ),
                           ),
                         ],
@@ -120,11 +136,17 @@ class _AdminHomeState extends State<AdminHome> {
                           //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                             padding: const EdgeInsets.only(left: 40),
-                            child: Text(
-                              'Make up',
-                              style: GoogleFonts.irishGrover(
-                                  color: Color.fromARGB(255, 20, 20, 20),
-                                  fontSize: 25),
+                            child: InkWell(onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return AdminMakeupView();
+                          },));
+                            },
+                              child: Text(
+                                'Make up',
+                                style: GoogleFonts.irishGrover(
+                                    color: Color.fromARGB(255, 20, 20, 20),
+                                    fontSize: 25),
+                              ),
                             ),
                           ),
                         ],
@@ -154,11 +176,17 @@ class _AdminHomeState extends State<AdminHome> {
                           //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                             padding: const EdgeInsets.only(left: 40),
-                            child: Text(
-                              'Mehandi',
-                              style: GoogleFonts.irishGrover(
-                                  color: Color.fromARGB(255, 20, 20, 20),
-                                  fontSize: 25),
+                            child: InkWell(onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder:(context) {
+                            return AdminMehandiView();
+                          },));
+                            },
+                              child: Text(
+                                'Mehandi',
+                                style: GoogleFonts.irishGrover(
+                                    color: Color.fromARGB(255, 20, 20, 20),
+                                    fontSize: 25),
+                              ),
                             ),
                           ),
                         ],

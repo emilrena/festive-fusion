@@ -1,21 +1,21 @@
-import 'package:festive_fusion/ADMIN/MakeupArtistFullView.dart';
-import 'package:festive_fusion/ADMIN/RentalArtistFullView.dart';
+import 'package:festive_fusion/USER/DesignerWork.dart';
+import 'package:festive_fusion/USER/ViewBookingStatus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class AdminMakeupView extends StatefulWidget {
-  const AdminMakeupView({super.key});
+class MyBookings extends StatefulWidget {
+  const MyBookings({super.key});
 
   @override
-  State<AdminMakeupView> createState() => _AdminMakeupViewState();
+  State<MyBookings> createState() => _MyBookingsState();
 }
 
-class _AdminMakeupViewState extends State<AdminMakeupView> {
+class _MyBookingsState extends State<MyBookings> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
       appBar:AppBar(
-        title: Text('PROFFESIONALS'),
+        title: Text('bookings'),
       ),
       
       body: SafeArea(
@@ -32,7 +32,7 @@ class _AdminMakeupViewState extends State<AdminMakeupView> {
             // Center(child: Text('PROFESIONALS')),
             Expanded(
               child: ListView.builder(
-                 itemCount: 10,
+                 itemCount: 3,
                 
                 itemBuilder: (context, index) {
                   return  ListTile(
@@ -56,15 +56,17 @@ class _AdminMakeupViewState extends State<AdminMakeupView> {
                       },
                     ),
                   ),
-                  leading: CircleAvatar(backgroundImage: AssetImage('Assets/p4.jpg')),
+                  leading: CircleAvatar(backgroundImage: AssetImage('Assets/p2.jpg'),
+                  radius: 30,
+                  ),
                   trailing:ElevatedButton(onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MakeupFullProfile();
+                            return MyBookingsStatus();
                           },));
                   },
                             style:ElevatedButton.styleFrom(padding:EdgeInsets.symmetric(vertical: 8.0,horizontal: 16.0), 
                             backgroundColor:Colors.deepPurple,
-                            ), child: Text('VIEW'
+                            ), child: Text('view'
                            , style: TextStyle(color: const Color.fromARGB(255, 231, 234, 236),fontSize: 10),
                             
                             )) 

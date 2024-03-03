@@ -91,8 +91,10 @@ class _MakeupNotificationState extends State<MakeupNotification> {
                         ),
                      IconButton(onPressed: (){}, icon: Icon(Icons.cancel),color: Colors.deepPurple,)
                       ],
+                  
                     )
-              ],
+             
+             ],
             ),
           );
         },

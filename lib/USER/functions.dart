@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
 import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/ADMIN/AdminMehandiView.dart';
+import 'package:festive_fusion/ADMIN/AdminNavigationBar.dart';
 import 'package:festive_fusion/ADMIN/AdminRentalView.dart';
 import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
 import 'package:festive_fusion/ADMIN/MakeupArtistFullView.dart';
@@ -516,6 +517,13 @@ class _Functions_userState extends State<Functions_user> {
                     return PopupP();
                   }));
                 }, child: Text('POPUP'),),
+               
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return AdminNav();
+                  }));
+                }, child: Text('admin'),),
                
 
               ],

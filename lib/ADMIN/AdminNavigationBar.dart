@@ -1,3 +1,6 @@
+import 'package:festive_fusion/ADMIN/AdminComplaintView.dart';
+import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
+import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/USER/BookedPeoples.dart';
 import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/booking.dart';
@@ -5,19 +8,19 @@ import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
 
-class Navigationbar extends StatefulWidget {
-  const Navigationbar({super.key});
+class AdminNav extends StatefulWidget {
+  const AdminNav({super.key});
 
   @override
-  State<Navigationbar> createState() => _NavigationbarState();
+  State<AdminNav> createState() => _AdminNavState();
 }
 
-class _NavigationbarState extends State<Navigationbar> {
+class _AdminNavState extends State<AdminNav> {
   int selectedindex=1;
    static const List<dynamic>option=[
-    MyBookings(),
-    UserHome(),
-    Registration(),
+    ComplaintView(),
+    AdminHome(),
+    
 
    ];
    void ontop(int index){
@@ -32,11 +35,11 @@ class _NavigationbarState extends State<Navigationbar> {
       body: Center(child:option.
       elementAt(selectedindex),),
 bottomNavigationBar: BottomNavigationBar(items: [
-  BottomNavigationBarItem(icon: Icon(Icons.book_online,),label: 'booking'),
+  BottomNavigationBarItem(icon: Icon(Icons.error,),label: 'complaints'),
 
   BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
 
-  BottomNavigationBarItem(icon: Icon(Icons.person,),label: 'person')
+  BottomNavigationBarItem(icon: Icon(Icons.logout_outlined,),label: 'logout'),
 ],
 type: BottomNavigationBarType.shifting,
 currentIndex: selectedindex,
