@@ -10,62 +10,70 @@ class EditServices_ extends StatefulWidget {
 }
 
 class _EditServices_State extends State<EditServices_> {
+  var packageEdit = TextEditingController();
+  var DescriptionEdit = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       appBar: AppBar(
         title: Center(child: Text('EDIT')),
       ),
       body: Container(
-                    decoration: BoxDecoration(image: DecorationImage(image: AssetImage('Assets/image1.jpg'),fit: BoxFit.cover),
-                    ),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('Assets/image1.jpg'), fit: BoxFit.cover),
+        ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.only(left: 28,right: 28),
+            padding: const EdgeInsets.only(left: 28, right: 28),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                
-                TextFormField(decoration: InputDecoration(hintText:'service',
-                  fillColor: Color.fromARGB(255, 182, 174, 196),
-                                        filled: true,
-                                        border: UnderlineInputBorder(
-                                          
-                                          borderSide: BorderSide.none)
-                                        
-                                          
-                                        ),
-                
-                ),SizedBox(height: 30,),
-                TextFormField(maxLines: 5,
-                  decoration: InputDecoration(hintText: 'Describe here',
-                    fillColor: Color.fromARGB(255, 182, 174, 196),
-                                        filled: true,
-                                        border: UnderlineInputBorder(
-                                          
-                                          borderSide: BorderSide.none)
-                                        
-                                          
-                                        ),
-                
+                TextFormField(controller: packageEdit,
+                  decoration: InputDecoration(
+                      hintText: 'service',
+                      fillColor: Color.fromARGB(255, 182, 174, 196),
+                      filled: true,
+                      border:
+                          UnderlineInputBorder(borderSide: BorderSide.none)),
                 ),
-                SizedBox(height: 20,),
-                Row(mainAxisAlignment: MainAxisAlignment.end,
+                SizedBox(
+                  height: 30,
+                ),
+                TextFormField(controller: DescriptionEdit,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                      hintText: 'Describe here',
+                      fillColor: Color.fromARGB(255, 182, 174, 196),
+                      filled: true,
+                      border:
+                          UnderlineInputBorder(borderSide: BorderSide.none)),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(onPressed: (){
-                       Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return Vservice();
-                  }));
-                    }, 
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 206, 197, 221))),
-                    child: Text('OK',style: TextStyle(color: Colors.black87),)),
+                    ElevatedButton(
+                        onPressed: () {
+                          print(packageEdit.text);
+                          print(DescriptionEdit.text);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return Vservice();
+                          }));
+                        },
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color.fromARGB(255, 206, 197, 221))),
+                        child: Text(
+                          'OK',
+                          style: TextStyle(color: Colors.black87),
+                        )),
                   ],
                 )
-            
-            
-            
               ],
             ),
           ),

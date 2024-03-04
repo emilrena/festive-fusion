@@ -12,6 +12,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  var Email=TextEditingController();
+  var Pass=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +51,7 @@ class _LoginState extends State<Login> {
                       ],
                     ),
                     TextFormField(
+                      controller: Email,
                       decoration: InputDecoration(
                           fillColor: Color.fromARGB(255, 224, 206, 221),
                           filled: true,
@@ -70,6 +73,7 @@ class _LoginState extends State<Login> {
                       ],
                     )),
                     TextFormField(
+                      controller: Pass,
                       decoration: InputDecoration(
                           fillColor: Color.fromARGB(255, 224, 206, 221),
                           filled: true,
@@ -87,6 +91,9 @@ class _LoginState extends State<Login> {
                       height: 50,
                     ),
                     ElevatedButton(onPressed: () {
+                      print(Email.text);
+                      print(Pass.text);
+
                       Navigator.push(context, MaterialPageRoute(builder:(context) {
                             return Navigationbar();
                           },));

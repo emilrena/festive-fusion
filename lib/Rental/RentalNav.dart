@@ -5,6 +5,7 @@ import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
 import 'package:festive_fusion/Rental/RentalHome.dart';
+import 'package:festive_fusion/Rental/RentalHomee.dart';
 import 'package:festive_fusion/Rental/RentalNotification.dart';
 import 'package:festive_fusion/Rental/Rental_EditProfile.dart';
 import 'package:festive_fusion/USER/BookedPeoples.dart';
@@ -25,9 +26,9 @@ class RentalNav extends StatefulWidget {
 
 class _RentalNavState extends State<RentalNav> {
   int selectedindex=1;
-   static const List<dynamic>option=[
+   static  List<dynamic>option=[
     RentalNotification(),
-    RentHome(),
+     RentHome(),                                               
     Rental_Edit_Profile(),
     
 

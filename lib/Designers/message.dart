@@ -8,6 +8,7 @@ class DesignerMessage extends StatefulWidget {
 }
 
 class _DesignerMessageState extends State<DesignerMessage> {
+  var Message=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +20,10 @@ class _DesignerMessageState extends State<DesignerMessage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 20,right: 20),
-              child: TextFormField(maxLines: 5,
+              child: TextFormField(
+                controller: Message,
+                maxLines: 5,
+
                 decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
                                 filled: true,
                                 border: UnderlineInputBorder(
@@ -35,6 +39,7 @@ class _DesignerMessageState extends State<DesignerMessage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(onPressed: (){
+                  print(Message.text);
                 
                 }, child: Text('send')),
               ),

@@ -8,6 +8,8 @@ class Rental_Package_edit extends StatefulWidget {
 }
 
 class _Rental_Package_editState extends State<Rental_Package_edit> {
+  var packageEdit=TextEditingController();
+  var DescriptionEdit=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

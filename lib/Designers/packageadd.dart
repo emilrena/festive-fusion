@@ -9,6 +9,8 @@ class package_add extends StatefulWidget {
 }
 
 class _package_addState extends State<package_add> {
+  var PackageName=TextEditingController();
+  var Description=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +31,7 @@ class _package_addState extends State<package_add> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextFormField(
+                TextFormField(controller: PackageName,
                   decoration: InputDecoration(
                     hintText: 'service',
                     fillColor: Color.fromARGB(255, 182, 174, 196),
@@ -40,7 +42,7 @@ class _package_addState extends State<package_add> {
                   ),
                 ),
                 SizedBox(height: 30,),
-                TextFormField(
+                TextFormField(controller: Description,
                   maxLines: 5,
                   decoration: InputDecoration(
                     hintText: 'Describe here',
@@ -57,6 +59,8 @@ class _package_addState extends State<package_add> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
+                        print(PackageName.text);
+                        print(Description.text);
                         Navigator.push(
                           context,
                           MaterialPageRoute(

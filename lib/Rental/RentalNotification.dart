@@ -1,6 +1,7 @@
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/DesignerProceeds.dart';
 import 'package:festive_fusion/Rental/RentalHome.dart';
+import 'package:festive_fusion/Rental/RentalHomee.dart';
 import 'package:festive_fusion/Rental/RentalProceed.dart';
 import 'package:flutter/material.dart';
 
