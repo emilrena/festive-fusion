@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+   Login({super.key});
 
   @override
   State<Login> createState() => _LoginState();
@@ -14,17 +14,20 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   var Email=TextEditingController();
   var Pass=TextEditingController();
+    final fkey = GlobalKey<FormState>();
+
+
   @override
   Widget build(BuildContext context) {
+     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 300,
+          child: Center(
+            child: Container(
+              width: 300,
+              child: Form(
+                 key: fkey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -41,7 +44,7 @@ class _LoginState extends State<Login> {
                       height: 50,
                     ),
                     Row(
-          
+                          
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
@@ -52,6 +55,11 @@ class _LoginState extends State<Login> {
                     ),
                     TextFormField(
                       controller: Email,
+                       validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'enter email';
+                    }
+                  },
                       decoration: InputDecoration(
                           fillColor: Color.fromARGB(255, 224, 206, 221),
                           filled: true,
@@ -74,6 +82,11 @@ class _LoginState extends State<Login> {
                     )),
                     TextFormField(
                       controller: Pass,
+                        validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Feild is empty';
+                    }
+                  },
                       decoration: InputDecoration(
                           fillColor: Color.fromARGB(255, 224, 206, 221),
                           filled: true,
@@ -93,12 +106,17 @@ class _LoginState extends State<Login> {
                     ElevatedButton(onPressed: () {
                       print(Email.text);
                       print(Pass.text);
-
-                      Navigator.push(context, MaterialPageRoute(builder:(context) {
+                      if (fkey.currentState!.validate()) {
+                       Navigator.push(context, MaterialPageRoute(builder:(context) {
                             return Navigationbar();
                           },));
-
+                          
+                    }
+                
+                     
+                
                     }, 
+                   
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple)),
                     child: Text('LOGIN',style: TextStyle(color: Color.fromARGB(255, 245, 244, 245)),)),
                     SizedBox(
@@ -113,7 +131,7 @@ class _LoginState extends State<Login> {
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

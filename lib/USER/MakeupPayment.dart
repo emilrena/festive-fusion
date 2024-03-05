@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 class Payment extends StatelessWidget {
   Payment({Key? key}) : super(key: key);
+  var Userid=TextEditingController();
+  var balance=TextEditingController();
 
   final List<String> _list = ['FULL AMOUNT', 'ADVANCE', ];
   final List<String> _list1 = ['GPAY', 'PHONEPAY', ];
@@ -55,7 +57,7 @@ class Payment extends StatelessWidget {
             ),
             SizedBox(height: 20,),
             SizedBox(height: 45,
-              child: TextFormField(
+              child: TextFormField(controller: Userid,
                 decoration: InputDecoration(
                               fillColor: Color.fromARGB(255, 223, 197, 218),
                               filled: true,
@@ -80,7 +82,7 @@ class Payment extends StatelessWidget {
                   ),
                   SizedBox(height: 10,),
                   SizedBox(height: 45,
-                    child: TextFormField(
+                    child: TextFormField(controller: balance,
                                   decoration: InputDecoration(
                                 fillColor: Color.fromARGB(255, 223, 197, 218),
                                 filled: true,
@@ -109,6 +111,8 @@ class Payment extends StatelessWidget {
             ),
             SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
+              print(Userid.text);
+              print(balance.text);
               Navigator.push(context, MaterialPageRoute(builder:(context) {
                             return AfterBooked();
                           },));
