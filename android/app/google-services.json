@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "475920844811",
+    "project_id": "festive-fusion-f4ba2",
+    "storage_bucket": "festive-fusion-f4ba2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475920844811:android:cf1a869f805e12d8989f0e",
+        "android_client_info": {
+          "package_name": "com.example.festive_fusion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyFgbGN5HBGjFLhn_LSdrC2Bqb2q86AT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

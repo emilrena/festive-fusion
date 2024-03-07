@@ -325,12 +325,12 @@ class _Functions_userState extends State<Functions_user> {
             //         return MakeupHome();
             //       }));
             //     }, child: Text('MAKEUP HOME'),),
-            //      ElevatedButton
-            //     (onPressed: (){
-            //       Navigator.push(context,MaterialPageRoute(builder: (context){
-            //         return Makeup_Registration();
-            //       }));
-            //     }, child: Text('MAKEUP Restration'),),
+                 ElevatedButton
+                (onPressed: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context){
+                    return Makeup_Registration();
+                  }));
+                }, child: Text('MAKEUP Restration'),),
             //      ElevatedButton
             //     (onPressed: (){
             //       Navigator.push(context,MaterialPageRoute(builder: (context){
