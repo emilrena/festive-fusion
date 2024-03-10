@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Mehandi_Message extends StatefulWidget {
@@ -53,7 +54,15 @@ class _Mehandi_MessageState extends State<Mehandi_Message> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: ()  async {
+                            await FirebaseFirestore.instance
+                                .collection('mehandi message ')
+                                .add({
+                              'message': Message.text,
+                              
+                              
+                              
+                            });
                              if (fkey.currentState!.validate()) {
                           print(Message.text);
                           }  },

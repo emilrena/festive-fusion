@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -73,7 +74,16 @@ class _Makeup_Package_EditState extends State<Makeup_Package_Edit> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () 
+                            async {
+                            await FirebaseFirestore.instance
+                                .collection('package edit ')
+                                .add({
+                              'package': packageEdit.text,
+                              'description': DescriptionEdit.text,
+                              
+                              
+                            });
                               if (fkey.currentState!.validate()) {
                             print(packageEdit.text);
                             print(DescriptionEdit.text);

@@ -1,8 +1,13 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Navigationbar.dart';
 import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Registration extends StatefulWidget {
   const Registration({super.key});
@@ -12,6 +17,9 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
+  var profileImage;
+  XFile? pickedFile;
+  File? image;
   var Name = TextEditingController();
   var Email = TextEditingController();
   var HouseName = TextEditingController();
@@ -22,6 +30,7 @@ class _RegistrationState extends State<Registration> {
   var Pass = TextEditingController();
   var conformPass = TextEditingController();
   String gender = "";
+  final fkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,255 +40,349 @@ class _RegistrationState extends State<Registration> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 300,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 154, 134, 189)),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('Name'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: Name,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('Email'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: Email,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('Gender'),
-                          ),
-                        ],
-                      ),
-                      RadioListTile(
-                          title: Text('Male'),
-                          value: 'Male',
-                          groupValue: gender,
-                          onChanged: (value) {
-                            setState(() {
-                              gender = value.toString();
-                            });
-                          }),
-                      RadioListTile(
-                          title: Text('Female'),
-                          value: 'Female',
-                          groupValue: gender,
-                          onChanged: (value) {
-                            setState(() {
-                              gender = value.toString();
-                            });
-                          }),
-                      RadioListTile(
-                          title: Text('Others'),
-                          value: 'others',
-                          groupValue: gender,
-                          onChanged: (value) {
-                            setState(() {
-                              gender = value.toString();
-                            });
-                          }),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('House name'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: HouseName,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('state'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: State,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('District'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: District,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('Pin No'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: Pin,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('Mobile Number'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: Mobile,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('Password'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: Pass,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text('confirm password'),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: conformPass,
-                        decoration: InputDecoration(
-                            fillColor: Color.fromARGB(255, 224, 206, 221),
-                            filled: true,
-                            border: UnderlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
-                                borderSide: BorderSide.none)),
-                      ),
-                      SizedBox(
-                        height: 50,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            print(Name.text);
-                            print(Email.text);
-                            print(HouseName.text);
-                            print(State.text);
-                            print(District.text);
-                            print(Pin.text);
-                            print(Mobile.text);
-                            print(Pass.text);
-                            print(conformPass.text);
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return Navigationbar();
+              Form(key: fkey,
+                child: Container(
+                  width: 300,
+                  child: SingleChildScrollView(
+                    child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                ImagePicker picker = ImagePicker();
+                                pickedFile = await picker.pickImage(
+                                    source: ImageSource.gallery);
+                  
+                                setState(() {
+                                  if (pickedFile != null) {
+                                    profileImage = File(pickedFile!.path);
+                                  }
+                                });
                               },
-                            ));
-                          },
-                          child: Text('REGISTOR')),
-                    ],
+                              child: ClipOval(
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: profileImage != null
+                                      ? FileImage(profileImage)
+                                      : null,
+                                  child: profileImage == null
+                                      ? Icon(
+                                          Icons.camera_alt,
+                                          size: 30,
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('Name'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: Name,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('Email'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: Email,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('Gender'),
+                            ),
+                          ],
+                        ),
+                        RadioListTile(
+                            title: Text('Male'),
+                            value: 'Male',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value.toString();
+                              });
+                            }),
+                        RadioListTile(
+                            title: Text('Female'),
+                            value: 'Female',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value.toString();
+                              });
+                            }),
+                        RadioListTile(
+                            title: Text('Others'),
+                            value: 'others',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value.toString();
+                              });
+                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('House name'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: HouseName,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('state'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: State,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('District'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: District,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('Pin No'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: Pin,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('Mobile Number'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: Mobile,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('Password'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: Pass,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('confirm password'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: conformPass,
+                           validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'field is empty';
+                                }
+                                return null;
+                              },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        ElevatedButton(
+                            onPressed: () async {
+                              await FirebaseFirestore.instance
+                                  .collection('user edit profile')
+                                  .add({
+                                'name': Name.text,
+                                'email': Email.text,
+                                'Adress': HouseName.text,
+                                'state': State.text,
+                                'District': District.text,
+                                'pin': Pin.text,
+                                'mobile no': Mobile.text,
+                                'password': Pass.text,
+                                'conform password': conformPass.text,
+                                'gender': gender,
+                               
+                                // 'image_url': profileImage,
+                              });
+                              if (fkey.currentState!.validate()) {
+                               
+                              print(Name.text);
+                              print(Email.text);
+                              print(HouseName.text);
+                              print(State.text);
+                              print(District.text);
+                              print(Pin.text);
+                              print(Mobile.text);
+                              print(Pass.text);
+                              print(conformPass.text);
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return Navigationbar();
+                                },
+                              ));
+                             } },
+                            child: Text('REGISTOR')),
+                      ],
+                    ),
                   ),
                 ),
               ),

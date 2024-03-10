@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/packageview.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,14 @@ class _EditServices_State extends State<EditServices_> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: ()   async {
+                            await FirebaseFirestore.instance
+                                .collection('package edit ')
+                                .add({
+                              'package': packageEdit.text,
+                              'email': DescriptionEdit.text,
+                              
+                            });
                                if (fkey.currentState!.validate()) {
                             print(packageEdit.text);
                             print(DescriptionEdit.text);

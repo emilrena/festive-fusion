@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Makeup_Message extends StatefulWidget {
@@ -55,7 +56,15 @@ class _Makeup_MessageState extends State<Makeup_Message> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('makeup message ')
+                                .add({
+                              'message': Message.text,
+                              
+                              
+                              
+                            });
                           if (fkey.currentState!.validate()) {
                             print(Message.text);
                           }

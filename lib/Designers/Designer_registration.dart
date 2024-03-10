@@ -1,7 +1,11 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Desgn_Reg extends StatefulWidget {
   const Desgn_Reg({super.key});
@@ -11,6 +15,9 @@ class Desgn_Reg extends StatefulWidget {
 }
 
 class _Desgn_RegState extends State<Desgn_Reg> {
+  var profileImage;
+  XFile? pickedFile;
+  File? image;
   var Name = TextEditingController();
   var Email = TextEditingController();
   var Adress = TextEditingController();
@@ -51,12 +58,31 @@ class _Desgn_RegState extends State<Desgn_Reg> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 154, 134, 189),
+                        GestureDetector(
+                          onTap: () async {
+                            ImagePicker picker = ImagePicker();
+                            pickedFile = await picker.pickImage(
+                                source: ImageSource.gallery);
+
+                            setState(() {
+                              if (pickedFile != null) {
+                                profileImage = File(pickedFile!.path);
+                              }
+                            });
+                          },
+                          child: ClipOval(
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: profileImage != null
+                                  ? FileImage(profileImage)
+                                  : null,
+                              child: profileImage == null
+                                  ? Icon(
+                                      Icons.camera_alt,
+                                      size: 30,
+                                    )
+                                  : null,
+                            ),
                           ),
                         ),
                         SizedBox(
@@ -360,7 +386,23 @@ class _Desgn_RegState extends State<Desgn_Reg> {
                         ),
                         ElevatedButton(
                           
-                          onPressed: () {
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('designer register')
+                                .add({
+                              'name': Name.text,
+                              'email': Email.text,
+                              'Adress': Adress.text,
+                              'state': State.text,
+                              'District': District.text,
+                              'pin': Pin.text,
+                              'mobile no': Mobile.text,
+                              'password': password.text,
+                              'conform password': confirmPass.text,
+                              'gender': gender,
+                              'experience': selectedExperience,
+                              // 'image_url': profileImage,
+                            });
                             print(Name.text);
                               print(Email.text);
                               print(Adress.text);

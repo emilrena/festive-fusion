@@ -1,6 +1,7 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:festive_fusion/Rental/RentalNav.dart';
 import 'package:flutter/cupertino.dart';
@@ -398,7 +399,24 @@ class _Rental_RegistrationState extends State<Rental_Registration> {
                         ),
                         ElevatedButton(
                           
-                          onPressed: () {
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('Rental register')
+                                .add({
+                              'name': Name.text,
+                              'email': Email.text,
+                              'Adress': Adress.text,
+                              'state': State.text,
+                              'District': District.text,
+                              'pin': Pin.text,
+                              'mobile no': Mobile.text,
+                              'password': password.text,
+                              'conform password': confirmPass.text,
+                              'gender': gender,
+                              'experience': selectedExperience,
+                              // 'image_url': profileImage,
+                            });
+                            if (fkey.currentState!.validate()) {
                             print(Name.text);
                               print(Email.text);
                               print(Adress.text);
@@ -412,7 +430,7 @@ class _Rental_RegistrationState extends State<Rental_Registration> {
                                 MaterialPageRoute(builder: (context) {
                               return RentalNav();
                             }));
-                          },
+                          }},
                           child: Text('register'),
                         ),
                       ],

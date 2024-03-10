@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/mehandi/Mehandi_PackageView.dart';
 import 'package:festive_fusion/mehandi/Mehandi_package.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,15 @@ class _Mehndi_package_editState extends State<Mehndi_package_edit> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection(' mehandi package edit ')
+                                .add({
+                              'package': packageEdit.text,
+                              'description': DescriptionEdit.text,
+                              
+                              
+                            });
                              if (fkey.currentState!.validate()) {
                             print(packageEdit.text);
                             print(DescriptionEdit);

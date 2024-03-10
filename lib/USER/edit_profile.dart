@@ -1,5 +1,11 @@
 // import 'package:festive_fusion/USER/user_functions.dart';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:festive_fusion/Navigationbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Edit extends StatefulWidget {
   const Edit({super.key});
@@ -9,7 +15,21 @@ class Edit extends StatefulWidget {
 }
 
 class _EditState extends State<Edit> {
-  String gender="";
+   var profileImage;
+  XFile? pickedFile;
+  File? image;
+  var Name = TextEditingController();
+  var Email = TextEditingController();
+  var Adress = TextEditingController();
+  var District = TextEditingController();
+  var Pin = TextEditingController();
+  var password = TextEditingController();
+  var confirmPass = TextEditingController();
+  var State = TextEditingController();
+  var Mobile = TextEditingController();
+  String gender = "";
+  final fkey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,24 +38,48 @@ class _EditState extends State<Edit> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 20,bottom: 20),
+          padding: const EdgeInsets.only(top: 20, bottom: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(width: 300,
-                child: SingleChildScrollView(
-                  
+              Form(key: fkey,
+                child: Container(
+                  width: 300,
+                  child: SingleChildScrollView(
                     child: Column(
-                      children: [
-                        Container(
-                          height: 50,width: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 154, 134, 189)
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              ImagePicker picker = ImagePicker();
+                              pickedFile = await picker.pickImage(
+                                  source: ImageSource.gallery);
+                
+                              setState(() {
+                                if (pickedFile != null) {
+                                  profileImage = File(pickedFile!.path);
+                                }
+                              });
+                            },
+                            child: ClipOval(
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundImage: profileImage != null
+                                    ? FileImage(profileImage)
+                                    : null,
+                                child: profileImage == null
+                                    ? Icon(
+                                        Icons.camera_alt,
+                                        size: 30,
+                                      )
+                                    : null,
+                              ),
+                            ),
                           ),
+                        SizedBox(
+                          height: 20,
                         ),
-                        SizedBox(height: 20,),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -43,16 +87,26 @@ class _EditState extends State<Edit> {
                             ),
                           ],
                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        SizedBox(height: 20,),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                        TextFormField(controller: Name,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -60,15 +114,23 @@ class _EditState extends State<Edit> {
                             ),
                           ],
                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                        TextFormField(controller: Email,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -77,78 +139,108 @@ class _EditState extends State<Edit> {
                           ],
                         ),
                         RadioListTile(
-                          title: Text('Male'),
-                        
-                        value: 'Male', groupValue: gender, onChanged: (value){
-                          setState(() {
-                            gender=value.toString();
-                          });
-                        }),
+                            title: Text('Male'),
+                            value: 'Male',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value.toString();
+                              });
+                            }),
                         RadioListTile(
-                          title: Text('Female'),
-                        
-                        value: 'Female', groupValue: gender, onChanged: (value){
-                          setState(() {
-                            gender=value.toString();
-                          });
-                        }),
+                            title: Text('Female'),
+                            value: 'Female',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value.toString();
+                              });
+                            }),
                         RadioListTile(
-                          title: Text('Others'),
-                        
-                        value: 'others', groupValue: gender, onChanged: (value){
-                          setState(() {
-                            gender=value.toString();
-                          });
-                        }),
-                         Row(mainAxisAlignment: MainAxisAlignment.start,
-                           children: [
-                             Padding(
-                               padding: const EdgeInsets.all(12.0),
-                               child: Text('House name'),
-                             ),
-                           ],
-                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                         Row(mainAxisAlignment: MainAxisAlignment.start,
-                           children: [
-                             Padding(
-                               padding: const EdgeInsets.all(12.0),
-                               child: Text('state'),
-                             ),
-                           ],
-                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                         Row(mainAxisAlignment: MainAxisAlignment.start,
-                           children: [
-                             Padding(
-                               padding: const EdgeInsets.all(12.0),
-                               child: Text('District'),
-                             ),
-                           ],
-                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                            title: Text('Others'),
+                            value: 'others',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value.toString();
+                              });
+                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('adress'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: Adress,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('state'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(controller: State,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('District'),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: District,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -156,16 +248,25 @@ class _EditState extends State<Edit> {
                             ),
                           ],
                         ),
-                        TextFormField(keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                        TextFormField(
+                          controller: Pin,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -173,16 +274,25 @@ class _EditState extends State<Edit> {
                             ),
                           ],
                         ),
-                        TextFormField(keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                        TextFormField(
+                          controller: Mobile,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -190,15 +300,24 @@ class _EditState extends State<Edit> {
                             ),
                           ],
                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        Row(mainAxisAlignment: MainAxisAlignment.start,
+                        TextFormField(
+                          controller: password,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -206,28 +325,69 @@ class _EditState extends State<Edit> {
                             ),
                           ],
                         ),
-                        TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                          borderSide: BorderSide.none)
-                        
-                          
-                        ),),
-                        SizedBox(height: 50,),
-                        ElevatedButton(onPressed: () {
-                          
+                        TextFormField(
+                          controller: confirmPass,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'field is empty';
+                              }
+                              return null;
+                            },
+                          decoration: InputDecoration(
+                              fillColor: Color.fromARGB(255, 224, 206, 221),
+                              filled: true,
+                              border: UnderlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(40)),
+                                  borderSide: BorderSide.none)),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        ElevatedButton(onPressed: () async {
+                              await FirebaseFirestore.instance
+                                  .collection('user edit profile')
+                                  .add({
+                                'name': Name.text,
+                                'email': Email.text,
+                                'Adress': Adress.text,
+                                'state': State.text,
+                                'District': District.text,
+                                'pin': Pin.text,
+                                'mobile no': Mobile.text,
+                                'password': password.text,
+                                'conform password': confirmPass.text,
+                                'gender': gender,
+                               
+                                // 'image_url': profileImage,
+                              });
+                              if (fkey.currentState!.validate()) {
+                                print(Name.text);
+                                print(Email.text);
+                                print(Adress.text);
+                                print(State.text);
+                                print(District.text);
+                                print(Pin.text);
+                                print(Mobile.text);
+                                print(password.text);
+                                print(confirmPass.text);
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return Navigationbar();
+                                }));
+                              }
+                            
                           
                         }, child: Text('ok')),
-                    
                       ],
                     ),
                   ),
+                ),
               ),
             ],
           ),
         ),
       ),
-      );
+    );
   }
 }

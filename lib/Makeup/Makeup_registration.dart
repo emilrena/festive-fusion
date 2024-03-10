@@ -405,7 +405,7 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         ElevatedButton(
                           onPressed: () async {
                             await FirebaseFirestore.instance
-                                .collection('Mehandi register')
+                                .collection('Makeup register')
                                 .add({
                               'name': Name.text,
                               'email': Email.text,

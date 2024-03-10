@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Navigationbar.dart';
 import 'package:festive_fusion/USER/functions.dart';
 import 'package:festive_fusion/registration.dart';
@@ -103,7 +104,14 @@ class _LoginState extends State<Login> {
                     SizedBox(
                       height: 50,
                     ),
-                    ElevatedButton(onPressed: () {
+                    ElevatedButton(onPressed: () 
+                      async {
+                              await FirebaseFirestore.instance
+                                  .collection('user edit profile')
+                                  .add({
+                                'Email': Email.text,
+                                'password': Pass.text,
+                                });
                       print(Email.text);
                       print(Pass.text);
                       if (fkey.currentState!.validate()) {
