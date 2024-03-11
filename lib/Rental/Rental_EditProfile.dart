@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:festive_fusion/Rental/RentalNav.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,6 +32,7 @@ class _Rental_Edit_ProfileState extends State<Rental_Edit_Profile> {
   String gender = "";
   String selectedExperience = '0-1 years';
   final fkey = GlobalKey<FormState>();
+  String imageUrl='';
 
   // List of years of experience options
   List<String> experienceOptions = [
@@ -400,6 +402,7 @@ class _Rental_Edit_ProfileState extends State<Rental_Edit_Profile> {
                         ElevatedButton(
                           
                           onPressed: () async {
+                            await uploadImage();
                             await FirebaseFirestore.instance
                                 .collection('Rental edit profile')
                                 .add({
@@ -443,5 +446,26 @@ class _Rental_Edit_ProfileState extends State<Rental_Edit_Profile> {
         ),
       ),
     );
+  }
+  Future<void> uploadImage() async {
+    try {
+      if (profileImage != null) {
+        
+        Reference storageReference =
+            FirebaseStorage.instance
+                .ref()
+                .child('image/${pickedFile!.name}');
+
+        await storageReference.putFile(profileImage!);
+
+        // Get the download URL
+         imageUrl = await storageReference.getDownloadURL();
+
+        // Now you can use imageUrl as needed (e.g., save it to Firestore)
+        print('Image URL: $imageUrl');
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
   }
 }

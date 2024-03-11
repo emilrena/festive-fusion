@@ -56,7 +56,7 @@ import 'package:festive_fusion/USER/RentalProffesionals.dart';
 import 'package:festive_fusion/USER/RentalWork.dart';
 
 import 'package:festive_fusion/USER/UserHome.dart';
-import 'package:festive_fusion/USER/UserPayment.dart';
+// import 'package:festive_fusion/USER/UserPayment.dart';
 // import 'package:festive_fusion/USER/User_Edit_Profile.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:festive_fusion/USER/edit_profile.dart';

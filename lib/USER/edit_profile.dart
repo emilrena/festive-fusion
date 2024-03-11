@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Navigationbar.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,6 +30,7 @@ class _EditState extends State<Edit> {
   var Mobile = TextEditingController();
   String gender = "";
   final fkey = GlobalKey<FormState>();
+  String imageUrl='';
 
   @override
   Widget build(BuildContext context) {
@@ -345,6 +347,7 @@ class _EditState extends State<Edit> {
                           height: 50,
                         ),
                         ElevatedButton(onPressed: () async {
+                          await uploadImage();
                               await FirebaseFirestore.instance
                                   .collection('user edit profile')
                                   .add({
@@ -389,5 +392,26 @@ class _EditState extends State<Edit> {
         ),
       ),
     );
+  }
+  Future<void> uploadImage() async {
+    try {
+      if (profileImage != null) {
+        
+        Reference storageReference =
+            FirebaseStorage.instance
+                .ref()
+                .child('image/${pickedFile!.name}');
+
+        await storageReference.putFile(profileImage!);
+
+        // Get the download URL
+         imageUrl = await storageReference.getDownloadURL();
+
+        // Now you can use imageUrl as needed (e.g., save it to Firestore)
+        print('Image URL: $imageUrl');
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
   }
 }

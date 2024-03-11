@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,6 +31,7 @@ class _DsgEditState extends State<DsgEdit> {
   String gender = "";
   String selectedExperience = '0-1 years';
   final fkey = GlobalKey<FormState>();
+  String imageUrl='';
 
   // List of years of experience options
   List<String> experienceOptions = [
@@ -387,6 +389,7 @@ class _DsgEditState extends State<DsgEdit> {
                         ElevatedButton(
                           
                           onPressed: () async {
+                            await uploadImage();
                             await FirebaseFirestore.instance
                                 .collection('designer edit profile')
                                 .add({
@@ -432,5 +435,27 @@ class _DsgEditState extends State<DsgEdit> {
         ),
       ),
     );
+  }
+  
+Future<void> uploadImage() async {
+    try {
+      if (profileImage != null) {
+        
+        Reference storageReference =
+            FirebaseStorage.instance
+                .ref()
+                .child('image/${pickedFile!.name}');
+
+        await storageReference.putFile(profileImage!);
+
+        // Get the download URL
+         imageUrl = await storageReference.getDownloadURL();
+
+        // Now you can use imageUrl as needed (e.g., save it to Firestore)
+        print('Image URL: $imageUrl');
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
   }
 }
