@@ -407,7 +407,7 @@ class _Mehandi_RegState extends State<Mehandi_Reg> {
                               'conform password': confirmPass.text,
                               'gender': gender,
                               'experience': selectedExperience,
-                              // 'image_url': profileImage,
+                              'image_url': imageUrl,
                             });
                             print(Name.text);
                               print(Email.text);

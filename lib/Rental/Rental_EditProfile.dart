@@ -417,7 +417,7 @@ class _Rental_Edit_ProfileState extends State<Rental_Edit_Profile> {
                               'conform password': confirmPass.text,
                               'gender': gender,
                               'experience': selectedExperience,
-                              // 'image_url': profileImage,
+                              'image_url': imageUrl,
                             });
                             if (fkey.currentState!.validate()) {
                             print(Name.text);

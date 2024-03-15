@@ -32,6 +32,8 @@ dependencies:
   firebase_storage: ^11.6.8
   cloud_firestore: ^4.15.7
   firebase_core: ^2.26.0
+  shared_preferences: ^2.2.2
+  fluttertoast: ^8.2.4
   flutter:
     sdk: flutter
   flutter_rating_bar: ^4.0.1

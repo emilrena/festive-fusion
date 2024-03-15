@@ -416,7 +416,7 @@ class _Rental_RegistrationState extends State<Rental_Registration> {
                               'conform password': confirmPass.text,
                               'gender': gender,
                               'experience': selectedExperience,
-                              // 'image_url': profileImage,
+                              'image_url': imageUrl,
                             });
                             if (fkey.currentState!.validate()) {
                             print(Name.text);

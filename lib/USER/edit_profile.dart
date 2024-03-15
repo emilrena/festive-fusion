@@ -362,7 +362,7 @@ class _EditState extends State<Edit> {
                                 'conform password': confirmPass.text,
                                 'gender': gender,
                                
-                                // 'image_url': profileImage,
+                                'image_url': imageUrl,
                               });
                               if (fkey.currentState!.validate()) {
                                 print(Name.text);

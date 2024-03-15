@@ -351,7 +351,7 @@ class _RegistrationState extends State<Registration> {
                             onPressed: () async {
                               await uploadImage();
                               await FirebaseFirestore.instance
-                                  .collection('user edit profile')
+                                  .collection('User_Registration')
                                   .add({
                                 'name': Name.text,
                                 'email': Email.text,
@@ -364,7 +364,7 @@ class _RegistrationState extends State<Registration> {
                                 'conform password': conformPass.text,
                                 'gender': gender,
                                
-                                // 'image_url': profileImage,
+                                'image_url': imageUrl,
                               });
                               if (fkey.currentState!.validate()) {
                                

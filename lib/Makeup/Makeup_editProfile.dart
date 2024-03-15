@@ -421,7 +421,7 @@ class _Makeup_EditProfileState extends State<Makeup_EditProfile> {
                               'conform password': confirmPass.text,
                               'gender': gender,
                               'experience': selectedExperience,
-                              // 'image_url': profileImage,
+                              'image_url': imageUrl,
                             });
                             if (fkey.currentState!.validate()) {
                               print(Name.text);
