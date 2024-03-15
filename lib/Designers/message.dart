@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DesignerMessage extends StatefulWidget {
   const DesignerMessage({Key? key}) : super(key: key);
@@ -52,23 +53,26 @@ class _DesignerMessageState extends State<DesignerMessage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                      onPressed: ()   async {
-                            await FirebaseFirestore.instance
-                                .collection(' designer message')
-                                .add({
-                              'message': Message.text,
-                              
-                              
-                            });
+                      onPressed: () async {
+                        SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
+
+                        await FirebaseFirestore.instance
+                            .collection(' designer message')
+                            .add({'message': Message.text, 'user_id': a});
                         if (fkey.currentState!.validate()) {
                           print(Message.text);
+                          print(a);
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {

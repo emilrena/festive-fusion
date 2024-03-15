@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/mehandi/Mehandi_PackageView.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +57,16 @@ class _Mehndi_package_addState extends State<Mehndi_package_add> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('mehandi_package')
+                                .add({
+                              'package': package.text,
+                              'description':Description.text,
+                              
+                              
+                              
+                            });
                           print(package.text);
                           print(Description.text);
 

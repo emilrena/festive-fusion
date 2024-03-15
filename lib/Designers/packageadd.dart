@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class package_add extends StatefulWidget {
   const package_add({Key? key});
@@ -76,7 +78,19 @@ class _package_addState extends State<package_add> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                             SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
+                            await FirebaseFirestore.instance
+                                .collection(' designer_package ')
+                                .add({
+                              'package': PackageName.text,
+                              'description':Description.text,
+                              
+                              
+                              
+                            });
                             if (fkey.currentState!.validate()) {
                             print(PackageName.text);
                             print(Description.text);

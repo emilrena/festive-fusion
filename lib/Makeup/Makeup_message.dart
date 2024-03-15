@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Makeup_Message extends StatefulWidget {
   const Makeup_Message({super.key});
@@ -57,6 +58,9 @@ class _Makeup_MessageState extends State<Makeup_Message> {
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                         onPressed: () async {
+                           SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
                             await FirebaseFirestore.instance
                                 .collection('makeup message ')
                                 .add({

@@ -18,6 +18,7 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
+  
   var profileImage;
   XFile? pickedFile;
   File? image;

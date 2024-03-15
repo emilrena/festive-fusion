@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/ADMIN/AdminNavigationBar.dart';
+import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
+import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:festive_fusion/Navigationbar.dart';
+import 'package:festive_fusion/Rental/RentalNav.dart';
 import 'package:festive_fusion/USER/functions.dart';
 import 'package:festive_fusion/mehandi/MehandiNav.dart';
 import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   String type;
@@ -45,6 +49,11 @@ Future<void> gatData() async {
             .where('password', isEqualTo: Pass.text)
             // .where('status', isEqualTo: 1)
             .get();
+             if(mechSnapshot.docs.isNotEmpty){
+  var userid = mechSnapshot.docs[0].id;
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  sp.setString('uid',userid);
+
               if (mechSnapshot.docs.isNotEmpty) {
 
       Fluttertoast.showToast(msg: 'Login Successful as Mechanic');
@@ -52,7 +61,7 @@ Future<void> gatData() async {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         return MehandiNav();
           }));
-    } 
+              } } 
        else {
         // Show an error message to the user
         showDialog(
@@ -81,14 +90,20 @@ Future<void> gatData() async {
             .where('password', isEqualTo: Pass.text)
             // .where('status', isEqualTo: 1)
             .get();
+
+            if(usershot.docs.isNotEmpty){
+  var userid = usershot.docs[0].id;
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  sp.setString('uid',userid);
+
               if (usershot.docs.isNotEmpty) {
 
       Fluttertoast.showToast(msg: 'Login Successful ');
      
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         return Navigationbar();
-          }));
-    } 
+         }));
+    } }
        else {
         // Show an error message to the user
         showDialog(
@@ -109,21 +124,106 @@ Future<void> gatData() async {
    // makeup login
     if(widget.type=='makeup')  {
       print('makeup');
-      final QuerySnapshot usershot =
+      final QuerySnapshot makeupshot =
         await FirebaseFirestore.instance
-            .collection('')
+            .collection('Makeup register')
             .where('email', isEqualTo: Email.text)
             .where('password', isEqualTo: Pass.text)
             // .where('status', isEqualTo: 1)
             .get();
-              if (usershot.docs.isNotEmpty) {
+             if(makeupshot.docs.isNotEmpty){
+  var userid = makeupshot.docs[0].id;
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  sp.setString('uid',userid);
 
-      Fluttertoast.showToast(msg: 'Login Successful as Mechanic');
+              if (makeupshot.docs.isNotEmpty) {
+
+      Fluttertoast.showToast(msg: 'Login Successful ');
      
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Navigationbar();
+        return MakeupNav();
           }));
-    } 
+              } } 
+       else {
+        // Show an error message to the user
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Login Failed'),
+            content: Text('Invalid username or password. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    //Designer login
+     if(widget.type=='designer')  {
+      print('designer');
+      final QuerySnapshot designershot =
+        await FirebaseFirestore.instance
+            .collection('designer register')
+            .where('email', isEqualTo: Email.text)
+            .where('password', isEqualTo: Pass.text)
+            // .where('status', isEqualTo: 1)
+            .get();
+             if(designershot.docs.isNotEmpty){
+  var userid = designershot.docs[0].id;
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  sp.setString('uid',userid);
+
+              if (designershot.docs.isNotEmpty) {
+
+      Fluttertoast.showToast(msg: 'Login Successful ');
+     
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return DesignerNav();
+          }));
+             }} 
+       else {
+        // Show an error message to the user
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Login Failed'),
+            content: Text('Invalid username or password. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    //rental login
+ if(widget.type=='rental')  {
+      print('rental');
+      final QuerySnapshot rentalshot =
+        await FirebaseFirestore.instance
+            .collection('Rental register')
+            .where('email', isEqualTo: Email.text)
+            .where('password', isEqualTo: Pass.text)
+            // .where('status', isEqualTo: 1)
+            .get();
+             if(rentalshot.docs.isNotEmpty){
+  var userid = rentalshot.docs[0].id;
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  sp.setString('uid',userid);
+
+              if (rentalshot.docs.isNotEmpty) {
+
+      Fluttertoast.showToast(msg: 'Login Successful ');
+     
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return RentalNav();
+          }));
+             }} 
        else {
         // Show an error message to the user
         showDialog(

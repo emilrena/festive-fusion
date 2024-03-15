@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Mehandi_Message extends StatefulWidget {
   const Mehandi_Message({super.key});
@@ -55,6 +56,9 @@ class _Mehandi_MessageState extends State<Mehandi_Message> {
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                         onPressed: ()  async {
+                           SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
                             await FirebaseFirestore.instance
                                 .collection('mehandi message ')
                                 .add({

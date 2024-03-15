@@ -77,7 +77,7 @@ class _Makeup_Package_EditState extends State<Makeup_Package_Edit> {
                           onPressed: () 
                             async {
                             await FirebaseFirestore.instance
-                                .collection('package edit ')
+                                .collection('makeup_package')
                                 .add({
                               'package': packageEdit.text,
                               'description': DescriptionEdit.text,

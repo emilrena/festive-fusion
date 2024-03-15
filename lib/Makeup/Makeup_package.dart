@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +72,16 @@ class _Makeup_Package_AddState extends State<Makeup_Package_Add> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('makeup_package')
+                                .add({
+                              'package': package.text,
+                              'description':Description.text,
+                              
+                              
+                              
+                            });
                             if (fkey.currentState!.validate()) {
                             print(package.text);
                             print(Description.text);

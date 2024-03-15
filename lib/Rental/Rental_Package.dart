@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Rental_Package_Add extends StatefulWidget {
@@ -55,7 +56,16 @@ class _Rental_Package_AddState extends State<Rental_Package_Add> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('makeup_package')
+                                .add({
+                              'package': package.text,
+                              'description':Description.text,
+                              
+                              
+                              
+                            });
                           print(package.text);
                           print(Description.text);
                         },
