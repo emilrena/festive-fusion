@@ -11,48 +11,101 @@ class Booked extends StatefulWidget {
 
 class _BookedState extends State<Booked> {
   @override
+  late DateTime selectedDate = DateTime.now();
+  late TimeOfDay selectedTime = TimeOfDay.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+    if (pickedTime != null && pickedTime != selectedTime) {
+      setState(() {
+        selectedTime = pickedTime;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking',style: TextStyle(color: Colors.deepPurpleAccent),),
+        title: Text(
+          'Booking',
+          style: TextStyle(color: Colors.deepPurpleAccent),
+        ),
       ),
-      body:
-      Row(mainAxisAlignment: MainAxisAlignment.center,
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SingleChildScrollView(
-            child: Container(width: 300,
+            child: Container(
+              width: 300,
               child: Column(
                 children: [
-                  Row(mainAxisAlignment: MainAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      SizedBox(height: 40,),
                       Text('TIME:'),
+                      SizedBox(width: 20),
+                      GestureDetector(
+                        onTap: () => _selectTime(context),
+                        child: Text(
+                          '${selectedTime.format(context)}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
                     ],
                   ),
-               
-               TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                                filled: true,
-                                border: UnderlineInputBorder(
-                                  
-                                  borderSide: BorderSide.none)
-                                
-                                  
-                                ),),
-                                SizedBox(height: 20,),
-                                Row(mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text('DATE:'),
-                                  ],
-                                ),
-               
-               TextFormField(decoration: InputDecoration(fillColor: Color.fromARGB(255, 224, 206, 221),
-                                filled: true,
-                                border: UnderlineInputBorder(
-                                  
-                                  borderSide: BorderSide.none)
-                                
-                                  
-                                ),),
-            
+                  // TextFormField(
+                  //   decoration: InputDecoration(
+                  //     fillColor: Color.fromARGB(255, 224, 206, 221),
+                  //     filled: true,
+                  //     border: UnderlineInputBorder(
+                  //       borderSide: BorderSide.none,
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text('DATE:'),
+                      SizedBox(width: 20),
+                      GestureDetector(
+                        onTap: () => _selectDate(context),
+                        child: Text(
+                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  // TextFormField(
+                  //   decoration: InputDecoration(
+                  //     fillColor: Color.fromARGB(255, 224, 206, 221),
+                  //     filled: true,
+                  //     border: UnderlineInputBorder(
+                  //       borderSide: BorderSide.none,
+                  //     ),
+                  //   ),
+                  // ),
                                 SizedBox(height: 30,),
                                 Text('SELECTED PACKAGE:'),
                                 Container(

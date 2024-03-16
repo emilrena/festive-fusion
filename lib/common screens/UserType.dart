@@ -30,38 +30,71 @@ class _TypeUserState extends State<TypeUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          SafeArea(
-            child: Text(
-              'Choose',
-              style: TextStyle(fontSize: 30, color: Colors.black87),
-            ),
-          ),
-          Text(
-            'your profile',
-            style: TextStyle(color: Colors.black87),
-          ),
-          SizedBox(height: 50), // Adding space between text and containers
-          Row(
+      body: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              buildContainer(0), // Pass index 0 for container 1
-              SizedBox(width: 10), // Decreased space between containers
-              buildContainer(1), // Pass index 1 for container 2
+              SafeArea(
+                child: Row(mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Choose',
+                      style: TextStyle(fontSize: 30, color: Colors.black87),
+                    ),
+                  ],
+                ),
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    '     your profile',
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                ],
+              ),
+              SizedBox(height: 50), // Adding space between text and containers
+              Row(
+                children: [
+                  buildContainer(0), // Pass index 0 for container 1
+                  SizedBox(width: 10), // Decreased space between containers
+                  buildContainer(1), // Pass index 1 for container 2
+                ],
+              ),
+              SizedBox(height: 20), // Adding space between first row and second row of containers
+              Row(
+                children: [
+                  buildContainer(2), // Pass index 2 for container 3
+                  SizedBox(width: 10), // Decreased space between containers
+                  buildContainer(3), // Pass index 3 for container 4
+                ],
+              ),
+               SizedBox(height: 20), // Adding space between containers and admin button
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Login(type: 'admin'),
+                    ),
+                  );
+                },
+                child: Row(mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Admin',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          SizedBox(height: 20), // Adding space between first row and second row of containers
-          Row(
-            children: [
-              buildContainer(2), // Pass index 2 for container 3
-              SizedBox(width: 10), // Decreased space between containers
-              buildContainer(3), // Pass index 3 for container 4
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
+  
 
   Widget buildContainer(int index) {
   bool isSelected = selectedContainerIndex == index;
