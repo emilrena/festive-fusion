@@ -40,7 +40,7 @@ Future<void> gatData() async {
       }
     }
     //mehandi login
-    if(widget.type=='mehendi')  {
+    if(widget.type=='mehandi')  {
       print('Mehendi');
       final QuerySnapshot mechSnapshot =
         await FirebaseFirestore.instance
@@ -56,7 +56,7 @@ Future<void> gatData() async {
 
               if (mechSnapshot.docs.isNotEmpty) {
 
-      Fluttertoast.showToast(msg: 'Login Successful as Mechanic');
+      Fluttertoast.showToast(msg: 'Login Successful ');
      
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         return MehandiNav();
@@ -123,7 +123,7 @@ Future<void> gatData() async {
     }
    // makeup login
     if(widget.type=='makeup')  {
-      print('makeup');
+      print('__________makeup');
       final QuerySnapshot makeupshot =
         await FirebaseFirestore.instance
             .collection('Makeup register')
@@ -132,7 +132,9 @@ Future<void> gatData() async {
             // .where('status', isEqualTo: 1)
             .get();
              if(makeupshot.docs.isNotEmpty){
+              print('_________________________________');
   var userid = makeupshot.docs[0].id;
+  print('userid:_____$userid');
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
 

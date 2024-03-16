@@ -1,3 +1,4 @@
+import 'package:festive_fusion/common%20screens/login.dart';
 import 'package:flutter/material.dart';
 
 class TypeUser extends StatefulWidget {
@@ -63,54 +64,97 @@ class _TypeUserState extends State<TypeUser> {
   }
 
   Widget buildContainer(int index) {
-    bool isSelected = selectedContainerIndex == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            selectedContainerIndex = index;
-          });
-        },
-        child: Container(
-          height: 200,
-          decoration: BoxDecoration(
-            color: isSelected ? Color.fromARGB(255, 95, 55, 82) : const Color.fromARGB(255, 224, 228, 224),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
-                    ),
-                  ]
-                : [],
+  bool isSelected = selectedContainerIndex == index;
+  return Expanded(
+    child: GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedContainerIndex = index;
+        });
+        String userType = containerTexts[index].toLowerCase();
+        if (selectedContainerIndex==0) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Login(type: 'makeup');
+            },
           ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  imagePaths[index], // Load different image for each container
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  containerTexts[index], // Pass text corresponding to the container
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        );
+        }
+         if (selectedContainerIndex==1) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Login(type: 'mehandi');
+            },
+          ),
+        );
+        }
+         if (selectedContainerIndex==2) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Login(type: 'designer');
+            },
+          ),
+        );
+        }
+         if (selectedContainerIndex==3) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Login(type: 'user');
+            },
+          ),
+        );
+        }
+        
+      },
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+          color: isSelected ? Color.fromARGB(255, 95, 55, 82) : const Color.fromARGB(255, 224, 228, 224),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
                   ),
+                ]
+              : [],
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                imagePaths[index], // Load different image for each container
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+              SizedBox(height: 10),
+              Text(
+                containerTexts[index], // Pass text corresponding to the container
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
 
 
