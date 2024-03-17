@@ -1,5 +1,5 @@
-import 'package:festive_fusion/common%20screens/login.dart';
 import 'package:flutter/material.dart';
+import 'package:festive_fusion/common%20screens/login.dart';
 
 class TypeUser extends StatefulWidget {
   const TypeUser({Key? key}) : super(key: key);
@@ -9,103 +9,124 @@ class TypeUser extends StatefulWidget {
 }
 
 class _TypeUserState extends State<TypeUser> {
-  int selectedContainerIndex = -1; // Variable to keep track of the selected container
-
-  // List of image paths for each container
-  List<String> imagePaths = [ 
+  int TypeUseredContainerIndex = 0; // Variable to keep track of the TypeUsered container
+  PageController _pageController = PageController(initialPage: 0);
+  List<String> imagePaths = [
     'Assets/makeup.webp',
     'Assets/mehandi.png',
     'Assets/image1.jpg',
+    'Assets/rental.jpg',
     'Assets/user.jpg',
   ];
-
-  // List of texts for each container
   List<String> containerTexts = [
     'Makeup',
     'Mehandi',
     'designer',
+    'rental',
     'user',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: Padding(
         padding: const EdgeInsets.all(25.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SafeArea(
-                child: Row(mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Choose',
-                      style: TextStyle(fontSize: 30, color: Colors.black87),
-                    ),
-                  ],
-                ),
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.start,
+        child: Column(
+          children: [
+            SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    '     your profile',
-                    style: TextStyle(color: Colors.black87),
+                    'Choose',
+                    style: TextStyle(fontSize: 30, color: Colors.black87),
                   ),
                 ],
               ),
-              SizedBox(height: 50), // Adding space between text and containers
-              Row(
-                children: [
-                  buildContainer(0), // Pass index 0 for container 1
-                  SizedBox(width: 10), // Decreased space between containers
-                  buildContainer(1), // Pass index 1 for container 2
-                ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  '     your profile',
+                  style: TextStyle(color: Colors.black87),
+                ),
+              ],
+            ),
+            SizedBox(height: 50),
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: imagePaths.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    TypeUseredContainerIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return buildContainer(index);
+                },
               ),
-              SizedBox(height: 20), // Adding space between first row and second row of containers
-              Row(
-                children: [
-                  buildContainer(2), // Pass index 2 for container 3
-                  SizedBox(width: 10), // Decreased space between containers
-                  buildContainer(3), // Pass index 3 for container 4
-                ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                imagePaths.length,
+                (index) => buildDot(index),
               ),
-               SizedBox(height: 20), // Adding space between containers and admin button
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
+            ),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                 Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => Login(type: 'admin'),
                     ),
                   );
                 },
-                child: Row(mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Admin',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Admin',
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
-  
 
   Widget buildContainer(int index) {
-  bool isSelected = selectedContainerIndex == index;
-  return Expanded(
-    child: GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedContainerIndex = index;
-        });
-        String userType = containerTexts[index].toLowerCase();
-        if (selectedContainerIndex==0) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: TypeUseredContainerIndex == index ?  Color.fromARGB(255, 121, 79, 114) : const Color.fromARGB(255, 224, 228, 224),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: TypeUseredContainerIndex == index
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
+                ),
+              ]
+            : [],
+      ),
+      child: GestureDetector(
+        onTap: () {
+          _pageController.animateToPage(
+            index,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.ease,
+          );
+          if (TypeUseredContainerIndex==0) {
           Navigator.push(
           context,
           MaterialPageRoute(
@@ -115,7 +136,7 @@ class _TypeUserState extends State<TypeUser> {
           ),
         );
         }
-         if (selectedContainerIndex==1) {
+        if (TypeUseredContainerIndex==1) {
           Navigator.push(
           context,
           MaterialPageRoute(
@@ -125,7 +146,7 @@ class _TypeUserState extends State<TypeUser> {
           ),
         );
         }
-         if (selectedContainerIndex==2) {
+         if (TypeUseredContainerIndex==2) {
           Navigator.push(
           context,
           MaterialPageRoute(
@@ -135,7 +156,17 @@ class _TypeUserState extends State<TypeUser> {
           ),
         );
         }
-         if (selectedContainerIndex==3) {
+         if (TypeUseredContainerIndex==3) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Login(type: 'rental');
+            },
+          ),
+        );
+        }
+         if (TypeUseredContainerIndex==4) {
           Navigator.push(
           context,
           MaterialPageRoute(
@@ -145,23 +176,7 @@ class _TypeUserState extends State<TypeUser> {
           ),
         );
         }
-        
-      },
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          color: isSelected ? Color.fromARGB(255, 95, 55, 82) : const Color.fromARGB(255, 224, 228, 224),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ]
-              : [],
-        ),
+        },
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -176,18 +191,26 @@ class _TypeUserState extends State<TypeUser> {
               Text(
                 containerTexts[index], // Pass text corresponding to the container
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: TypeUseredContainerIndex == index ? Colors.white : Colors.black87,
+                  fontWeight: TypeUseredContainerIndex == index ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             ],
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
+
+  Widget buildDot(int index) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 4),
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: index == TypeUseredContainerIndex ? Colors.black : Colors.grey,
+      ),
+    );
+  }
 }
-
-}
-
-

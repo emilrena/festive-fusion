@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/USER/MehandiWork.dart';
+import 'package:festive_fusion/USER/DesignerWork.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -106,7 +106,7 @@ class _MehandiProffesional_ViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MehandiWorkView(),
+                                  builder: (context) => DesignerWork(),
                                 ),
                               );
                             },

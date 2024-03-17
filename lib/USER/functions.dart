@@ -63,6 +63,7 @@ import 'package:festive_fusion/USER/edit_profile.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/USER/package.dart';
 import 'package:festive_fusion/common%20screens/UserType.dart';
+// import 'package:festive_fusion/common%20screens/n.dart';
 import 'package:festive_fusion/demolist.dart';
 import 'package:festive_fusion/gridDemo.dart';
 import 'package:festive_fusion/mehandi/MehandiHome.dart';
@@ -563,6 +564,7 @@ class _Functions_userState extends State<Functions_user> {
                     return TypeUser();
                   }));
                 }, child: Text('usertype'),),
+               
                 
 
                 
