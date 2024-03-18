@@ -1,26 +1,24 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/message.dart';
-import 'package:festive_fusion/Designers/packageadd.dart';
 import 'package:festive_fusion/Designers/packageview.dart';
 import 'package:festive_fusion/Designers/upload_image.dart';
-import 'package:festive_fusion/Makeup/Makeup_Upload_Image.dart';
-import 'package:festive_fusion/Makeup/Makeup_message.dart';
-import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class DesignerHome extends StatefulWidget {
-  const DesignerHome({super.key});
+  const DesignerHome({Key? key}) : super(key: key);
 
   @override
   State<DesignerHome> createState() => _DesignerHomeState();
 }
 
 class _DesignerHomeState extends State<DesignerHome> {
- final ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
   late File _image;
+  late List<String> _imageUrls;
+  bool _isLoading = false;
 
   Future<void> _getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -28,14 +26,38 @@ class _DesignerHomeState extends State<DesignerHome> {
       setState(() {
         _image = File(pickedFile.path);
       });
-       Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>Upload_pic_describe(imageFile: _image),
-      ),
-    );
-  
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Upload_pic_describe(imageFile: _image),
+        ),
+      );
+    }
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    _loadImages();
+  }
+
+  Future<void> _loadImages() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('designer_upload_image').get();
+      setState(() {
+        _imageUrls = snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+      });
+    } catch (error) {
+      print('Error loading images: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -121,19 +143,25 @@ class _DesignerHomeState extends State<DesignerHome> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: ResponsiveGridList(
-                desiredItemWidth: 150,
-                minSpacing: 10,
-                children: List.generate(20, (index) => index + 1).map((i) {
-                  return Container(
-                    height: 150,
-                    alignment: Alignment(0, 0),
-                    color: Color.fromARGB(255, 165, 146, 159),
-                    child: Text(i.toString()),
-                  );
-                }).toList(),
-              ),
-            )
+              child: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3, // Adjust as needed
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 8.0,
+                      ),
+                      itemCount: _imageUrls.length,
+                      itemBuilder: (context, index) {
+                        return Image.network(
+                          _imageUrls[index],
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+            ),
           ],
         ),
       ),

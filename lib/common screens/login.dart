@@ -175,8 +175,12 @@ Future<void> gatData() async {
             .get();
              if(designershot.docs.isNotEmpty){
   var userid = designershot.docs[0].id;
+  var image_url = designershot.docs[0]['image_url'];
+  var username = designershot.docs[0]['name'];
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
+  sp.setString('name', username);
+  sp.setString('image_url',image_url);
 
               if (designershot.docs.isNotEmpty) {
 
@@ -215,8 +219,14 @@ Future<void> gatData() async {
             .get();
              if(rentalshot.docs.isNotEmpty){
   var userid = rentalshot.docs[0].id;
+    var username = rentalshot.docs[0]['name'];
+    var image_url = rentalshot.docs[0]['image'];
+
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
+  sp.setString('name', username);
+  sp.setString('image',image_url);
+
 
               if (rentalshot.docs.isNotEmpty) {
 

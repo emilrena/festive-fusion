@@ -6,6 +6,7 @@ import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Upload_pic_describe extends StatefulWidget {
    final File imageFile;
@@ -76,11 +77,15 @@ class _Upload_pic_describeState extends State<Upload_pic_describe> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
+                  SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
+
                   try {
                     await uploadImage();
                     await FirebaseFirestore.instance
                         .collection('designer_upload_image')
-                        .add({'describe': describe.text, 'imageUrl': imageUrl});
+                        .add({'describe': describe.text, 'imageUrl': imageUrl,'designer_id': a});
 
                     if (fkey.currentState!.validate()) {
                       Navigator.push(
