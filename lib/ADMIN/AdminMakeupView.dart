@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
+import 'package:festive_fusion/ADMIN/MakeupArtistFullView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -106,7 +107,7 @@ class _AdminMakeupViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DesignerFullProfile(),
+                                  builder: (context) => MakeupFullProfile(),
                                 ),
                               );
                             },

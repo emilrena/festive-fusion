@@ -1,18 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
 
 class AdminDesignerView extends StatefulWidget {
   const AdminDesignerView({Key? key}) : super(key: key);
 
   @override
-  State<AdminDesignerView> createState() =>
-      _AdminDesignerViewState();
+  State<AdminDesignerView> createState() => _AdminDesignerViewState();
 }
 
-class _AdminDesignerViewState
-    extends State<AdminDesignerView> {
+class _AdminDesignerViewState extends State<AdminDesignerView> {
   var search = TextEditingController();
 
   // Function to fetch data from Firestore
@@ -66,9 +64,9 @@ class _AdminDesignerViewState
                       itemCount: snapshot.data?.length ?? 0,
                       itemBuilder: (context, index) {
                         final document = snapshot.data![index];
-                        final data =
-                            document.data() as Map<String, dynamic>;
-                        final imageUrl = data['image_url']; 
+                        final id = snapshot.data![index].id;
+                        final data = document.data() as Map<String, dynamic>;
+                        final imageUrl = data['image_url'];
                         return ListTile(
                           onTap: () {},
                           title: Text(data['name'] ?? 'Name not available'),
@@ -106,7 +104,10 @@ class _AdminDesignerViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DesignerFullProfile(),
+                                  builder: (context) => DesignerFullProfile(
+                                    id: id,
+                                    data: data,
+                                  ),
                                 ),
                               );
                             },

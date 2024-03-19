@@ -69,7 +69,7 @@ class _DesignerMessageState extends State<DesignerMessage> {
 
                         await FirebaseFirestore.instance
                             .collection(' designer message')
-                            .add({'message': Message.text, 'user_id': a});
+                            .add({'message': Message.text, 'designer_id': a});
                         if (fkey.currentState!.validate()) {
                           print(Message.text);
                           print(a);

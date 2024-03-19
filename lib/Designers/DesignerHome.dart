@@ -6,6 +6,7 @@ import 'package:festive_fusion/Designers/upload_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:responsive_grid/responsive_grid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DesignerHome extends StatefulWidget {
   const DesignerHome({Key? key}) : super(key: key);
@@ -38,19 +39,36 @@ class _DesignerHomeState extends State<DesignerHome> {
   @override
   void initState() {
     super.initState();
+    
     _loadImages();
   }
 
+  var sp;
+  var id;
+
+
+
+
   Future<void> _loadImages() async {
+     SharedPreferences spr =await SharedPreferences.getInstance();
+   setState(() {
+        sp = spr.get('name');
+        id = spr.getString('uid');
+        print(id);
+
+   });
     setState(() {
       _isLoading = true;
     });
 
     try {
       final snapshot =
-          await FirebaseFirestore.instance.collection('designer_upload_image').get();
+          await FirebaseFirestore.instance.collection('designer_upload_image').where('designer_id',isEqualTo: id).get();
+     
+     print(snapshot.docs.length);
       setState(() {
         _imageUrls = snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+        print(_imageUrls);
       });
     } catch (error) {
       print('Error loading images: $error');
@@ -93,7 +111,7 @@ class _DesignerHomeState extends State<DesignerHome> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 30),
-                    child: Text('RENA FATHIMA'),
+                    child: Text(sp),
                   )
                 ],
               ),

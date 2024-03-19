@@ -177,6 +177,7 @@ Future<void> gatData() async {
   var userid = designershot.docs[0].id;
   var image_url = designershot.docs[0]['image_url'];
   var username = designershot.docs[0]['name'];
+  print('_____________$username');
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
   sp.setString('name', username);
