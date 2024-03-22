@@ -105,9 +105,11 @@ class _DesignerProffesional_ViewState
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => DesignerWork(),
-                                ),
+                              MaterialPageRoute(
+    builder: (context) => DesignerWork(
+      designer_id:snapshot.data![index].id, 
+    ),
+                              )
                               );
                             },
                             style: ElevatedButton.styleFrom(

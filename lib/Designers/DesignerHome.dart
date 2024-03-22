@@ -39,35 +39,37 @@ class _DesignerHomeState extends State<DesignerHome> {
   @override
   void initState() {
     super.initState();
-    
+
     _loadImages();
   }
 
   var sp;
+  var img;
   var id;
 
-
-
-
   Future<void> _loadImages() async {
-     SharedPreferences spr =await SharedPreferences.getInstance();
-   setState(() {
-        sp = spr.get('name');
-        id = spr.getString('uid');
-        print(id);
-
-   });
+    SharedPreferences spr = await SharedPreferences.getInstance();
+    setState(() {
+      sp = spr.get('name');
+      img = spr.get('image_url');
+      id = spr.getString('uid');
+      print(id);
+      print(img);
+    });
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final snapshot =
-          await FirebaseFirestore.instance.collection('designer_upload_image').where('designer_id',isEqualTo: id).get();
-     
-     print(snapshot.docs.length);
+      final snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: id)
+          .get();
+
+      print(snapshot.docs.length);
       setState(() {
-        _imageUrls = snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+        _imageUrls =
+            snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
         print(_imageUrls);
       });
     } catch (error) {
@@ -104,8 +106,10 @@ class _DesignerHomeState extends State<DesignerHome> {
                   Column(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage('Assets/p4.jpg'),
+                        backgroundImage: img != null ? NetworkImage(img) : null,
                         radius: 35,
+                        backgroundColor: Colors
+                            .grey, 
                       ),
                     ],
                   ),
@@ -123,7 +127,8 @@ class _DesignerHomeState extends State<DesignerHome> {
                   padding: const EdgeInsets.only(left: 30),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return Vservice();
                       }));
                     },
@@ -142,13 +147,15 @@ class _DesignerHomeState extends State<DesignerHome> {
                   padding: const EdgeInsets.only(left: 40),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return DesignerMessage();
                       }));
                     },
                     child: Text(
                       '   ENQUIRY   ',
-                      style: TextStyle(color: Color.fromARGB(221, 126, 10, 106)),
+                      style:
+                          TextStyle(color: Color.fromARGB(221, 126, 10, 106)),
                     ),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/USER/DesignerWork.dart';
+import 'package:festive_fusion/USER/RentalWork.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -106,7 +107,7 @@ class _RentalProffesional_ViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DesignerWork(),
+                                  builder: (context) => RentalWorkView(),
                                 ),
                               );
                             },

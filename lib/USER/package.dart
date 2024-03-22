@@ -1,19 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/USER/DesignerWork.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class UserPckg extends StatefulWidget {
-  const UserPckg({super.key});
+  final String designer_id; // Designer ID received from the previous screen
+
+  const UserPckg({Key? key, required this.designer_id,}) : super(key: key);
 
   @override
   State<UserPckg> createState() => _UserPckgState();
 }
 
 class _UserPckgState extends State<UserPckg> {
-  List c=[
-    Colors.brown,Colors.red,Colors.purple
-  ];
+  late List<DocumentSnapshot> _packages;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPackages();
+  }
+
+  Future<void> _loadPackages() async {
+    try {
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection(' designer_package ')
+          .where('designer_id', isEqualTo: widget.designer_id)
+          .get();
+      setState(() {
+        _packages = snapshot.docs;
+        _isLoading = false;
+      });
+    } catch (error) {
+      print('Error loading packages: $error');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +56,7 @@ class _UserPckgState extends State<UserPckg> {
             child: ElevatedButton
             (onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return DesignerWork();
+                            return DesignerWork(designer_id:'');
                           },));
             }, child: Text('WORKS',style: TextStyle(color: const Color.fromARGB(255, 15, 15, 15)),),
             style: ElevatedButton.styleFrom(

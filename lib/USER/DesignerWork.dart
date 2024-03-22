@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class DesignerWork extends StatefulWidget {
-  const DesignerWork({Key? key}) : super(key: key);
+  final String designer_id; // Define the designer_id parameter
 
+   DesignerWork({Key? key, required this.designer_id, }) : super(key: key);
   @override
   State<DesignerWork> createState() => _DesignerWorkState();
 }
@@ -20,26 +21,31 @@ class _DesignerWorkState extends State<DesignerWork> {
     super.initState();
     _loadImages();
   }
+Future<void> _loadImages() async {
+  setState(() {
+    _isLoading = true;
+  });
 
-  Future<void> _loadImages() async {
+  try {
+    print('.........................');
+    final snapshot = await FirebaseFirestore.instance
+        .collection('designer_upload_image')
+        .where('designer_id', isEqualTo: widget.designer_id)
+        .get();
     setState(() {
-      _isLoading = true;
+      _imageUrls = snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+      print(_imageUrls);
     });
-
-    try {
-      final snapshot =
-          await FirebaseFirestore.instance.collection('designer_upload_image').get();
-      setState(() {
-        _imageUrls = snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
-      });
-    } catch (error) {
-      print('Error loading images: $error');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  } catch (error) {
+    print('Error loading images: $error');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +110,7 @@ class _DesignerWorkState extends State<DesignerWork> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) {
-                        return UserPckg();
+                        return UserPckg(designer_id: widget.designer_id,);
                       }),
                     );
                   },
