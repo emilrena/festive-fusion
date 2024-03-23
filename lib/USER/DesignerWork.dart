@@ -110,6 +110,7 @@ Future<void> _loadImages() async {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) {
+                        print(widget.designer_id);
                         return UserPckg(designer_id: widget.designer_id,);
                       }),
                     );

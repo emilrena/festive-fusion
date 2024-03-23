@@ -107,7 +107,7 @@ class _MakeupProffesional_ViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MakeupWorkView(),
+                                  builder: (context) => MakeupWorkView(makeup_id:snapshot.data![index].id,),
                                 ),
                               );
                             },

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Makeup_Package_Add extends StatefulWidget {
   const Makeup_Package_Add({super.key});
@@ -73,11 +74,15 @@ class _Makeup_Package_AddState extends State<Makeup_Package_Add> {
                     children: [
                       ElevatedButton(
                           onPressed: () async {
+                             SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
                             await FirebaseFirestore.instance
                                 .collection('makeup_package')
                                 .add({
                               'package': package.text,
                               'description':Description.text,
+                              'package_id':a,
                               
                               
                               

@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class MakeupWorkView extends StatefulWidget {
-  const MakeupWorkView({super.key});
+  final String makeup_id;
 
+  const MakeupWorkView({Key? key, required this.makeup_id, }) : super(key: key);
   @override
   State<MakeupWorkView> createState() => _MakeupWorkViewState();
 }
@@ -56,7 +57,7 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
                 child: ElevatedButton
                 (onPressed: (){
                   Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MakeupPackages();
+                            return MakeupPackages(makeup_id: widget.makeup_id,);
                           },));
                 }, child: Text('PACKAGES',style: TextStyle(color: Colors.black87),),
                 style: ElevatedButton.styleFrom(

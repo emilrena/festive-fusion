@@ -104,9 +104,9 @@ class _AdminDesignerViewState extends State<AdminDesignerView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DesignerFullProfile(
-                                    id: id,
-                                    data: data,
+                                  builder: (context) => DesignerFullProfile(designer_id:snapshot.data![index].id,
+                                    // id: id,
+                                    // data: data,
                                   ),
                                 ),
                               );

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class MehandiWorkView extends StatefulWidget {
-  const MehandiWorkView({super.key});
+  final String mehandi_id; 
+  const MehandiWorkView({Key? key, required this.mehandi_id, }) : super(key: key);
 
   @override
   State<MehandiWorkView> createState() => _MehandiWorkViewState();
@@ -57,7 +58,7 @@ class _MehandiWorkViewState extends State<MehandiWorkView> {
                 child: ElevatedButton
                 (onPressed: (){
                   Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MehandiPackages();
+                            return MehandiPackages(mehandi_id: widget.mehandi_id,);
                           },));
                 }, child: Text('PACKAGES',style: TextStyle(color: Colors.black87),),
                 style: ElevatedButton.styleFrom(

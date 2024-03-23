@@ -4,6 +4,7 @@ import 'package:festive_fusion/Makeup/MakeupHome.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Makeup_Upload_pic extends StatefulWidget {
   final File imageFile;
@@ -72,12 +73,17 @@ class _Makeup_Upload_picState extends State<Makeup_Upload_pic> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+               
                 onPressed: () async {
+                  SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
+
                   try {
                     await uploadImage();
                     await FirebaseFirestore.instance
-                        .collection('makeup_upload_image')
-                        .add({'describe': describe.text, 'imageUrl': imageUrl});
+                        .collection('designer_upload_image')
+                        .add({'describe': describe.text, 'imageUrl': imageUrl,'makeup_id': a});
 
                     if (fkey.currentState!.validate()) {
                       Navigator.push(

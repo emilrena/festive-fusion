@@ -3,8 +3,9 @@ import 'package:festive_fusion/USER/package.dart';
 import 'package:flutter/material.dart';
 
 class Booked extends StatefulWidget {
-  const Booked({super.key});
-
+  final String provider_id;
+    final String package_id;
+  const Booked({Key? key, required this.provider_id, required this.package_id }) : super(key: key);
   @override
   State<Booked> createState() => _BookedState();
 }

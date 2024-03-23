@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DesignerFullProfile extends StatefulWidget {
-  final String id;
-  const DesignerFullProfile({Key? key, required this.id, required Map<String, dynamic> data}) : super(key: key);
+  final String designer_id;
+  const DesignerFullProfile({Key? key, required this.designer_id, }) : super(key: key);
 
   @override
   State<DesignerFullProfile> createState() => _DesignerFullProfileState();
@@ -15,28 +15,29 @@ class _DesignerFullProfileState extends State<DesignerFullProfile> {
   @override
   void initState() {
     super.initState();
-    _designerFuture = _getDesignerData();
+  //  _getDesignerData();
   }
 
-  Future<DocumentSnapshot> _getDesignerData() async {
-    try {
-      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-          .collection('designer_register')
-          .doc(widget.id)
-          .get();
-      return documentSnapshot;
-    } catch (e) {
-      print('Error fetching designer data: $e');
-      throw e; // Re-throw the error to handle it in the UI
-    }
+ Future<DocumentSnapshot> _getDesignerData() async {
+  try {
+    print(widget.designer_id);
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('designer register')
+        .doc(widget.designer_id)
+        .get();
+    return documentSnapshot;
+  } catch (e) {
+    print('Error fetching designer data: $e');
+    throw e; // Re-throw the error to handle it in the UI
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: FutureBuilder<DocumentSnapshot>(
-        future: _designerFuture,
+        future: _getDesignerData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -47,6 +48,7 @@ class _DesignerFullProfileState extends State<DesignerFullProfile> {
               return Center(child: Text('No data found'));
             }
             Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+             String imageUrl = data['image_url'] ?? ''; 
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -54,7 +56,7 @@ class _DesignerFullProfileState extends State<DesignerFullProfile> {
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage: AssetImage('Assets/p3.jpg'),
+                      backgroundImage:NetworkImage(imageUrl),
                     ),
                     SizedBox(height: 30),
                     Text('Name: ${data['name']}'),

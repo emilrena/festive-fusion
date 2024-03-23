@@ -107,7 +107,7 @@ class _MehandiProffesional_ViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MehandiWorkView(),
+                                  builder: (context) => MehandiWorkView(mehandi_id:snapshot.data![index].id,),
                                 ),
                               );
                             },

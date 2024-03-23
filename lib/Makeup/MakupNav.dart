@@ -2,7 +2,7 @@ import 'package:festive_fusion/ADMIN/AdminComplaintView.dart';
 import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
 import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
-import 'package:festive_fusion/Designers/DesignerHome.dart';
+// import 'package:festive_fusion/Designers/MakeupHome.dart';
 import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
 import 'package:festive_fusion/Makeup/BookingNotification.dart';
 import 'package:festive_fusion/Makeup/MakeupHome.dart';
