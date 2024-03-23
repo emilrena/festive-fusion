@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/mehandi/MehandiHome.dart';
+import 'package:festive_fusion/Makeup/MakeupHome.dart';
+import 'package:festive_fusion/Makeup/MakupNav.dart';
+import 'package:festive_fusion/mehandi/MehandiNav.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Mehndi_Upload_pic extends StatefulWidget {
   final File imageFile;
@@ -15,9 +17,10 @@ class Mehndi_Upload_pic extends StatefulWidget {
 }
 
 class _Mehndi_Upload_picState extends State<Mehndi_Upload_pic> {
-   var describe = TextEditingController();
-   final fkey = GlobalKey<FormState>();
-   String imageUrl='';
+  var describe = TextEditingController();
+  final fkey = GlobalKey<FormState>();
+  String imageUrl = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,18 +75,27 @@ class _Mehndi_Upload_picState extends State<Mehndi_Upload_pic> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: ()async {
-                  try {
-                    await uploadImage();
-                    await FirebaseFirestore.instance
-                        .collection('mehandi_upload_image')
-                        .add({'describe': describe.text, 'imageUrl': imageUrl});
+                onPressed: () async {
+                  SharedPreferences sp = await SharedPreferences.getInstance();
+                  String? mehandi_id = sp.getString('uid');
 
-                    if (fkey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MehandiHome()),
-                      );
+                  try {
+                    if (mehandi_id != null) {
+                      await uploadImage();
+                      await FirebaseFirestore.instance
+                          .collection('mehandi_upload_image')
+                          .add({
+                        'describe': describe.text,
+                        'imageUrl': imageUrl,
+                        'mehandi_id': mehandi_id
+                      });
+
+                      if (fkey.currentState!.validate()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MehandiNav()),
+                        );
+                      }
                     }
                   } catch (error) {
                     print('Error: $error');
@@ -102,17 +114,17 @@ class _Mehndi_Upload_picState extends State<Mehndi_Upload_pic> {
   Future<void> uploadImage() async {
     try {
       if (widget.imageFile != null) {
-        Reference storageReference =
-            FirebaseStorage.instance
-                .ref()
-                .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        Reference storageReference = FirebaseStorage.instance
+            .ref()
+            .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
+        // Upload the image
         await storageReference.putFile(widget.imageFile);
 
-        // Get the download URL
+        // Get the download URL after the upload is complete
         imageUrl = await storageReference.getDownloadURL();
 
-        // Now you can use imageUrl as needed (e.g., save it to Firestore)
+        // Print the image URL for debugging
         print('Image URL: $imageUrl');
       }
     } catch (e) {

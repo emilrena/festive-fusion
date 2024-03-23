@@ -51,8 +51,12 @@ Future<void> gatData() async {
             .get();
              if(mechSnapshot.docs.isNotEmpty){
   var userid = mechSnapshot.docs[0].id;
+   var image_url = mechSnapshot.docs[0]['image_url'];
+  var username = mechSnapshot.docs[0]['name'];
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
+  sp.setString('name', username);
+  sp.setString('image_url',image_url);
 
               if (mechSnapshot.docs.isNotEmpty) {
 
@@ -134,10 +138,13 @@ Future<void> gatData() async {
              if(makeupshot.docs.isNotEmpty){
               print('_________________________________');
   var userid = makeupshot.docs[0].id;
+   var image_url = makeupshot.docs[0]['image_url'];
+  var username = makeupshot.docs[0]['name'];
   print('userid:_____$userid');
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
-
+sp.setString('name', username);
+  sp.setString('image_url',image_url);
               if (makeupshot.docs.isNotEmpty) {
 
       Fluttertoast.showToast(msg: 'Login Successful ');

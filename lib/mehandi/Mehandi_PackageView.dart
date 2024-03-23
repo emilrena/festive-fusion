@@ -19,7 +19,7 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
     try {
       print('..................');
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('makeup_package')
+          .collection('mehandi_package')
           .get();
 
       print('Number of documents: ${snapshot.docs}');

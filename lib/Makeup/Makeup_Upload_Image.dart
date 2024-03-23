@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:festive_fusion/Makeup/MakeupHome.dart';
+import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,23 +74,27 @@ class _Makeup_Upload_picState extends State<Makeup_Upload_pic> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-               
                 onPressed: () async {
-                  SharedPreferences sp =
-                            await SharedPreferences.getInstance();
-                        var a = sp.getString('uid');
+                  SharedPreferences sp = await SharedPreferences.getInstance();
+                  String? makeupId = sp.getString('uid');
 
                   try {
-                    await uploadImage();
-                    await FirebaseFirestore.instance
-                        .collection('designer_upload_image')
-                        .add({'describe': describe.text, 'imageUrl': imageUrl,'makeup_id': a});
+                    if (makeupId != null) {
+                      await uploadImage();
+                      await FirebaseFirestore.instance
+                          .collection('makeup_upload_image')
+                          .add({
+                        'describe': describe.text,
+                        'imageUrl': imageUrl,
+                        'makeup_id': makeupId
+                      });
 
-                    if (fkey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MakeupHome()),
-                      );
+                      if (fkey.currentState!.validate()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MakeupNav()),
+                        );
+                      }
                     }
                   } catch (error) {
                     print('Error: $error');
@@ -108,8 +113,9 @@ class _Makeup_Upload_picState extends State<Makeup_Upload_pic> {
   Future<void> uploadImage() async {
     try {
       if (widget.imageFile != null) {
-        Reference storageReference =
-            FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        Reference storageReference = FirebaseStorage.instance
+            .ref()
+            .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
         // Upload the image
         await storageReference.putFile(widget.imageFile);

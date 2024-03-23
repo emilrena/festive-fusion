@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/message.dart';
 import 'package:festive_fusion/Designers/packageview.dart';
 import 'package:festive_fusion/Designers/upload_image.dart';
+import 'package:festive_fusion/Makeup/Makeup_Upload_Image.dart';
 import 'package:festive_fusion/Makeup/Makeup_message.dart';
 import 'package:festive_fusion/Makeup/Makeup_packageView.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _MakeupHomeState extends State<MakeupHome> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Upload_pic_describe(imageFile: _image),
+          builder: (context) =>Makeup_Upload_pic(imageFile: _image),
         ),
       );
     }
