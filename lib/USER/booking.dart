@@ -1,19 +1,112 @@
-import 'package:festive_fusion/USER/MakeupPayment.dart';
-import 'package:festive_fusion/USER/package.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:festive_fusion/USER/MakeupPayment.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Booked extends StatefulWidget {
   final String provider_id;
-    final String package_id;
-  const Booked({Key? key, required this.provider_id, required this.package_id }) : super(key: key);
+  final String package_id;
+  final String type;
+
+  const Booked({
+    Key? key,
+    required this.provider_id,
+    required this.package_id,
+    required this.type,
+  }) : super(key: key);
+
   @override
   State<Booked> createState() => _BookedState();
 }
 
 class _BookedState extends State<Booked> {
-  @override
   late DateTime selectedDate = DateTime.now();
   late TimeOfDay selectedTime = TimeOfDay.now();
+  late String packageName = '';
+  late String packageDescription = '';
+   String? address;
+  String? state;
+  String? pin;
+  String? district;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPackageDetails();
+    getSavedAddress(); 
+    
+  }
+
+  void fetchPackageDetails() {
+    if (widget.type == 'designer') {
+      fetchDesignerPackageDetails();
+    } else if (widget.type == 'mehandi') {
+      fetchMehandiPackageDetails();
+    } else if (widget.type == 'makeup') {
+      fetchMakeupPackageDetails();
+    }
+  }
+
+  void fetchDesignerPackageDetails() {
+    print('object');
+    FirebaseFirestore.instance
+        .collection(' designer_package ')
+        .doc(widget.package_id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        setState(() {
+          packageName = doc['package'];
+          packageDescription = doc['description'];
+        });
+      }
+    }).catchError((error) {
+      print('Error fetching designer package details: $error');
+    });
+  }
+
+  void fetchMehandiPackageDetails() {
+    FirebaseFirestore.instance
+        .collection('mehandi_package')
+        .doc(widget.package_id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        setState(() {
+          packageName = doc['package'];
+          packageDescription = doc['description'];
+        });
+      }
+    }).catchError((error) {
+      print('Error fetching mehandi package details: $error');
+    });
+  }
+
+  void fetchMakeupPackageDetails() {
+    FirebaseFirestore.instance
+        .collection('makeup_package')
+        .doc(widget.package_id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        setState(() {
+          packageName = doc['package'];
+          packageDescription = doc['description'];
+        });
+      }
+    }).catchError((error) {
+      print('Error fetching mehandi package details: $error');
+    });
+  }
+   void getSavedAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      address = prefs.getString('Adress');
+      state = prefs.getString('state');
+      pin = prefs.getString('pin');
+      district = prefs.getString('district');
+    });
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -44,108 +137,124 @@ class _BookedState extends State<Booked> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Booking',
-          style: TextStyle(color: Colors.deepPurpleAccent),
+        appBar: AppBar(
+          title: Text(
+            'Booking',
+            style: TextStyle(color: Colors.deepPurpleAccent),
+          ),
         ),
-      ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              width: 300,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 40,),
-                      Text('TIME:'),
-                      SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () => _selectTime(context),
-                        child: Text(
-                          '${selectedTime.format(context)}',
-                          style: TextStyle(fontSize: 16),
+        body: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Container(
+                width: 300,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 40,
                         ),
-                      ),
-                    ],
-                  ),
-                  // TextFormField(
-                  //   decoration: InputDecoration(
-                  //     fillColor: Color.fromARGB(255, 224, 206, 221),
-                  //     filled: true,
-                  //     border: UnderlineInputBorder(
-                  //       borderSide: BorderSide.none,
-                  //     ),
-                  //   ),
-                  // ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text('DATE:'),
-                      SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () => _selectDate(context),
-                        child: Text(
-                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                          style: TextStyle(fontSize: 16),
+                        Text('TIME:'),
+                        SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () => _selectTime(context),
+                          child: Text(
+                            '${selectedTime.format(context)}',
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('DATE:'),
+                        SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: Text(
+                            '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text('SELECTED PACKAGE:'),
+                    Container(
+                      height: 80,
+                      width: 300,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 224, 206, 221),
                       ),
-                    ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Package Name: $packageName',
+                              style: TextStyle(fontSize: 16)),
+                          Text('Package Description: $packageDescription',
+                              style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(onPressed: () {}, child: Text('CHANGE')),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                   Text('CURRENT ADDRESS:'),
+                  Container(
+                    height: 160,
+                    width: 300,
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 224, 206, 221),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Address: $address', style: TextStyle(fontSize: 16)),
+                        Text('State: $state', style: TextStyle(fontSize: 16)),
+                        Text('Pin: $pin', style: TextStyle(fontSize: 16)),
+                        Text('District: $district', style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 20),
-                  // TextFormField(
-                  //   decoration: InputDecoration(
-                  //     fillColor: Color.fromARGB(255, 224, 206, 221),
-                  //     filled: true,
-                  //     border: UnderlineInputBorder(
-                  //       borderSide: BorderSide.none,
-                  //     ),
-                  //   ),
-                  // ),
-                                SizedBox(height: 30,),
-                                Text('SELECTED PACKAGE:'),
-                                Container(
-                                  height: 80,width: 300,
-                                  decoration: BoxDecoration(color: Color.fromARGB(255, 224, 206, 221),),
-                                ),
-            
-                                Row(mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(onPressed: (){
-                          //             Navigator.push(context, MaterialPageRoute(builder:(context) {
-                          //   return UserPckg();
-                          // },));
-                                    }, child: Text('CHANGE')),
-                                  ],
-                                ),
-                                 SizedBox(height: 20,),
-                                Text(' CURRENT ADRESS:'),
-                                Container(
-                                  height: 80,width: 300,
-                                  decoration: BoxDecoration(color: Color.fromARGB(255, 224, 206, 221),),
-                                ),
-            
-                                Row(mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(onPressed: (){}, child: Text('CHANGE')),
-                                  ],
-                                ),
-                                ElevatedButton(onPressed: (){
-                                  Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return Payment();
-                          },));
-                                }, child: Text(' NEXT ',style:TextStyle(color: Colors.deepPurple),))
-                                 ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(onPressed: () {}, child: Text('CHANGE')),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return Payment(package_id:widget.package_id,provider_id:widget.provider_id,
+                            type:widget.type
+                            );
+                          },
+                        ));
+                      },
+                      child: Text('NEXT',
+                          style: TextStyle(color: Colors.deepPurple)),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      )
-    );
+          ],
+        ));
   }
 }

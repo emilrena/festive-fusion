@@ -129,6 +129,7 @@ class _MakeupPackagesState extends State<MakeupPackages> {
                                     return Booked(
                                       provider_id: widget.makeup_id,
                                       package_id: package.id,
+                                      type: 'makeup',
                                     );
                                   }),
                                 );

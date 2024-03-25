@@ -128,6 +128,7 @@ class _MehandiPackagesState extends State<MehandiPackages> {
                                     return Booked(
                                       provider_id: widget.mehandi_id,
                                       package_id: package.id,
+                                      type: 'mehandi',
                                     );
                                   }),
                                 );

@@ -2,7 +2,14 @@ import 'package:festive_fusion/USER/BokkedImage.dart';
 import 'package:flutter/material.dart';
 
 class Payment extends StatelessWidget {
-  Payment({Key? key}) : super(key: key);
+  final String provider_id;
+  final String package_id;
+  final String type;
+  Payment({Key? key,
+  required this.provider_id,
+    required this.package_id,
+    required this.type,
+  }) : super(key: key);
   var Userid=TextEditingController();
   var balance=TextEditingController();
 

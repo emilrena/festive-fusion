@@ -116,6 +116,8 @@ class _UserPckgState extends State<UserPckg> {
                         itemCount: _packages.length,
                         itemBuilder: (context, index) {
                           var package = _packages[index];
+                          var package_id=package.id;
+                          print('________________$package_id');
                           var a = index % 2;
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -126,7 +128,8 @@ class _UserPckgState extends State<UserPckg> {
                                   MaterialPageRoute(builder: (context) {
                                     return Booked(
                                       provider_id: widget.designer_id,
-                                      package_id: package.id,
+                                      package_id: package_id,
+                                      type: 'designer',
                                     );
                                   }),
                                 );
@@ -155,11 +158,13 @@ class _UserPckgState extends State<UserPckg> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            package['package'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                          SizedBox(width: 150,
+                                            child: Text(
+                                              package['package'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(height: 8),
