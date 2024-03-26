@@ -77,7 +77,7 @@ Future<void> _loadImages() async {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) {
-                        return Message();
+                        return Message(designer_id: widget.designer_id,);
                       }),
                     );
                   },
