@@ -1,22 +1,53 @@
+import 'package:bottom_bar_matu/utils/app_utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:festive_fusion/USER/BokkedImage.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Payment extends StatelessWidget {
+class Payment extends StatefulWidget {
   final String provider_id;
   final String package_id;
   final String type;
-  Payment({
-    Key? key,
-    required this.provider_id,
-    required this.package_id,
-    required this.type,
-  }) : super(key: key);
+  final String description;
+  Payment(
+      {Key? key,
+      required this.provider_id,
+      required this.package_id,
+      required this.type,
+      required this.description})
+      : super(key: key);
 
+  @override
+  State<Payment> createState() => _PaymentState();
+}
+
+class _PaymentState extends State<Payment> {
   var Userid = TextEditingController();
+
   var balance = TextEditingController();
 
-  final List<String> _list = ['FULL AMOUNT', 'ADVANCE',];
-  final List<String> _list1 = ['GPAY', 'PHONEPAY',];
+  final List<String> _list = [
+    'FULL AMOUNT',
+    'ADVANCE',
+  ];
+
+  final List<String> _list1 = [
+    'GPAY',
+    'PHONEPAY',
+  ];
+
   final List<String> _list2 = ['GPAY', 'PHONEPAY', 'CASH ON DELIVERY'];
+
+  var amt = '';
+  var finalprice = 0.0;
+  var remaining = 0.0;
+  void total() {
+    setState(() {
+      finalprice = (widget.description).toInt() / 4;
+      print(finalprice);
+      remaining = (widget.description).toInt() - finalprice;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +66,7 @@ class Payment extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Text(
-                'Your additional content here',
+                'Total amount: ${widget.description}', // Show description here
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
@@ -48,6 +79,12 @@ class Payment extends StatelessWidget {
                   hint: Text('PAYMENT'),
                   onChanged: (value) {
                     print(value);
+                    setState(() {
+                      amt = value.toString();
+                    });
+                    if (amt == 'ADVANCE') {
+                      total();
+                    }
                   },
                   items: _list.map((e) {
                     return DropdownMenuItem(
@@ -58,6 +95,39 @@ class Payment extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(
+              height: 10,
+            ),
+            amt == 'ADVANCE'
+                ? SizedBox(
+                    height: 45,
+                    child: TextFormField(
+                      controller: balance,
+                      decoration: InputDecoration(
+                        fillColor: Color.fromARGB(255, 223, 197, 218),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
+                        ),
+                        hintText: (finalprice.toString()),
+                      ),
+                    ),
+                  )
+                : SizedBox(
+                    height: 45,
+                    child: TextFormField(
+                      controller: balance,
+                      decoration: InputDecoration(
+                        fillColor: Color.fromARGB(255, 223, 197, 218),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
+                        ),
+                        hintText: ('0'),
+                      ),
+                    ),
+                  ),
+            SizedBox(height: 20),
             Container(
               child: Material(
                 child: DropdownButtonFormField(
@@ -74,53 +144,44 @@ class Payment extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20,),
-            SizedBox(
-              height: 45,
-              child: TextFormField(
-                controller: Userid,
-                decoration: InputDecoration(
-                  fillColor: Color.fromARGB(255, 223, 197, 218),
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(0,)),
-                  ),
-                  hintText: ('ENTER ID'),
-                ),
-              ),
-            ),
-            SizedBox(height: 20,),
-            ElevatedButton(
-              onPressed: (){},
-              child: Text('PAY'),
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text("BALANCE AMOUNT:"),
               ],
             ),
-            SizedBox(height: 10,),
-            SizedBox(
-              height: 45,
-              child: TextFormField(
-                controller: balance,
-                decoration: InputDecoration(
-                  fillColor: Color.fromARGB(255, 223, 197, 218),
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(0,)),
+            SizedBox(height: 10),
+            amt == 'ADVANCE'
+                ? SizedBox(
+                    height: 45,
+                    child: TextFormField(
+                      controller: balance,
+                      decoration: InputDecoration(
+                        fillColor: Color.fromARGB(255, 223, 197, 218),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
+                        ),
+                        hintText: (remaining.toString()),
+                      ),
+                    ),
+                  )
+                : SizedBox(
+                    height: 45,
+                    child: TextFormField(
+                      controller: balance,
+                      decoration: InputDecoration(
+                        fillColor: Color.fromARGB(255, 223, 197, 218),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0)),
+                        ),
+                        hintText: ('0'),
+                      ),
+                    ),
                   ),
-                  hintText: ('10000'),
-                ),
-              ),
-            ),
+            SizedBox(height: 20),
             Container(
               child: Material(
                 child: DropdownButtonFormField(
@@ -137,19 +198,42 @@ class Payment extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 30,
+            ),
             ElevatedButton(
-              onPressed: (){
-                print(Userid.text);
-                print(balance.text);
-                // Show booking successful message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Booking Successful!'),
+              onPressed: () async {
+                SharedPreferences sp = await SharedPreferences.getInstance();
+                var a = sp.getString('uid');
+
+                Map<String, dynamic> data = {
+                  'provider_id': widget.provider_id,
+                  'package_id': widget.package_id,
+                  'type': widget.type,
+                  'description': widget.description,
+                  'payment_type': amt,
+                  'user_id': a,
+                };
+
+                if (amt == 'ADVANCE') {
+                  data['advance_payment_amount'] = finalprice;
+                  data['balance_payment_amount'] = remaining;
+                } else {
+                  data['advance_payment_amount'] = 0;
+                  data['balance_payment_amount'] = double.parse(balance.text);
+                }
+
+                await FirebaseFirestore.instance
+                    .collection('Payment_and_booking')
+                    .add(data);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AfterBooked(),
                   ),
                 );
               },
-              child: Text('BOOK'),
+              child: Text('PAY & BOOK'),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(0.0),

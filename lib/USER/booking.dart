@@ -7,8 +7,9 @@ class Booked extends StatefulWidget {
   final String provider_id;
   final String package_id;
   final String type;
+  
 
-  const Booked({
+   Booked({
     Key? key,
     required this.provider_id,
     required this.package_id,
@@ -28,6 +29,9 @@ class _BookedState extends State<Booked> {
   String? state;
   String? pin;
   String? district;
+  String? requestDocumentId; 
+  
+
 
   @override
   void initState() {
@@ -237,19 +241,83 @@ class _BookedState extends State<Booked> {
                         TextButton(onPressed: () {}, child: Text('CHANGE')),
                       ],
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return Payment(package_id:widget.package_id,provider_id:widget.provider_id,
-                            type:widget.type
-                            );
-                          },
-                        ));
-                      },
-                      child: Text('NEXT',
-                          style: TextStyle(color: Colors.deepPurple)),
-                    )
+                  ElevatedButton(
+  onPressed: () async {
+     SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var a = sp.getString('uid');
+    
+    await FirebaseFirestore.instance.collection('requests').add({
+      'user_id': a, // Replace userId with the actual user ID
+      'package_id': widget.package_id,
+      'provider_id': widget.provider_id,
+      'date': selectedDate,
+      'time': selectedTime,
+      'status': 0, 
+    });
+
+    // Show a message or perform any action to indicate that the request has been sent
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Availability request sent!')),
+    );
+
+    // Optional: You can monitor changes in the status field of the document
+    // corresponding to the user's request in the "requests" collection
+    // and update the UI accordingly when the status changes to 1.
+  },
+  child: Text('Check Availability', style: TextStyle(color: Colors.deepPurple)),
+),
+
+// Display a message or UI based on the status of the request
+StreamBuilder<DocumentSnapshot>(
+  stream: FirebaseFirestore.instance.collection('requests').doc(requestDocumentId).snapshots(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      // Show a loading indicator while waiting for the data
+      return CircularProgressIndicator();
+    } else {
+      // Check the status field of the document
+      int? status = snapshot.data?['status'];
+      if (status == 0) {
+        // If the status is 0, show a message indicating waiting for provider response
+        return Text('Waiting for provider response...');
+      } else if (status == 1) {
+        // If the status is 1, enable the "NEXT" button to proceed with the payment
+        return ElevatedButton(
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return Payment(
+                package_id: widget.package_id,
+                provider_id: widget.provider_id,
+                type: widget.type,
+                description: packageDescription,
+              );
+            }));
+          },
+          child: Text('NEXT', style: TextStyle(color: Colors.deepPurple)),
+        );
+      } else if (status == 2) {
+       
+        return Column(
+          children: [
+            Text('Request rejected.'),
+            ElevatedButton(
+              onPressed: () {
+                
+              },
+              child: Text('Select Designer', style: TextStyle(color: Colors.deepPurple)),
+            ),
+          ],
+        );
+      } else {
+        
+        return Text('Status: $status');
+      }
+    }
+  },
+)
+
+
                   ],
                 ),
               ),
