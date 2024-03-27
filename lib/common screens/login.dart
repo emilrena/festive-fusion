@@ -101,12 +101,14 @@ Future<void> gatData() async {
   var userDistrict = usershot.docs[0]['District'];
   var userState = usershot.docs[0]['state'];
   var userpin = usershot.docs[0]['pin'];
+  var image_url = usershot.docs[0]['image_url'];
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
   sp.setString('adress',useradress);
   sp.setString('district',userDistrict);
   sp.setString('state',userState);
   sp.setString('pin',userpin);
+  sp.setString('image_url',image_url);
 
               if (usershot.docs.isNotEmpty) {
 

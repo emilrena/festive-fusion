@@ -9,6 +9,7 @@ import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/mehandi/MehandiHome.dart';
+import 'package:festive_fusion/mehandi/MehandiNotificatin.dart';
 import 'package:festive_fusion/mehandi/Mehandi_editProfile.dart';
 import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class MehandiNav extends StatefulWidget {
 class _MehandiNavState extends State<MehandiNav> {
   int selectedindex=1;
    static const List<dynamic>option=[
-    DesignerNotification(),
+    MehandiNotificaton(),
     MehandiHome(),
     Mehandi_EditProfile(),
     

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:festive_fusion/USER/MakeupPayment.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Booked extends StatefulWidget {
@@ -21,14 +22,17 @@ class Booked extends StatefulWidget {
 
 class _BookedState extends State<Booked> {
   late DateTime selectedDate = DateTime.now();
-  late TimeOfDay selectedTime = TimeOfDay.now();
+  var selectedTime = TimeOfDay.now();
+
   late String packageName = '';
   late String packageDescription = '';
   String? address;
   String? state;
   String? pin;
   String? district;
-   String? requestDocumentId;
+  // var img
+  bool waitingForResponse = false;
+  String? requestDocumentId;
 
   @override
   void initState() {
@@ -106,6 +110,7 @@ class _BookedState extends State<Booked> {
       state = prefs.getString('state');
       pin = prefs.getString('pin');
       district = prefs.getString('district');
+      // img = prefs.get('image_url');
     });
   }
 
@@ -245,16 +250,32 @@ class _BookedState extends State<Booked> {
                         SharedPreferences sp =
                             await SharedPreferences.getInstance();
                         var a = sp.getString('uid');
-
+                        print('..........$a');
+                        // Change the UI to waiting status
+                        setState(() {
+                          // Update UI to indicate waiting status
+                          waitingForResponse =
+                              true; // Assuming you have a boolean variable to track waiting status
+                        });
+                        String dateAsString =
+                            DateFormat('yyyy-MM-dd').format(selectedDate);
+                        String timeAsString = DateFormat('HH:mm').format(
+                            DateTime(
+                                selectedDate.year,
+                                selectedDate.month,
+                                selectedDate.day,
+                                selectedTime.hour,
+                                selectedTime.minute));
                         await FirebaseFirestore.instance
                             .collection('requests')
                             .add({
                           'user_id': a,
                           'package_id': widget.package_id,
                           'provider_id': widget.provider_id,
-                          'date': selectedDate,
-                          'time': selectedTime,
+                          'date': dateAsString,
+                          'time': timeAsString.toString(),
                           'status': 0,
+                          
                         });
 
                         // Show a message or perform any action to indicate that the request has been sent
@@ -266,62 +287,65 @@ class _BookedState extends State<Booked> {
                         // corresponding to the user's request in the "requests" collection
                         // and update the UI accordingly when the status changes to 1.
                       },
-                      child: Text('Check Availability',
-                          style: TextStyle(color: Colors.deepPurple)),
+                      child: waitingForResponse
+                          ? Text(
+                              'Waiting for provider response...') // Show waiting status
+                          : Text('Check Availability',
+                              style: TextStyle(color: Colors.deepPurple)),
                     ),
 
 // Display a message or UI based on the status of the request
-                    StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('requests')
-                          .doc(requestDocumentId)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          // Show a loading indicator while waiting for the data
-                          return CircularProgressIndicator();
-                        } else {
-                          // Check the status field of the document
-                          int? status = snapshot.data?['status'];
-                          if (status == 0) {
-                            
-                            return Text('Waiting for provider response...');
-                          } else if (status == 1) {
-                            
-                            return ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return Payment(
-                                    package_id: widget.package_id,
-                                    provider_id: widget.provider_id,
-                                    type: widget.type,
-                                    description: packageDescription,
-                                  );
-                                }));
-                              },
-                              child: Text('NEXT',
-                                  style: TextStyle(color: Colors.deepPurple)),
-                            );
-                          } else if (status == 2) {
-                            return Column(
-                              children: [
-                                Text('Request rejected.'),                                             
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  child: Text('Select Designer',
-                                      style:
-                                          TextStyle(color: Colors.deepPurple)),
-                                ),
-                              ],
-                            );
-                          } else {
-                            return Text('Status: $status');
-                          }
-                        }
-                      },
-                    )
+                    // StreamBuilder<DocumentSnapshot>(
+                    //   stream: FirebaseFirestore.instance
+                    //       .collection('requests')
+                    //       .doc(requestDocumentId)
+                    //       .snapshots(),
+                    //   builder: (context, snapshot) {
+                    //     if (snapshot.connectionState ==
+                    //         ConnectionState.waiting) {
+                    //       // Show a loading indicator while waiting for the data
+                    //       return CircularProgressIndicator();
+                    //     } else {
+                    //       // Check the status field of the document
+                    //       int? status = snapshot.data?['status'];
+                    //       if (status == 0) {
+
+                    //         return Text('Waiting for provider response...');
+                    //       } else if (status == 1) {
+
+                    //         return ElevatedButton(
+                    //           onPressed: () {
+                    //             Navigator.push(context,
+                    //                 MaterialPageRoute(builder: (context) {
+                    //               return Payment(
+                    //                 package_id: widget.package_id,
+                    //                 provider_id: widget.provider_id,
+                    //                 type: widget.type,
+                    //                 description: packageDescription,
+                    //               );
+                    //             }));
+                    //           },
+                    //           child: Text('NEXT',
+                    //               style: TextStyle(color: Colors.deepPurple)),
+                    //         );
+                    //       } else if (status == 2) {
+                    //         return Column(
+                    //           children: [
+                    //             Text('Request rejected.'),
+                    //             ElevatedButton(
+                    //               onPressed: () {},
+                    //               child: Text('Select Designer',
+                    //                   style:
+                    //                       TextStyle(color: Colors.deepPurple)),
+                    //             ),
+                    //           ],
+                    //         );
+                    //       } else {
+                    //         return Text('Status: $status');
+                    //       }
+                    //     }
+                    //   },
+                    // )
                   ],
                 ),
               ),
