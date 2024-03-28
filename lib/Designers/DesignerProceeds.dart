@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
 import 'package:flutter/material.dart';
 
 class DesignerProceed extends StatefulWidget {
-  const DesignerProceed({Key? key}) : super(key: key);
+  final String bookingRequets;
+  const DesignerProceed({Key? key, required this.bookingRequets, required List<QueryDocumentSnapshot<Map<String, dynamic>>> bookingRequests}) : super(key: key);
 
   @override
   State<DesignerProceed> createState() => _DesignerProceedState();

@@ -57,6 +57,44 @@ class _DesignerNotificationState extends State<DesignerNotification> {
     }
   }
 
+  Future<void> acceptBooking(String requestId) async {
+    try {
+      await FirebaseFirestore.instance.collection('requests').doc(requestId).update({
+        'status': 1, // 1 indicates booking accepted
+      });
+      print('Booking request accepted');
+    } catch (e) {
+      print('Error accepting booking request: $e');
+    }
+  }
+
+  Future<void> cancelBooking(String requestId) async {
+    try {
+      await FirebaseFirestore.instance.collection('requests').doc(requestId).update({
+        'status': 2, // 2 indicates booking cancelled
+      });
+      print('Booking request cancelled');
+    } catch (e) {
+      print('Error cancelling booking request: $e');
+    }
+  }
+
+  void handleAccept(String requestId) {
+    acceptBooking(requestId);
+    // Navigate to next page with bookingRequests list
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return DesignerProceed(bookingRequests: bookingRequests, bookingRequets: 'string',);
+    }));
+  }
+
+  void handleCancel(String requestId, int index) {
+    cancelBooking(requestId);
+    // Remove cancelled request from the list
+    setState(() {
+      bookingRequests.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,8 +107,9 @@ class _DesignerNotificationState extends State<DesignerNotification> {
       body: ListView.builder(
         itemCount: bookingRequests.length,
         itemBuilder: (context, index) {
-          final bookingRequest = bookingRequests[index];
+          final bookingRequest = bookingRequests[index].data(); // Get the data of the document
           final userId = bookingRequest['user_id'];
+          final requestId = bookingRequests[index].id; // Get the document ID
 
           return FutureBuilder(
             future: fetchUserDetails(userId),
@@ -88,66 +127,59 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                     children: [
                       Row(
                         children: [
-                          userDetails.containsKey('image')
-                              ? Image.network(userDetails['image_url'])
-                              : SizedBox(), // Display image
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Text(userDetails['name'] ?? ''), // Display name
-                          )
+                          userDetails.containsKey('image_url')
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(userDetails['image_url']),
+                                  radius: 30,
+                                )
+                              : CircleAvatar(
+                                  child: Icon(Icons.person),
+                                  radius: 30,
+                                ),
+                          SizedBox(width: 20),
+                          Text(userDetails['name'] ?? ''),
                         ],
                       ),
                       SizedBox(height: 10),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Text(
-                              'PACKAGE CHOOSED:',
-                              style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),
-                            ),
+                          Text(
+                            'PACKAGE CHOOSED:',
+                            style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),
                           ),
+                          SizedBox(width: 5),
+                          Text(bookingRequest['packageName'] ?? ''),
                         ],
                       ),
-                      SizedBox(height: 5),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 40),
-                        child: Text(bookingRequest['packageName'] ?? ''),
-                      ),
                       SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 250),
-                        child: Text(
-                          'Date : ${bookingRequest['date'] ?? ''}',
-                          style: TextStyle(color: Color.fromARGB(255, 92, 8, 71)),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 250),
-                        child: Text(
-                          'Time : ${bookingRequest['time'] ?? ''}',
-                          style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 240),
-                        child: FutureBuilder(
-                          future: fetchUserDetails(userId),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            } else {
-                              final userDetails = snapshot.data as Map<String, dynamic>;
-                              return Text(
-                                'Address : ${userDetails['address'] ?? ''}',
-                                style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
-                              );
-                            }
-                          },
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Date : ${bookingRequest['date'] ?? ''}',
+                            style: TextStyle(color: Color.fromARGB(255, 92, 8, 71)),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'Time : ${bookingRequest['time'] ?? ''}',
+                            style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
+                          ),
+                          SizedBox(height: 5),
+                          FutureBuilder(
+                            future: fetchUserDetails(userId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              } else {
+                                final userDetails = snapshot.data as Map<String, dynamic>;
+                                return Text(
+                                  'Address : ${userDetails['address'] ?? ''}',
+                                  style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
+                                );
+                              }
+                            },
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -157,9 +189,7 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                             padding: const EdgeInsets.only(right: 50),
                             child: IconButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return DesignerProceed();
-                                }));
+                                handleAccept(requestId);
                               },
                               icon: Icon(Icons.check),
                               color: Colors.deepPurple,
@@ -167,9 +197,7 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                           ),
                           IconButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return DesignerHome();
-                              }));
+                              handleCancel(requestId, index);
                             },
                             icon: Icon(Icons.cancel),
                             color: Colors.deepPurple,

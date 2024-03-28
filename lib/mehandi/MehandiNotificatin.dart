@@ -1,5 +1,6 @@
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/DesignerProceeds.dart';
+import 'package:festive_fusion/mehandi/MehandiProceed.dart';
 import 'package:flutter/material.dart';
 
 class MehandiNotificaton extends StatefulWidget {
@@ -91,7 +92,7 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
                           padding: const EdgeInsets.only(right: 50),
                           child: IconButton(onPressed: (){
                               Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return DesignerProceed();
+                    return MehandiProceed();
                   }));
                           }, icon: Icon(Icons.check),color: Colors.deepPurple,),
                         ),
