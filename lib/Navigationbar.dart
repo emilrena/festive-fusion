@@ -1,5 +1,6 @@
 import 'package:festive_fusion/USER/BookedPeoples.dart';
 import 'package:festive_fusion/USER/UserHome.dart';
+import 'package:festive_fusion/USER/Waiting.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/registration.dart';
@@ -14,12 +15,17 @@ class Navigationbar extends StatefulWidget {
 
 class _NavigationbarState extends State<Navigationbar> {
   int selectedindex=1;
+   final String uid = 'uid';
    static const List<dynamic>option=[
     MyBookings(),
+    Waiting(),
     UserHome(),
     Registration(),
+    
 
    ];
+   
+     
    void ontop(int index){
     setState(() {
       selectedindex=index;
@@ -34,9 +40,14 @@ class _NavigationbarState extends State<Navigationbar> {
 bottomNavigationBar: BottomNavigationBar(items: [
   BottomNavigationBarItem(icon: Icon(Icons.book_online,),label: 'booking'),
 
+   BottomNavigationBarItem(icon: Icon(Icons.notification_important_sharp,),label: 'booking status'),
+
   BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
 
   BottomNavigationBarItem(icon: Icon(Icons.person,),label: 'person')
+
+  
+
 ],
 type: BottomNavigationBarType.shifting,
 currentIndex: selectedindex,

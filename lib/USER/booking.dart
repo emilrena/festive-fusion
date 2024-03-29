@@ -31,7 +31,7 @@ class _BookedState extends State<Booked> {
   String? pin;
   String? district;
   // var img
-  bool waitingForResponse = false;
+  var waitingForResponse = 0;
   String? requestDocumentId;
 
   @override
@@ -252,11 +252,7 @@ class _BookedState extends State<Booked> {
                         var a = sp.getString('uid');
                         print('..........$a');
                         // Change the UI to waiting status
-                        setState(() {
-                          // Update UI to indicate waiting status
-                          waitingForResponse =
-                              true; // Assuming you have a boolean variable to track waiting status
-                        });
+                      
                         String dateAsString =
                             DateFormat('yyyy-MM-dd').format(selectedDate);
                         String timeAsString = DateFormat('HH:mm').format(
@@ -276,19 +272,24 @@ class _BookedState extends State<Booked> {
                           'packageName':packageName,
                           'time': timeAsString.toString(),
                           'status': 0,
+                           'type': widget.type,
+                          
+                          
                           
                         });
+                          setState(() {
+                          // Update UI to indicate waiting status
+                          waitingForResponse = 1;
+                              // Assuming you have a boolean variable to track waiting status
+                        });
 
-                        // Show a message or perform any action to indicate that the request has been sent
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Availability request sent!')),
                         );
 
-                        // Optional: You can monitor changes in the status field of the document
-                        // corresponding to the user's request in the "requests" collection
-                        // and update the UI accordingly when the status changes to 1.
+                       
                       },
-                      child: waitingForResponse
+                      child: waitingForResponse==1
                           ? Text(
                               'Waiting for provider response...') // Show waiting status
                           : Text('Check Availability',
