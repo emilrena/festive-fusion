@@ -1,70 +1,99 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/USER/MakeupPayment.dart';
 
 class MyBookingsStatus extends StatefulWidget {
-  const MyBookingsStatus({Key? key}) : super(key: key);
+  final String providerName;
+  final String providerImage;
+  final String packageId;
+  final String providerId;
+  final String type;
+
+  const MyBookingsStatus({
+    Key? key,
+    required this.providerName,
+    required this.providerImage,
+    required this.packageId,
+    required this.providerId,
+    required this.type,
+  }) : super(key: key);
 
   @override
   State<MyBookingsStatus> createState() => _MyBookingsStatusState();
 }
 
 class _MyBookingsStatusState extends State<MyBookingsStatus> {
+  String? description; // Variable to store the package description
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> fetchPackageDetails(
+      String packageId) async {
+    try {
+      String collectionName;
+
+      // Determine collection based on the type
+      if (widget.type == 'designer') {
+        collectionName = ' designer_package ';
+      } else if (widget.type == 'mehandi') {
+        collectionName = 'mehandi_package';
+      } else if (widget.type == 'makeup') {
+        collectionName = 'makeup_package';
+      } else {
+        // Default collection or handle other types
+        collectionName = 'default_collection';
+      }
+
+      // Fetch data from the determined collection
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection(collectionName)
+          .doc(packageId)
+          .get();
+
+      return snapshot;
+    } catch (error) {
+      // Handle any potential errors
+      print("Error fetching package details: $error");
+      throw error; // Rethrow the error for higher-level handling if necessary
+    }
+  }
+
+  String? userAddress;
+  String? userDistrict;
+  String? userState;
+  String? userPin;
 
   @override
-  TextEditingController feedbackController = TextEditingController();
-  void showFeedbackPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Give Feedback"),
-          
-          content: Column(
-            children: [SizedBox(height: 50,),
-              RatingBar.builder(itemSize: 40,
-                      initialRating: 3,
-                      minRating: 1,
-                      direction: Axis.horizontal,
-                      allowHalfRating: true,
-                      itemCount: 5,
-                // controller: feedbackController,
-                // maxLines: 4,
-               itemBuilder: (context, _) => Icon(
-                        Icons.star,
-                        size: 3,
-                        color: Color.fromARGB(255, 124, 4, 94),
-                      ),
-                      onRatingUpdate: (rating) {
-                        print(rating);
-                      },
-                    ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Add your logic to handle feedback submission
-                String feedbackText = feedbackController.text;
-                // You can send the feedback to your server or handle it as needed
-                print("Feedback submitted: $feedbackText");
-
-                // Close the pop-up
-                Navigator.of(context).pop();
-              },
-              child: Text("Send Feedback"),
-            ),
-            TextButton(
-              onPressed: () {
-                // Close the pop-up
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-          ],
-        );
-      },
-    );
+  void initState() {
+    super.initState();
+    _getUserAddress();
+    _fetchPackageDetails(); // Call _fetchPackageDetails to fetch package details
   }
+
+  Future<void> _getUserAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userAddress = prefs.getString('adress');
+      userDistrict = prefs.getString('district');
+      userState = prefs.getString('state');
+      userPin = prefs.getString('pin');
+    });
+  }
+
+  Future<void> _fetchPackageDetails() async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await fetchPackageDetails(widget.packageId);
+      setState(() {
+        description = snapshot.data()!['description']; // Assign description value
+      });
+    } catch (error) {
+      // Handle any potential errors
+      print("Error fetching package details: $error");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -74,95 +103,116 @@ class _MyBookingsStatusState extends State<MyBookingsStatus> {
         ),
       ),
       body: Container(
-            height: 600,
-            width: 400,
-            margin: EdgeInsets.all(10), // Add margin for space between containers
-            color: Color(0xFFFFFFFF),
-            child: Column(
-              
+        height: 600,
+        width: 400,
+        margin: EdgeInsets.all(10),
+        color: Color(0xFFFFFFFF),
+        child: Column(
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('Assets/p4.jpg'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Text('ARON AROUSHANS'),
-                    )
-                  ],
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(widget.providerImage),
                 ),
-                
-                SizedBox(height: 10), // Add space between the circle and text
-                Row(mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Text('PACKAGE CHOOSED:',style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),),
-                    ),
-                   
-
-                  
-                  ],
-                  
-                ),
-                SizedBox(height: 5,),
-                 Padding(
-                   padding: const EdgeInsets.only(right: 40),
-                   child: Text('engagement and wedding day '),
-                 ),
-                 SizedBox(height:10,),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 250),
-                      child: Text('Date : ',style: TextStyle(color: Color.fromARGB(255, 92, 8, 71)),),
-                    ),
-                    Text(' 5/9/2024'),
-                     SizedBox(height:10,),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 250),
-                      child: Text('Time : ',style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),),
-                    ),
-                   
-                    Text('2.00 pm'),
-                     SizedBox(height:10,),
-                     Padding(
-                       padding: const EdgeInsets.only(right: 240),
-                       child: Text('Adress :  ',style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),),
-                     ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Text('Thalancheri house chettipadi(po)'),
-                    ),
-                    SizedBox(height: 20,),
-                     Text('2.00 pm'),
-                     SizedBox(height:10,),
-                     Padding(
-                       padding: const EdgeInsets.only(right: 240),
-                       child: Text('STATUS :  ',style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),),
-                     ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Text('APPROVED'),
-                    ),
-                    
-                    SizedBox(height: 20,),
-                    ElevatedButton(
-                onPressed: () {
-                  showFeedbackPopup(context);
-                },
-                child: Text('Give Feedback'),
-              ),
-             
-             ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Text(widget.providerName),
+                )
+              ],
             ),
-          )
-        
-      
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Text(
+                    'PACKAGE CHOOSED:',
+                    style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5),
+            FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              future: fetchPackageDetails(widget.packageId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return Text('Package details not found');
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(right: 40),
+                  child: Text(snapshot.data!['package']),
+                );
+              },
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Row(
+                children: [
+                  Text(
+                    'TOTAL AMOUNT:',
+                    style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    description ?? 'No description',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 240),
+              child: Text(
+                'Address :  ',
+                style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(userAddress ?? 'User Address not found'),
+                  Text(userDistrict ?? 'User District not found'),
+                  Text(userState ?? 'User State not found'),
+                  Text(userPin ?? 'User PIN not found'),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Payment(
+                      provider_id: widget.providerId,
+                      package_id: widget.packageId,
+                      type: widget.type,
+                      description: description??'' // Pass description to Payment page
+                    ),
+                  ),
+                );
+              },
+              child: Text('Make Payment'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
-
-

@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Payment extends StatefulWidget {
-  final String provider_id;
+   final String provider_id;
   final String package_id;
   final String type;
   final String description;
   Payment(
       {Key? key,
       required this.provider_id,
-      required this.package_id,
-      required this.type,
-      required this.description})
+    required this.package_id,
+    required this.type,
+    required this.description,})
       : super(key: key);
 
   @override
@@ -22,6 +22,19 @@ class Payment extends StatefulWidget {
 }
 
 class _PaymentState extends State<Payment> {
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.provider_id); // Access provider_id here
+    print(widget.package_id); // Access package_id here
+    print(widget.type); // Access type here
+    print(widget.description); // Access description here
+  }
+
+ 
+
+    
   var Userid = TextEditingController();
 
   var balance = TextEditingController();
@@ -51,6 +64,7 @@ class _PaymentState extends State<Payment> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('PAYMENT'),

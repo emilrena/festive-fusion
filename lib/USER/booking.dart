@@ -270,6 +270,7 @@ class _BookedState extends State<Booked> {
                           'provider_id': widget.provider_id,
                           'date': dateAsString,
                           'packageName':packageName,
+                          
                           'time': timeAsString.toString(),
                           'status': 0,
                            'type': widget.type,

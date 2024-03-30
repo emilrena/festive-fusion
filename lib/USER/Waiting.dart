@@ -1,16 +1,12 @@
-import 'package:festive_fusion/USER/MakeupPayment.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/USER/MakeupPayment.dart';
+import 'package:festive_fusion/USER/ViewBookingStatus.dart';
 
 class Waiting extends StatefulWidget {
-  final String package_id;
-  final String provider_id;
-  final String type;
-  const Waiting( {Key? key,
-    required this.provider_id,
-    required this.package_id,
-    required this.type,
+  const Waiting({
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -47,7 +43,6 @@ class _WaitingState extends State<Waiting> {
 
     setState(() {
       bookings = snapshot.docs;
-      print('____________________________$bookings');
     });
   }
 
@@ -98,7 +93,7 @@ class _WaitingState extends State<Waiting> {
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: bookings!.length,
+                itemCount: bookings?.length ?? 0,
                 itemBuilder: (context, index) {
                   final booking = bookings![index];
                   final type = booking['type'];
@@ -124,30 +119,28 @@ class _WaitingState extends State<Waiting> {
                       final providerImage = providerData['image_url'];
 
                       return ListTile(
-                        onTap: () {
-                          if (status == 1) {
-                            // Navigate to the payment page
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return Payment(
-                                  provider_id: providerId,
-                                  package_id:
-                                      packageId, // Assuming you have a variable named packageId
-                                  type: type,
-                                  description: description,
-                                );
-                              }),
-                            );
-                          }
-                        },
                         title: Text(providerName),
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(providerImage),
                           radius: 30,
                         ),
                         trailing: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (status == 1) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return MyBookingsStatus(
+                                    providerName: providerName,
+                                    providerImage: providerImage,
+                                    packageId: booking['package_id'],
+                                    providerId: providerId,
+                                    type:type,
+                                  );
+                                }),
+                              );
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                               vertical: 8.0,
