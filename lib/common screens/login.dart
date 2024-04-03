@@ -98,6 +98,7 @@ Future<void> gatData() async {
             if(usershot.docs.isNotEmpty){
   var userid = usershot.docs[0].id;
   var useradress = usershot.docs[0]['Adress'];
+   var username= usershot.docs[0]['name'];
   var userDistrict = usershot.docs[0]['District'];
   var userState = usershot.docs[0]['state'];
   var userpin = usershot.docs[0]['pin'];
@@ -105,6 +106,7 @@ Future<void> gatData() async {
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
   sp.setString('adress',useradress);
+  sp.setString('name',username);
   sp.setString('district',userDistrict);
   sp.setString('state',userState);
   sp.setString('pin',userpin);
@@ -237,13 +239,13 @@ sp.setString('name', username);
             .get();
              if(rentalshot.docs.isNotEmpty){
   var userid = rentalshot.docs[0].id;
-    var username = rentalshot.docs[0]['name'];
-    var image_url = rentalshot.docs[0]['image'];
+    // var username = rentalshot.docs[0]['name'];
+    // var image_url = rentalshot.docs[0]['image'];
 
   SharedPreferences sp = await SharedPreferences.getInstance();
   sp.setString('uid',userid);
-  sp.setString('name', username);
-  sp.setString('image',image_url);
+  // sp.setString('name', username);
+  // sp.setString('image',image_url);
 
 
               if (rentalshot.docs.isNotEmpty) {
@@ -379,7 +381,7 @@ sp.setString('name', username);
                         
                           if (fkey.currentState!.validate()) {
                             print('-------------');
-                            gatData();
+                           await gatData();
                             //  Navigator.push(context, MaterialPageRoute(builder:(context) {
                             //       return Navigationbar();
                             //     },));

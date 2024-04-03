@@ -14,9 +14,9 @@ class _ItemsState extends State<Items> {
   Widget build(BuildContext context) {
     return   Scaffold(
       body:  InkWell(onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return Rental_Upload_pic();
-                          },));
+        // Navigator.push(context, MaterialPageRoute(builder:(context) {
+        //                     return Rental_Upload_pic();
+        //                   },));
       },
         child: ResponsiveGridList(
                       desiredItemWidth: 150,

@@ -52,7 +52,7 @@ class _WaitingState extends State<Waiting> {
 
     // Determine the collection based on the type
     if (type == 'mehandi') {
-      collectionName = 'mehandi_register';
+      collectionName = 'Mehandi register';
     } else if (type == 'designer') {
       collectionName = 'designer register';
     } else if (type == 'makeup') {

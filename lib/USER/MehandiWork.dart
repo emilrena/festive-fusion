@@ -33,7 +33,7 @@ Future<void> _loadImages() async {
   try {
     print('.........................');
     final snapshot = await FirebaseFirestore.instance
-        .collection('designer_upload_image')
+        .collection('mehandi_upload_image')
         .where('mehandi_id', isEqualTo: widget.mehandi_id)
         .get();
     setState(() {

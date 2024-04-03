@@ -1,8 +1,10 @@
-import 'package:festive_fusion/Rental/Rental_Message.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_grid/responsive_grid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'Rental_UploadImage.dart'; // Assuming Rental_Upload_pic is the screen to upload the image
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RentHome extends StatefulWidget {
   RentHome({Key? key});
@@ -12,27 +14,76 @@ class RentHome extends StatefulWidget {
 }
 
 class _RentHomeState extends State<RentHome> {
-  String selectedCategory = "Category 1"; // Initial category
-  XFile? pickedFile;
-  File? image;
+  final ImagePicker _picker = ImagePicker();
+  File? _image;
+  late String _userId;
+  List<String> _imageUrls = [];
+  bool _isLoading = false;
 
-  Future<void> _getImageFromGallery() async {
-    ImagePicker picker = ImagePicker();
-    pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
 
+  Future<void> _loadUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      if (pickedFile != null) {
-        image = File(pickedFile!.path);
-      }
+      _userId = prefs.getString('uid') ?? '';
     });
-    print(image);
+    _loadImages();
+  }
+
+  Future<void> _getImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+
+      if (_image != null && await _image!.exists()) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Rental_Upload_pic(imageFile: _image!),
+          ),
+        );
+      } else {
+        print('Image file does not exist or is invalid.');
+      }
+    } else {
+      print('No image picked.');
+    }
+  }
+
+  Future<void> _loadImages() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('rental_upload_image')
+          .where('user_id', isEqualTo: _userId)
+          .get();
+
+      setState(() {
+        _imageUrls =
+            snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+      });
+    } catch (error) {
+      print('Error loading images: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [Icon(Icons.add)],
         title: Text(
           'HOME',
           style: TextStyle(color: Colors.deepPurple),
@@ -40,6 +91,7 @@ class _RentHomeState extends State<RentHome> {
       ),
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 30),
@@ -60,72 +112,42 @@ class _RentHomeState extends State<RentHome> {
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 30),
-                  child: DropdownButton<String>(
-                    value: selectedCategory,
-                    items: [
-                      DropdownMenuItem(
-                        child: Text('Category 1'),
-                        value: 'Category 1',
-                      ),
-                      DropdownMenuItem(
-                        child: Text('Category 2'),
-                        value: 'Category 2',
-                      ),
-                      // Add more categories as needed
-                    ],
-                    onChanged: (value) {
-                      if (value == 'Category 1') {
-                        _getImageFromGallery();
-                      }
-                      setState(() {
-                        selectedCategory = value!;
-                      });
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 40),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return Rental_Message();
-                      }));
-                    },
-                    child: Text(
-                      '   ENQUIRY   ',
-                      style: TextStyle(
-                        color: Color.fromARGB(221, 126, 10, 106),
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.6)),
-                    ),
-                  ),
+                ElevatedButton(
+                  onPressed: _getImage,
+                  child: Text('Upload Image'),
                 ),
               ],
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 20),
             Expanded(
-              child: ResponsiveGridList(
-                desiredItemWidth: 150,
-                minSpacing: 10,
-                children: List.generate(20, (index) => index + 1).map((i) {
-                  return Container(
-                    height: 150,
-                    alignment: Alignment(0, 0),
-                    color: Color.fromARGB(255, 165, 146, 159),
-                    child: image != null ? Image.file(image!) : Text(i.toString()),
-                  );
-                }).toList(),
+              child: Column(
+                children: [
+                  _isLoading
+                      ? CircularProgressIndicator()
+                      : Expanded(
+                          child: GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: _imageUrls.length,
+                            itemBuilder: (context, index) {
+                              return Image.network(
+                                _imageUrls[index],
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                        ),
+                ],
               ),
-            )
+            ),
           ],
         ),
       ),
