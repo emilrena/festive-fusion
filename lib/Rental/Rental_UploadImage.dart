@@ -126,7 +126,7 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
                       'category': category,
                       'rate': rate,
                       'image_url': imageUrl,
-                      'user_id': a, // Adding user_id
+                      'rental_id': a, // Adding user_id
                     });
                     print('Data uploaded successfully');
                   } else {

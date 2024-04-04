@@ -1,7 +1,8 @@
+import 'package:festive_fusion/Rental/Rental_Message.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'Rental_UploadImage.dart'; // Assuming Rental_Upload_pic is the screen to upload the image
+import 'Rental_UploadImage.dart'; 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,12 +65,12 @@ class _RentHomeState extends State<RentHome> {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('rental_upload_image')
-          .where('user_id', isEqualTo: _userId)
+          .where('rental_id', isEqualTo: _userId)
           .get();
 
       setState(() {
         _imageUrls =
-            snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+            snapshot.docs.map((doc) => doc['image_url'] as String).toList();
       });
     } catch (error) {
       print('Error loading images: $error');
@@ -78,6 +79,15 @@ class _RentHomeState extends State<RentHome> {
         _isLoading = false;
       });
     }
+  }
+
+  void _navigateToRentalMessagePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Rental_Message(),
+      ),
+    );
   }
 
   @override
@@ -114,39 +124,39 @@ class _RentHomeState extends State<RentHome> {
             ),
             SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: _getImage,
                   child: Text('Upload Image'),
                 ),
+                ElevatedButton(
+                  onPressed: _navigateToRentalMessagePage,
+                  child: Text('Enquiry'),
+                ),
               ],
             ),
             SizedBox(height: 20),
             Expanded(
-              child: Column(
-                children: [
-                  _isLoading
-                      ? CircularProgressIndicator()
-                      : Expanded(
-                          child: GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                            ),
-                            itemCount: _imageUrls.length,
-                            itemBuilder: (context, index) {
-                              return Image.network(
-                                _imageUrls[index],
-                                fit: BoxFit.cover,
-                              );
-                            },
+              child: _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : _imageUrls.isEmpty
+                      ? Center(child: Text('No images available'))
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
                           ),
+                          itemCount: _imageUrls.length,
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                              _imageUrls[index],
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
-                ],
-              ),
             ),
           ],
         ),
@@ -154,3 +164,5 @@ class _RentHomeState extends State<RentHome> {
     );
   }
 }
+
+

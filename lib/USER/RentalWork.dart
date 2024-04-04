@@ -1,16 +1,50 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Rental/Rental_Message.dart';
 import 'package:festive_fusion/USER/RentalCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class RentalWorkView extends StatefulWidget {
-  const RentalWorkView({super.key});
+  final String rental_id; 
+  const RentalWorkView({Key? key, required this.rental_id, }) : super(key: key);
 
   @override
   State<RentalWorkView> createState() => _RentalWorkViewState();
 }
 
 class _RentalWorkViewState extends State<RentalWorkView> {
+  late List<String> _image_urls;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImages();
+  }
+Future<void> _loadImages() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    print('.........................');
+    final snapshot = await FirebaseFirestore.instance
+        .collection('rental_upload_imagee')
+        .where('rental_id', isEqualTo: widget.rental_id)
+        .get();
+    setState(() {
+      _image_urls = snapshot.docs.map((doc) => doc['image_url'] as String).toList();
+      print(_image_urls);
+    });
+  } catch (error) {
+    print('Error loading images: $error');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +91,7 @@ class _RentalWorkViewState extends State<RentalWorkView> {
                 child: ElevatedButton
                 (onPressed: (){
                   Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return RentalCategory();
+                            return RentalCategory(rental_id: widget.rental_id,);
                           },));
                 }, child: Text('CATEGORY ',style: TextStyle(color: Colors.black87),),
                 style: ElevatedButton.styleFrom(
@@ -71,18 +105,25 @@ class _RentalWorkViewState extends State<RentalWorkView> {
           ),
           SizedBox(height: 10,),
           Expanded(
-            child: ResponsiveGridList(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ResponsiveGridList(
                     desiredItemWidth: 150,
                     minSpacing: 10,
-                    children: List.generate(20, (index)=> index+1).map((i) {
-            return Container(
-              height: 150,
-              alignment: Alignment(0, 0),
-              color: Color.fromARGB(255, 165, 146, 159),
-              child: Text(i.toString()),
-            );
-                    }).toList()
-                ),
+                    children: _image_urls.map((image_url) {
+                      return Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(image_url),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
           )
         ],
       ),

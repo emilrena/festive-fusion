@@ -1,9 +1,11 @@
-import 'package:festive_fusion/Rental/Rental_UploadImage.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_grid/responsive_grid.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Items extends StatefulWidget {
-  const Items({super.key});
+  final String rentalId;
+  final String category;
+
+  const Items({required this.rentalId, required this.category, Key? key}) : super(key: key);
 
   @override
   State<Items> createState() => _ItemsState();
@@ -12,25 +14,40 @@ class Items extends StatefulWidget {
 class _ItemsState extends State<Items> {
   @override
   Widget build(BuildContext context) {
-    return   Scaffold(
-      body:  InkWell(onTap: (){
-        // Navigator.push(context, MaterialPageRoute(builder:(context) {
-        //                     return Rental_Upload_pic();
-        //                   },));
-      },
-        child: ResponsiveGridList(
-                      desiredItemWidth: 150,
-                      minSpacing: 10,
-                      children: List.generate(20, (index)=> index+1).map((i) {
-              return Container(
-                height: 150,
-                alignment: Alignment(0, 0),
-                color: Color.fromARGB(255, 165, 146, 159),
-                child: Text(i.toString()),
-              );
-                      }).toList()
-                  ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Items - ${widget.category}'),
       ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('rental_upload_image')
+            .where('rental_id', isEqualTo: widget.rentalId)
+            .where('category', isEqualTo: widget.category)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('No images available'));
+          }
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var imageUrl = snapshot.data!.docs[index]['image_url'];
+              return Image.network(imageUrl);
+            },
           );
+        },
+      ),
+    );
   }
 }
