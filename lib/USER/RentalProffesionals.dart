@@ -41,13 +41,13 @@ class _RentalProffesional_ViewState
   // Function to fetch data from Firestore including feedback ratings
   Future<List<Map<String, dynamic>>> getData() async {
     try {
-      final designerSnapshot = await FirebaseFirestore.instance
+      final rentalSnapshot = await FirebaseFirestore.instance
           .collection('Rental register')
           .get();
 
       // Fetch feedback ratings for each designer
       final List<Map<String, dynamic>> rentalWithRatings = [];
-      for (final rentalDoc in designerSnapshot.docs) {
+      for (final rentalDoc in rentalSnapshot.docs) {
         final rentalData = rentalDoc.data() as Map<String, dynamic>;
         final rentalId = rentalDoc.id;
 
@@ -144,6 +144,7 @@ class _RentalProffesional_ViewState
                                 ),
                           trailing: ElevatedButton(
                             onPressed: () {
+                              print("rental");
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

@@ -21,12 +21,9 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
 
   List<String> _categories = [
     'Jewellery',
-    'Gown',
-    'Lehenga',
-    'Shirt',
-    'Sharara',
+    'Bridal Dress',
     'Dupatta',
-    'Coat',
+    'Groom Dress',
   ];
 
   String? _selectedCategory;

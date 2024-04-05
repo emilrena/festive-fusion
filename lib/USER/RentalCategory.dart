@@ -80,26 +80,26 @@ class _RentalCategoryState extends State<RentalCategory> {
               children: [
                 CategoryCard(
                   imagePath: 'Assets/rental.jpg',
-                  category: 'Jewelry',
-                  rentalId: widget.rental_id,
+                  category: 'Jewellery',
+                  rental_id: widget.rental_id,
                 ),
                 SizedBox(width: 20),
                 CategoryCard(
                   imagePath: 'Assets/duppatta.jpg',
                   category: 'Dupatta',
-                  rentalId: widget.rental_id,
+                  rental_id: widget.rental_id,
                 ),
                 SizedBox(width: 20),
                 CategoryCard(
                   imagePath: 'Assets/bridal.jpg',
                   category: 'Bridal Dress',
-                  rentalId: widget.rental_id,
+                 rental_id: widget.rental_id,
                 ),
                 SizedBox(width: 20),
                 CategoryCard(
                   imagePath: 'Assets/groom.jpg',
                   category: 'Groom Dress',
-                  rentalId: widget.rental_id,
+                  rental_id: widget.rental_id,
                 ),
               ],
             ),
@@ -113,12 +113,12 @@ class _RentalCategoryState extends State<RentalCategory> {
 class CategoryCard extends StatelessWidget {
   final String imagePath;
   final String category;
-  final String rentalId;
+  final String rental_id;
 
   const CategoryCard({
     required this.imagePath,
     required this.category,
-    required this.rentalId,
+    required this.rental_id,
   });
 
   @override
@@ -128,7 +128,7 @@ class CategoryCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) {
-            return Items(rentalId: rentalId, category: category);
+            return Items(rental_id: rental_id, category: category);
           }),
         );
       },

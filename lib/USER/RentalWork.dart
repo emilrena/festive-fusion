@@ -6,7 +6,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 
 class RentalWorkView extends StatefulWidget {
   final String rental_id; 
-  const RentalWorkView({Key? key, required this.rental_id, }) : super(key: key);
+  const RentalWorkView({Key? key, required this.rental_id}) : super(key: key);
 
   @override
   State<RentalWorkView> createState() => _RentalWorkViewState();
@@ -21,29 +21,29 @@ class _RentalWorkViewState extends State<RentalWorkView> {
     super.initState();
     _loadImages();
   }
-Future<void> _loadImages() async {
-  setState(() {
-    _isLoading = true;
-  });
 
-  try {
-    print('.........................');
-    final snapshot = await FirebaseFirestore.instance
-        .collection('rental_upload_imagee')
-        .where('rental_id', isEqualTo: widget.rental_id)
-        .get();
+  Future<void> _loadImages() async {
     setState(() {
-      _image_urls = snapshot.docs.map((doc) => doc['image_url'] as String).toList();
-      print(_image_urls);
+      _isLoading = true;
     });
-  } catch (error) {
-    print('Error loading images: $error');
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('rental_upload_image')
+          .where('rental_id', isEqualTo: widget.rental_id)
+          .get();
+          
+      setState(() {
+        _image_urls = snapshot.docs.map((doc) => doc['image_url'] as String).toList();
+      });
+    } catch (error) {
+      print('Error loading images: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,6 @@ Future<void> _loadImages() async {
           child: Padding(
             padding: const EdgeInsets.only(right: 50),
             child: Text('WORK',style: TextStyle(color: Colors.deepPurple),
-            
             ),
           ),
         ),
@@ -77,28 +76,32 @@ Future<void> _loadImages() async {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 40),
-                child: ElevatedButton
-                (onPressed: (){}, child: Text('WORKS',style: TextStyle(color: Colors.deepPurple),),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0.0)
+                child: ElevatedButton(
+                  onPressed: (){},
+                  child: Text('WORKS',style: TextStyle(color: Colors.deepPurple),
                   ),
-                ),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0.0),
+                    ),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 60),
-                child: ElevatedButton
-                (onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return RentalCategory(rental_id: widget.rental_id,);
-                          },));
-                }, child: Text('CATEGORY ',style: TextStyle(color: Colors.black87),),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0.0)
+                child: ElevatedButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder:(context) {
+                              return RentalCategory(rental_id: widget.rental_id,);
+                            },));
+                  },
+                  child: Text('CATEGORY ',style: TextStyle(color: Colors.black87),
                   ),
-                ),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0.0),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -109,21 +112,25 @@ Future<void> _loadImages() async {
                 ? Center(
                     child: CircularProgressIndicator(),
                   )
-                : ResponsiveGridList(
-                    desiredItemWidth: 150,
-                    minSpacing: 10,
-                    children: _image_urls.map((image_url) {
-                      return Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(image_url),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                : (_image_urls != null && _image_urls.isNotEmpty)
+                    ? ResponsiveGridList(
+                        desiredItemWidth: 150,
+                        minSpacing: 10,
+                        children: _image_urls.map((image_url) {
+                          return Container(
+                            height: 150,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(image_url),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    : Center(
+                        child: Text("No images to display."),
+                      ),
           )
         ],
       ),
