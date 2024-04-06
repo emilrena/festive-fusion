@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:festive_fusion/ADMIN/DesignerArtistFullView.dart';
 
 class AdminDesignerView extends StatefulWidget {
   const AdminDesignerView({Key? key}) : super(key: key);
@@ -40,7 +40,10 @@ class _AdminDesignerViewState extends State<AdminDesignerView> {
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: TextField(
                 controller: search,
-                style: TextStyle(fontSize: 8),
+                style: TextStyle(fontSize: 16),
+                onChanged: (value) {
+                  setState(() {}); // Trigger rebuild on text change
+                },
                 decoration: InputDecoration(
                   labelText: 'SEARCH',
                   border: OutlineInputBorder(),
@@ -53,18 +56,24 @@ class _AdminDesignerViewState extends State<AdminDesignerView> {
             Expanded(
               child: FutureBuilder(
                 future: getData(),
-                builder: (context,
-                    AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                builder:
+                    (context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
+                    final filteredData = snapshot.data!.where((document) {
+                      final data = document.data() as Map<String, dynamic>;
+                      final name = data['name'] ?? '';
+                      return name
+                          .toLowerCase()
+                          .contains(search.text.toLowerCase());
+                    }).toList();
                     return ListView.builder(
-                      itemCount: snapshot.data?.length ?? 0,
+                      itemCount: filteredData.length,
                       itemBuilder: (context, index) {
-                        final document = snapshot.data![index];
-                        final id = snapshot.data![index].id;
+                        final document = filteredData[index];
                         final data = document.data() as Map<String, dynamic>;
                         final imageUrl = data['image_url'];
                         return ListTile(
@@ -74,8 +83,7 @@ class _AdminDesignerViewState extends State<AdminDesignerView> {
                             width: 5,
                             child: RatingBar.builder(
                               itemSize: 20,
-                              initialRating:
-                                  (data['rating'] ?? 0).toDouble(),
+                              initialRating: (data['rating'] ?? 0).toDouble(),
                               minRating: 1,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
@@ -104,7 +112,8 @@ class _AdminDesignerViewState extends State<AdminDesignerView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DesignerFullProfile(designer_id:snapshot.data![index].id,
+                                  builder: (context) => DesignerFullProfile(
+                                    designer_id: document.id,
                                     // id: id,
                                     // data: data,
                                   ),
@@ -119,8 +128,7 @@ class _AdminDesignerViewState extends State<AdminDesignerView> {
                             child: Text(
                               'view',
                               style: TextStyle(
-                                color:
-                                    const Color.fromARGB(255, 231, 234, 236),
+                                color: const Color.fromARGB(255, 231, 234, 236),
                                 fontSize: 10,
                               ),
                             ),

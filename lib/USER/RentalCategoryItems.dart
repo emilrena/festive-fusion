@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Items extends StatefulWidget {
   final String rental_id;
   final String category;
 
-  const Items({required this.rental_id, required this.category, Key? key}) : super(key: key);
+  const Items({required this.rental_id, required this.category, Key? key})
+      : super(key: key);
 
   @override
   State<Items> createState() => _ItemsState();
@@ -116,7 +118,8 @@ class _FullImageViewState extends State<FullImageView> {
   void _loadUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userId = prefs.getString('user_id') ?? ''; // Change 'user_id' to your preference
+      _userId = prefs.getString('user_id') ??
+          ''; // Change 'user_id' to your preference
     });
   }
 
@@ -169,12 +172,12 @@ class _FullImageViewState extends State<FullImageView> {
                                 context: context,
                                 initialDate: _selectedDate,
                                 firstDate: DateTime.now(),
-                                lastDate: DateTime.now().add(Duration(days: 365)),
+                                lastDate:
+                                    DateTime.now().add(Duration(days: 365)),
                               );
                               if (selectedDate != null) {
                                 setState(() {
                                   _selectedDate = selectedDate;
-                                  _showPayAmountButton = true;
                                 });
                               }
                             },
@@ -192,24 +195,25 @@ class _FullImageViewState extends State<FullImageView> {
                               if (selectedTime != null) {
                                 setState(() {
                                   _selectedTime = selectedTime;
-                                  _showBookNowButton = true;
+                                  _showPayAmountButton = true;
                                 });
                               }
                             },
                             child: Text('Select Time'),
                           ),
+                          SizedBox(height: 8),
+                          if (_showPayAmountButton)
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showBookNowButton = true;
+                                });
+                              },
+                              child: Text('Pay Amount'),
+                            ),
                         ],
                       ),
                       actions: [
-                        if (_showPayAmountButton)
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _showBookNowButton = true;
-                              });
-                            },
-                            child: Text('Pay Amount'),
-                          ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -218,19 +222,31 @@ class _FullImageViewState extends State<FullImageView> {
                         ),
                         if (_showBookNowButton)
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                               SharedPreferences sp = await SharedPreferences.getInstance();
+      var userId = sp.getString('uid') ?? '';
                               // Implement booking logic here
                               // For example, save booking to Firestore
-                              FirebaseFirestore.instance.collection('rental_booking').add({
+                              await FirebaseFirestore.instance
+                                  .collection('rental_booking')
+                                  .add({
                                 'imageUrl': widget.imageUrl,
                                 'description': widget.description,
                                 'rate': widget.rate,
                                 'date': _selectedDate.toString(),
                                 'time': _selectedTime.format(context),
-                                'user_id': _userId,
+                                'user_id': userId,
                               });
-                              Navigator.of(context).pop();
-                              // Show a success message or navigate to a confirmation screen
+                              Fluttertoast.showToast(
+                                msg: "Successfully booked!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                             Navigator.pop(context);
                             },
                             child: Text('Book Now'),
                           ),
@@ -248,3 +264,4 @@ class _FullImageViewState extends State<FullImageView> {
     );
   }
 }
+

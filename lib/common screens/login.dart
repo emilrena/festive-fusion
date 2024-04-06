@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/ADMIN/AdminNavigationBar.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
+import 'package:festive_fusion/Designers/Designer_registration.dart';
+import 'package:festive_fusion/Makeup/Makeup_registration.dart';
 import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:festive_fusion/Navigationbar.dart';
 import 'package:festive_fusion/Rental/RentalNav.dart';
+import 'package:festive_fusion/Rental/Rental_Registration.dart';
 import 'package:festive_fusion/USER/functions.dart';
 import 'package:festive_fusion/mehandi/MehandiNav.dart';
+import 'package:festive_fusion/mehandi/Mehandi_registration.dart';
 import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,12 +29,10 @@ class _LoginState extends State<Login> {
   var Pass = TextEditingController();
   final fkey = GlobalKey<FormState>();
 
-  
-Future<void> gatData() async {
-   print('object');
-   // admin login
-  if (widget.type == 'admin') {
-   
+  Future<void> gatData() async {
+    print('object');
+    // admin login
+    if (widget.type == 'admin') {
       if (Email.text == 'admin@gmail.com' && Pass.text == 'admin123') {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) {
@@ -40,33 +42,32 @@ Future<void> gatData() async {
       }
     }
     //mehandi login
-    if(widget.type=='mehandi')  {
+    if (widget.type == 'mehandi') {
       print('Mehendi');
-      final QuerySnapshot mechSnapshot =
-        await FirebaseFirestore.instance
-            .collection('Mehandi register')
-            .where('email', isEqualTo: Email.text)
-            .where('password', isEqualTo: Pass.text)
-            // .where('status', isEqualTo: 1)
-            .get();
-             if(mechSnapshot.docs.isNotEmpty){
-  var userid = mechSnapshot.docs[0].id;
-   var image_url = mechSnapshot.docs[0]['image_url'];
-  var username = mechSnapshot.docs[0]['name'];
-  SharedPreferences sp = await SharedPreferences.getInstance();
-  sp.setString('uid',userid);
-  sp.setString('name', username);
-  sp.setString('image_url',image_url);
+      final QuerySnapshot mechSnapshot = await FirebaseFirestore.instance
+          .collection('Mehandi register')
+          .where('email', isEqualTo: Email.text)
+          .where('password', isEqualTo: Pass.text)
+          // .where('status', isEqualTo: 1)
+          .get();
+      if (mechSnapshot.docs.isNotEmpty) {
+        var userid = mechSnapshot.docs[0].id;
+        var image_url = mechSnapshot.docs[0]['image_url'];
+        var username = mechSnapshot.docs[0]['name'];
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString('uid', userid);
+        sp.setString('name', username);
+        sp.setString('image_url', image_url);
 
-              if (mechSnapshot.docs.isNotEmpty) {
+        if (mechSnapshot.docs.isNotEmpty) {
+          Fluttertoast.showToast(msg: 'Login Successful ');
 
-      Fluttertoast.showToast(msg: 'Login Successful ');
-     
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return MehandiNav();
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return MehandiNav();
           }));
-              } } 
-       else {
+        }
+      } else {
         // Show an error message to the user
         showDialog(
           context: context,
@@ -85,42 +86,41 @@ Future<void> gatData() async {
     }
     //user login
 
-    if(widget.type=='user')  {
+    if (widget.type == 'user') {
       print('user');
-      final QuerySnapshot usershot =
-        await FirebaseFirestore.instance
-            .collection('User_Registration')
-            .where('email', isEqualTo: Email.text)
-            .where('password', isEqualTo: Pass.text)
-            // .where('status', isEqualTo: 1)
-            .get();
+      final QuerySnapshot usershot = await FirebaseFirestore.instance
+          .collection('User_Registration')
+          .where('email', isEqualTo: Email.text)
+          .where('password', isEqualTo: Pass.text)
+          // .where('status', isEqualTo: 1)
+          .get();
 
-            if(usershot.docs.isNotEmpty){
-  var userid = usershot.docs[0].id;
-  var useradress = usershot.docs[0]['Adress'];
-   var username= usershot.docs[0]['name'];
-  var userDistrict = usershot.docs[0]['District'];
-  var userState = usershot.docs[0]['state'];
-  var userpin = usershot.docs[0]['pin'];
-  var image_url = usershot.docs[0]['image_url'];
-  SharedPreferences sp = await SharedPreferences.getInstance();
-  sp.setString('uid',userid);
-  sp.setString('adress',useradress);
-  sp.setString('name',username);
-  sp.setString('district',userDistrict);
-  sp.setString('state',userState);
-  sp.setString('pin',userpin);
-  sp.setString('image_url',image_url);
+      if (usershot.docs.isNotEmpty) {
+        var userid = usershot.docs[0].id;
+        var useradress = usershot.docs[0]['Adress'];
+        var username = usershot.docs[0]['name'];
+        var userDistrict = usershot.docs[0]['District'];
+        var userState = usershot.docs[0]['state'];
+        var userpin = usershot.docs[0]['pin'];
+        var image_url = usershot.docs[0]['image_url'];
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString('uid', userid);
+        sp.setString('adress', useradress);
+        sp.setString('name', username);
+        sp.setString('district', userDistrict);
+        sp.setString('state', userState);
+        sp.setString('pin', userpin);
+        sp.setString('image_url', image_url);
 
-              if (usershot.docs.isNotEmpty) {
+        if (usershot.docs.isNotEmpty) {
+          Fluttertoast.showToast(msg: 'Login Successful ');
 
-      Fluttertoast.showToast(msg: 'Login Successful ');
-     
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Navigationbar();
-         }));
-    } }
-       else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return Navigationbar();
+          }));
+        }
+      } else {
         // Show an error message to the user
         showDialog(
           context: context,
@@ -137,35 +137,34 @@ Future<void> gatData() async {
         );
       }
     }
-   // makeup login
-    if(widget.type=='makeup')  {
+    // makeup login
+    if (widget.type == 'makeup') {
       print('__________makeup');
-      final QuerySnapshot makeupshot =
-        await FirebaseFirestore.instance
-            .collection('Makeup register')
-            .where('email', isEqualTo: Email.text)
-            .where('password', isEqualTo: Pass.text)
-            // .where('status', isEqualTo: 1)
-            .get();
-             if(makeupshot.docs.isNotEmpty){
-              print('_________________________________');
-  var userid = makeupshot.docs[0].id;
-   var image_url = makeupshot.docs[0]['image_url'];
-  var username = makeupshot.docs[0]['name'];
-  print('userid:_____$userid');
-  SharedPreferences sp = await SharedPreferences.getInstance();
-  sp.setString('uid',userid);
-sp.setString('name', username);
-  sp.setString('image_url',image_url);
-              if (makeupshot.docs.isNotEmpty) {
+      final QuerySnapshot makeupshot = await FirebaseFirestore.instance
+          .collection('Makeup register')
+          .where('email', isEqualTo: Email.text)
+          .where('password', isEqualTo: Pass.text)
+          // .where('status', isEqualTo: 1)
+          .get();
+      if (makeupshot.docs.isNotEmpty) {
+        print('_________________________________');
+        var userid = makeupshot.docs[0].id;
+        var image_url = makeupshot.docs[0]['image_url'];
+        var username = makeupshot.docs[0]['name'];
+        print('userid:_____$userid');
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString('uid', userid);
+        sp.setString('name', username);
+        sp.setString('image_url', image_url);
+        if (makeupshot.docs.isNotEmpty) {
+          Fluttertoast.showToast(msg: 'Login Successful ');
 
-      Fluttertoast.showToast(msg: 'Login Successful ');
-     
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return MakeupNav();
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return MakeupNav();
           }));
-              } } 
-       else {
+        }
+      } else {
         // Show an error message to the user
         showDialog(
           context: context,
@@ -183,34 +182,33 @@ sp.setString('name', username);
       }
     }
     //Designer login
-     if(widget.type=='designer')  {
+    if (widget.type == 'designer') {
       print('designer');
-      final QuerySnapshot designershot =
-        await FirebaseFirestore.instance
-            .collection('designer register')
-            .where('email', isEqualTo: Email.text)
-            .where('password', isEqualTo: Pass.text)
-            // .where('status', isEqualTo: 1)
-            .get();
-             if(designershot.docs.isNotEmpty){
-  var userid = designershot.docs[0].id;
-  var image_url = designershot.docs[0]['image_url'];
-  var username = designershot.docs[0]['name'];
-  print('_____________$username');
-  SharedPreferences sp = await SharedPreferences.getInstance();
-  sp.setString('uid',userid);
-  sp.setString('name', username);
-  sp.setString('image_url',image_url);
+      final QuerySnapshot designershot = await FirebaseFirestore.instance
+          .collection('designer register')
+          .where('email', isEqualTo: Email.text)
+          .where('password', isEqualTo: Pass.text)
+          // .where('status', isEqualTo: 1)
+          .get();
+      if (designershot.docs.isNotEmpty) {
+        var userid = designershot.docs[0].id;
+        var image_url = designershot.docs[0]['image_url'];
+        var username = designershot.docs[0]['name'];
+        print('_____________$username');
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString('uid', userid);
+        sp.setString('name', username);
+        sp.setString('image_url', image_url);
 
-              if (designershot.docs.isNotEmpty) {
+        if (designershot.docs.isNotEmpty) {
+          Fluttertoast.showToast(msg: 'Login Successful ');
 
-      Fluttertoast.showToast(msg: 'Login Successful ');
-     
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return DesignerNav();
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return DesignerNav();
           }));
-             }} 
-       else {
+        }
+      } else {
         // Show an error message to the user
         showDialog(
           context: context,
@@ -228,35 +226,33 @@ sp.setString('name', username);
       }
     }
     //rental login
- if(widget.type=='rental')  {
+    if (widget.type == 'rental') {
       print('rental');
-      final QuerySnapshot rentalshot =
-        await FirebaseFirestore.instance
-            .collection('Rental register')
-            .where('email', isEqualTo: Email.text)
-            .where('password', isEqualTo: Pass.text)
-            // .where('status', isEqualTo: 1)
-            .get();
-             if(rentalshot.docs.isNotEmpty){
-  var userid = rentalshot.docs[0].id;
-    // var username = rentalshot.docs[0]['name'];
-    // var image_url = rentalshot.docs[0]['image'];
+      final QuerySnapshot rentalshot = await FirebaseFirestore.instance
+          .collection('Rental register')
+          .where('email', isEqualTo: Email.text)
+          .where('password', isEqualTo: Pass.text)
+          // .where('status', isEqualTo: 1)
+          .get();
+      if (rentalshot.docs.isNotEmpty) {
+        var userid = rentalshot.docs[0].id;
+        // var username = rentalshot.docs[0]['name'];
+        // var image_url = rentalshot.docs[0]['image'];
 
-  SharedPreferences sp = await SharedPreferences.getInstance();
-  sp.setString('uid',userid);
-  // sp.setString('name', username);
-  // sp.setString('image',image_url);
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString('uid', userid);
+        // sp.setString('name', username);
+        // sp.setString('image',image_url);
 
+        if (rentalshot.docs.isNotEmpty) {
+          Fluttertoast.showToast(msg: 'Login Successful ');
 
-              if (rentalshot.docs.isNotEmpty) {
-
-      Fluttertoast.showToast(msg: 'Login Successful ');
-     
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return RentalNav();
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return RentalNav();
           }));
-             }} 
-       else {
+        }
+      } else {
         // Show an error message to the user
         showDialog(
           context: context,
@@ -273,15 +269,7 @@ sp.setString('name', username);
         );
       }
     }
-
-}
-   
-    
-    
-    
-
-
-  
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +288,7 @@ sp.setString('name', username);
                     SizedBox(
                       height: 30,
                     ),
-                    Text('Festive Fusion',
+                    Text('Wed Vogue',
                         style: GoogleFonts.irishGrover(
                             color: const Color.fromARGB(255, 163, 33, 185),
                             fontSize: 30,
@@ -378,10 +366,9 @@ sp.setString('name', username);
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                        
                           if (fkey.currentState!.validate()) {
                             print('-------------');
-                           await gatData();
+                            await gatData();
                             //  Navigator.push(context, MaterialPageRoute(builder:(context) {
                             //       return Navigationbar();
                             //     },));
@@ -399,14 +386,41 @@ sp.setString('name', username);
                       height: 30,
                     ),
                     TextButton(
-                        onPressed: () {
+                      onPressed: () {
+                        if (widget.type == 'designer') {
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
-                              return Functions_user();
+                              return Desgn_Reg();
                             },
                           ));
-                        },
-                        child: Text('Not Registered yet?Sign up'))
+                        } else if (widget.type == 'mehandi') {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return Mehandi_Reg();
+                            },
+                          ));
+                        } else if (widget.type == 'makeup') {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return Makeup_Registration();
+                            },
+                          ));
+                        } else if (widget.type == 'rental') {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return Rental_Registration();
+                            },
+                          ));
+                        } else if (widget.type == 'user') {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return Registration();
+                            },
+                          ));
+                        }
+                      },
+                      child: Text('Not Registered yet? Sign up'),
+                    )
                   ],
                 ),
               ),

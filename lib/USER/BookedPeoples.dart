@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,20 +14,26 @@ class _MyBookingsState extends State<MyBookings> {
   List<QueryDocumentSnapshot>? bookings;
   String? userId;
   double rating = 0;
+  
 
   @override
   void initState() {
     super.initState();
     fetchUserId();
     fetchBookings('');
+    fetchRentalBookings(); 
+
   }
 
-  void fetchUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userId = prefs.getString('user_id') ?? '';
-    });
-  }
+ void fetchUserId() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? fetchedUserId = prefs.getString('user_id') ?? '';
+  print('Fetched userId: $fetchedUserId'); // Add this line
+  setState(() {
+    userId = fetchedUserId;
+  });
+}
+
 
   void fetchBookings(String type) async {
     Query query = FirebaseFirestore.instance
@@ -43,6 +49,35 @@ class _MyBookingsState extends State<MyBookings> {
       bookings = snapshot.docs;
     });
   }
+  void fetchRentalBookings() async {
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  String? userId = sp.getString('uid');
+
+  if (userId == null) {
+    print('User ID not found in shared preferences');
+    return;
+  }
+
+  print('Fetching rental bookings for user ID: $userId');
+  Query query = FirebaseFirestore.instance
+      .collection('rental_booking')
+      .where('user_id', isEqualTo: userId);
+      print(userId);
+
+  final QuerySnapshot snapshot = await query.get();
+
+  if (snapshot.docs.isEmpty) {
+    print('No rental bookings found for user ID: $userId');
+  } else {
+    print('Rental bookings found: ${snapshot.docs.length}');
+  }
+
+  setState(() {
+    var rentalBookings = snapshot.docs;
+  });
+}
+
+
 
   Future<DocumentSnapshot<Map<String, dynamic>>> fetchProviderDetails(
       String type, String providerId) async {
@@ -50,11 +85,11 @@ class _MyBookingsState extends State<MyBookings> {
 
     // Determine the collection based on the type
     if (type == 'mehandi') {
-      collectionName = 'mehandi_register';
+      collectionName = 'Mehandi register';
     } else if (type == 'designer') {
       collectionName = 'designer register';
     } else if (type == 'makeup') {
-      collectionName = 'makeup_register';
+      collectionName = 'Makeup register';
     } else {
       collectionName = 'default_collection';
     }
@@ -143,181 +178,235 @@ class _MyBookingsState extends State<MyBookings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('bookings'),
-      ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('My Bookings'),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: 'Booked'),
+              Tab(text: 'Rent'),
+            ],
+          ),
+        ),
+        body: TabBarView(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: TextField(
-                style: TextStyle(fontSize: 8),
-                decoration: InputDecoration(
-                    labelText: 'SEARCH', border: OutlineInputBorder()),
-              ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: bookings?.length ?? 0,
-                itemBuilder: (context, index) {
-                  final booking = bookings![index];
-                  final type = booking['type'];
-                  final providerId = booking['provider_id'];
+            Scaffold(
+              body: SafeArea(
+                child: bookings == null
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: bookings!.length,
+                        itemBuilder: (context, index) {
+                          final booking = bookings![index];
+                          final type = booking['type'];
+                          final providerId = booking['provider_id'];
 
-                  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                    future: fetchProviderDetails(type, providerId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      }
+                          return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            future: fetchProviderDetails(type, providerId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              }
 
-                      if (!snapshot.hasData || !snapshot.data!.exists) {
-                        // Handle case where provider details are not found
-                        return ListTile(
-                          title: Text('Provider details not found'),
-                        );
-                      }
+                              if (!snapshot.hasData || !snapshot.data!.exists) {
+                                // Handle case where provider details are not found
+                                return ListTile(
+                                  title: Text('Provider details not found'),
+                                );
+                              }
 
-                      final providerData = snapshot.data!;
-                      final providerName = providerData['name'];
-                      final providerImage = providerData['image_url'];
+                              final providerData = snapshot.data!;
+                              final providerName = providerData['name'];
+                              final providerImage = providerData['image_url'];
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            title: Text(providerName),
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(providerImage),
-                              radius: 30,
-                            ),
-                            trailing: ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text("Feedback"),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
+                              return Card(
+                                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        title: Text(
+                                          providerName,
+                                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                        ),
+                                        leading: CircleAvatar(
+                                          backgroundImage: NetworkImage(providerImage),
+                                          radius: 30,
+                                        ),
+                                        trailing: ElevatedButton(
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text("Feedback"),
+                                                  content: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Text("Rate your experience"),
+                                                      RatingBar.builder(
+                                                        initialRating: rating,
+                                                        minRating: 1,
+                                                        direction: Axis.horizontal,
+                                                        allowHalfRating: true,
+                                                        itemCount: 5,
+                                                        itemSize: 20,
+                                                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                        itemBuilder: (context, _) => Icon(
+                                                          Icons.star,
+                                                          color: Colors.purple,
+                                                        ),
+                                                        onRatingUpdate: (value) {
+                                                          setState(() {
+                                                            rating = value;
+                                                          });
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  actions: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        submitFeedback(providerId, providerName, type);
+                                                      },
+                                                      child: Text('Submit'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text('Cancel'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                                          child: Text('Feedback'),
+                                        ),
+                                      ),
+                                      SizedBox(height: 8), // Add some space between ListTile and buttons
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
-                                          Text("Rate your experience"),
-                                          RatingBar.builder(
-                                            initialRating: rating,
-                                            minRating: 1,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: true,
-                                            itemCount: 5,
-                                            itemSize: 20,
-                                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                            itemBuilder: (context, _) => Icon(
-                                              Icons.star,
-                                              color: Colors.purple,
-                                            ),
-                                            onRatingUpdate: (value) {
-                                              setState(() {
-                                                rating = value;
-                                              });
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  String complaint = '';
+                                                  return AlertDialog(
+                                                    title: Text("Complaint"),
+                                                    content: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Text("Please describe your complaint"),
+                                                        TextField(
+                                                          onChanged: (value) {
+                                                            complaint = value;
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            labelText: 'Complaint',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    actions: [
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          submitComplaint(providerId, type, complaint);
+                                                        },
+                                                        child: Text('Submit'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context).pop();
+                                                        },
+                                                        child: Text('Cancel'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
                                             },
+                                            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                            child: Text('Complaint'),
                                           ),
                                         ],
                                       ),
-                                      actions: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            submitFeedback(providerId, providerName, type);
-                                          },
-                                          child: Text('Submit'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text('Cancel'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(255, 88, 40, 172),
-                              ),
-                              child: Text(
-                                'FEEDBACK',
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 107, 10, 86),
-                                    fontSize: 10),
-                              ),
-                            ),
-                          ),
-                          ListTile(
-                            title: Text(''),
-                            trailing: ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    String complaint = '';
-                                    return AlertDialog(
-                                      title: Text("Complaint"),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text("Please describe your complaint"),
-                                          TextField(
-                                            onChanged: (value) {
-                                              complaint = value;
-                                            },
-                                            decoration: InputDecoration(
-                                              labelText: 'Complaint',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      actions: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            submitComplaint(providerId, type, complaint);
-                                          },
-                                          child: Text('Submit'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text('Cancel'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              child: Text(
-                                'COMPLAINT',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
               ),
             ),
+            RentTabContent(userId: userId),
           ],
         ),
       ),
+    );
+  }
+}
+
+class RentTabContent extends StatelessWidget {
+  final String? userId;
+
+  RentTabContent({Key? key, this.userId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (userId == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    return FutureBuilder<QuerySnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('rental_bookings')
+          .where('user_id', isEqualTo: userId)
+          .get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          print('No rental bookings found.');
+          return Center(child: Text('No rental bookings found.'));
+        }
+
+        print('Rental bookings found: ${snapshot.data!.docs.length}');
+        return ListView.builder(
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (context, index) {
+            final rental = snapshot.data!.docs[index];
+            final date = rental['date'] ?? '';
+            final description = rental['description'] ?? '';
+            final imageUrl = rental['imageUrl'] ?? '';
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Date: $date'),
+                  Text('Description: $description'),
+                  Image.network(imageUrl),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
