@@ -17,22 +17,30 @@ class RentHome extends StatefulWidget {
 class _RentHomeState extends State<RentHome> {
   final ImagePicker _picker = ImagePicker();
   File? _image;
-  late String _userId;
+  String? _userId;
+  String? _userName;
+  dynamic _userImageUrl; // Updated declaration
+
   List<String> _imageUrls = [];
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadUserId();
+    _loadUserData();
+    _loadImages();
   }
 
-  Future<void> _loadUserId() async {
+  Future<void> _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _userId = prefs.getString('uid') ?? '';
+      _userName = prefs.getString('name') ?? '';
+      // Load user image URL from shared preferences
+      String? imageUrl = prefs.getString('image_url');
+      // Set the image URL as the background image for CircleAvatar
+      _userImageUrl = imageUrl != null ? NetworkImage(imageUrl) : AssetImage('Assets/p4.jpg');
     });
-    _loadImages();
   }
 
   Future<void> _getImage() async {
@@ -55,6 +63,15 @@ class _RentHomeState extends State<RentHome> {
     } else {
       print('No image picked.');
     }
+  }
+
+  void _navigateToRentalMessagePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Rental_Message(),
+      ),
+    );
   }
 
   Future<void> _loadImages() async {
@@ -81,15 +98,6 @@ class _RentHomeState extends State<RentHome> {
     }
   }
 
-  void _navigateToRentalMessagePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Rental_Message(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,14 +118,32 @@ class _RentHomeState extends State<RentHome> {
                   Column(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage('Assets/p4.jpg'),
+                        backgroundImage: _userImageUrl, // Use the user's image URL here
                         radius: 35,
                       ),
                     ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 30),
-                    child: Text('RENA FATHIMA'),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome back,',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          _userName ?? '',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -164,5 +190,3 @@ class _RentHomeState extends State<RentHome> {
     );
   }
 }
-
-

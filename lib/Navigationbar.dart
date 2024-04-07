@@ -2,6 +2,7 @@ import 'package:festive_fusion/USER/BookedPeoples.dart';
 import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/Waiting.dart';
 import 'package:festive_fusion/USER/booking.dart';
+import 'package:festive_fusion/USER/edit_profile.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
 import 'package:festive_fusion/registration.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _NavigationbarState extends State<Navigationbar> {
     MyBookings(),
     Waiting(),
     UserHome(),
-    Registration(),
+    Edit(),
     
 
    ];

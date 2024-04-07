@@ -3,41 +3,40 @@ import 'package:flutter/material.dart';
 
 class DesignerFullProfile extends StatefulWidget {
   final String designer_id;
-  const DesignerFullProfile({Key? key, required this.designer_id, }) : super(key: key);
+  const DesignerFullProfile({Key? key, required this.designer_id}) : super(key: key);
 
   @override
   State<DesignerFullProfile> createState() => _DesignerFullProfileState();
 }
 
 class _DesignerFullProfileState extends State<DesignerFullProfile> {
-  late Future<DocumentSnapshot> _designerFuture;
+  Future<DocumentSnapshot>? _designerFuture;
 
   @override
   void initState() {
     super.initState();
-  //  _getDesignerData();
+    _designerFuture = _getDesignerData();
   }
 
- Future<DocumentSnapshot> _getDesignerData() async {
-  try {
-    print(widget.designer_id);
-    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-        .collection('designer register')
-        .doc(widget.designer_id)
-        .get();
-    return documentSnapshot;
-  } catch (e) {
-    print('Error fetching designer data: $e');
-    throw e; // Re-throw the error to handle it in the UI
+  Future<DocumentSnapshot> _getDesignerData() async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('designer register')
+          .doc(widget.designer_id)
+          .get();
+      return documentSnapshot;
+    } catch (e) {
+      print('Error fetching designer data: $e');
+      throw e; // Re-throw the error to handle it in the UI
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: FutureBuilder<DocumentSnapshot>(
-        future: _getDesignerData(),
+        future: _designerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -48,47 +47,91 @@ class _DesignerFullProfileState extends State<DesignerFullProfile> {
               return Center(child: Text('No data found'));
             }
             Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-             String imageUrl = data['image_url'] ?? ''; 
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
+            String imageUrl = data['image_url'] ?? '';
+            return Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage:NetworkImage(imageUrl),
+                      backgroundImage: NetworkImage(imageUrl),
                     ),
-                    SizedBox(height: 30),
-                    Text('Name: ${data['name']}'),
                     SizedBox(height: 20),
-                    Text('Email: ${data['email']}'),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: Table(
+                        columnWidths: const {
+                          0: FlexColumnWidth(1),
+                          1: FlexColumnWidth(2),
+                        },
+                        children: [
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('Name'))),
+                              TableCell(child: Text('${data['name']}')),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('Email'))),
+                              TableCell(child: Text('${data['email']}')),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('Gender'))),
+                              TableCell(child: Text('${data['gender']}')),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('Address'))),
+                              TableCell(child: Text('${data['Adress']}')),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('Experience'))),
+                              TableCell(child: Text('${data['experience']} years')),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('State'))),
+                              TableCell(child: Text('${data['state']}')),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              TableCell(child: Center(child: Text('Phone No'))),
+                              TableCell(child: Text('${data['mobile no']}')),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 20),
-                    Text('Gender: ${data['gender']}'),
-                    SizedBox(height: 20),
-                    Text('Address: ${data['address']}'),
-                    SizedBox(height: 20),
-                    Text('Experience: ${data['experience']} years'),
-                    SizedBox(height: 20),
-                    Text('State: ${data['state']}'),
-                    SizedBox(height: 20),
-                    Text('Phone No: ${data['phone']}'),
-                    SizedBox(height: 40),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        // Implement block functionality
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                        backgroundColor: Colors.deepPurple,
+                        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0), backgroundColor: Colors.red,
                       ),
                       child: Text(
-                        'BLOCK',
-                        style: TextStyle(color: Colors.white, fontSize: 10),
+                        'Block Designer',
+                        style: TextStyle(fontSize: 16.0),
                       ),
                     ),
                   ],
                 ),
-              ],
+              ),
             );
           }
         },

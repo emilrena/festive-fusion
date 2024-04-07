@@ -236,13 +236,12 @@ class _LoginState extends State<Login> {
           .get();
       if (rentalshot.docs.isNotEmpty) {
         var userid = rentalshot.docs[0].id;
-        // var username = rentalshot.docs[0]['name'];
-        // var image_url = rentalshot.docs[0]['image'];
-
+         var image_url = rentalshot.docs[0]['image_url'];
+        var username = rentalshot.docs[0]['name'];
         SharedPreferences sp = await SharedPreferences.getInstance();
-        sp.setString('uid', userid);
-        // sp.setString('name', username);
-        // sp.setString('image',image_url);
+        sp.setString('uid',  userid);
+        sp.setString('name', username);
+        sp.setString('image', image_url);
 
         if (rentalshot.docs.isNotEmpty) {
           Fluttertoast.showToast(msg: 'Login Successful ');
