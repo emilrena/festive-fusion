@@ -34,8 +34,8 @@ class _RentHomeState extends State<RentHome> {
   Future<void> _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userId = prefs.getString('uid') ?? '';
-      _userName = prefs.getString('name') ?? '';
+      _userId = prefs.getString('uid');
+      _userName = prefs.getString('name');
       // Load user image URL from shared preferences
       String? imageUrl = prefs.getString('image_url');
       // Set the image URL as the background image for CircleAvatar
@@ -100,93 +100,109 @@ class _RentHomeState extends State<RentHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'HOME',
-          style: TextStyle(color: Colors.deepPurple),
+    if (_userId == null) {
+      // If _userId is not initialized yet, return a loading indicator or an empty container
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'HOME',
+            style: TextStyle(color: Colors.deepPurple),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 30),
-              child: Row(
-                children: [
-                  Column(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: _userImageUrl, // Use the user's image URL here
-                        radius: 35,
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      // Once _userId is initialized, build the UI
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'HOME',
+            style: TextStyle(color: Colors.deepPurple),
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 30),
+                child: Row(
+                  children: [
+                    Column(
                       children: [
-                        Text(
-                          'Welcome back,',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          _userName ?? '',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        CircleAvatar(
+                          backgroundImage: _userImageUrl, // Use the user's image URL here
+                          radius: 35,
                         ),
                       ],
                     ),
-                  )
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back,',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            _userName ?? '',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: _getImage,
+                    child: Text('Upload Image'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _navigateToRentalMessagePage,
+                    child: Text('Enquiry'),
+                  ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _getImage,
-                  child: Text('Upload Image'),
-                ),
-                ElevatedButton(
-                  onPressed: _navigateToRentalMessagePage,
-                  child: Text('Enquiry'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : _imageUrls.isEmpty
-                      ? Center(child: Text('No images available'))
-                      : GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
+              SizedBox(height: 20),
+              Expanded(
+                child: _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : _imageUrls.isEmpty
+                        ? Center(child: Text('No images available'))
+                        : GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: _imageUrls.length,
+                            itemBuilder: (context, index) {
+                              return Image.network(
+                                _imageUrls[index],
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
-                          itemCount: _imageUrls.length,
-                          itemBuilder: (context, index) {
-                            return Image.network(
-                              _imageUrls[index],
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }

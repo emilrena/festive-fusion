@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/Designers/DesignerHome.dart';
-import 'package:festive_fusion/Designers/DesignerProceeds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DesignerNotification extends StatefulWidget {
@@ -13,11 +11,13 @@ class DesignerNotification extends StatefulWidget {
 
 class _DesignerNotificationState extends State<DesignerNotification> {
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> bookingRequests = [];
+  late List<QueryDocumentSnapshot<Map<String, dynamic>>> payments = [];
 
   @override
   void initState() {
     super.initState();
     fetchBookingRequests();
+    fetchPayments();
   }
 
   Future<void> fetchBookingRequests() async {
@@ -37,6 +37,21 @@ class _DesignerNotificationState extends State<DesignerNotification> {
       print('Fetched ${bookingRequests.length} booking requests');
     } catch (e) {
       print('Error fetching booking requests: $e');
+    }
+  }
+
+  Future<void> fetchPayments() async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance.collection('payments').get();
+
+      setState(() {
+        payments = snapshot.docs;
+      });
+
+      print('Fetched ${payments.length} payments');
+    } catch (e) {
+      print('Error fetching payments: $e');
     }
   }
 
@@ -63,6 +78,8 @@ class _DesignerNotificationState extends State<DesignerNotification> {
         'status': 1, // 1 indicates booking accepted
       });
       print('Booking request accepted');
+      // After accepting, fetch updated requests
+      fetchBookingRequests();
     } catch (e) {
       print('Error accepting booking request: $e');
     }
@@ -74,143 +91,222 @@ class _DesignerNotificationState extends State<DesignerNotification> {
         'status': 2, // 2 indicates booking cancelled
       });
       print('Booking request cancelled');
+      // After cancelling, fetch updated requests
+      fetchBookingRequests();
     } catch (e) {
       print('Error cancelling booking request: $e');
     }
   }
 
-  void handleAccept(String requestId) {
-    acceptBooking(requestId);
-    // Navigate to next page with bookingRequests list
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return DesignerProceed(bookingRequests: bookingRequests, bookingRequets: 'string',);
-    }));
-  }
-
-  void handleCancel(String requestId, int index) {
-    cancelBooking(requestId);
-    // Remove cancelled request from the list
-    setState(() {
-      bookingRequests.removeAt(index);
-    });
+  Future<void> deleteBooking(String requestId) async {
+    try {
+      await FirebaseFirestore.instance.collection('requests').doc(requestId).delete();
+      print('Booking request deleted');
+      // After deleting, fetch updated requests
+      fetchBookingRequests();
+    } catch (e) {
+      print('Error deleting booking request: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'NOTIFICATIONS',
-          style: TextStyle(color: Colors.deepPurpleAccent),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Designer',
+            style: TextStyle(color: Colors.deepPurpleAccent),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.deepPurpleAccent),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: 'Notifications'),
+              Tab(text: 'Committed Work'),
+            ],
+          ),
         ),
-      ),
-      body: ListView.builder(
-        itemCount: bookingRequests.length,
-        itemBuilder: (context, index) {
-          final bookingRequest = bookingRequests[index].data(); // Get the data of the document
-          final userId = bookingRequest['user_id'];
-          final requestId = bookingRequests[index].id; // Get the document ID
+        body: TabBarView(
+          children: [
+            ListView.builder(
+              itemCount: bookingRequests.length,
+              itemBuilder: (context, index) {
+                final bookingRequest = bookingRequests[index].data();
+                final userId = bookingRequest['user_id'];
+                final requestId = bookingRequests[index].id;
+                final status = bookingRequest['status'];
 
-          return FutureBuilder(
-            future: fetchUserDetails(userId),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else {
-                final userDetails = snapshot.data as Map<String, dynamic>;
-                return Container(
-                  height: 350,
-                  width: 200,
-                  margin: EdgeInsets.all(10),
-                  color: Color(0xFFFFFFFF),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          userDetails.containsKey('image_url')
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(userDetails['image_url']),
-                                  radius: 30,
-                                )
-                              : CircleAvatar(
-                                  child: Icon(Icons.person),
-                                  radius: 30,
-                                ),
-                          SizedBox(width: 20),
-                          Text(userDetails['name'] ?? ''),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Text(
-                            'PACKAGE CHOOSED:',
-                            style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),
+                return FutureBuilder(
+                  future: fetchUserDetails(userId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      final userDetails = snapshot.data as Map<String, dynamic>;
+                      return Card(
+                        elevation: 3,
+                        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(userDetails['image_url'] ?? ''),
+                                    radius: 30,
+                                  ),
+                                  SizedBox(width: 20),
+                                  Text(
+                                    userDetails['name'] ?? '',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'Package Chosen:',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                bookingRequest['packageName'] ?? '',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'Date: ${bookingRequest['date'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                'Time: ${bookingRequest['time'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                'Address: ${userDetails['address'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  if (status == 0) // Show only if the status is pending
+                                    Row(
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {
+                                            acceptBooking(requestId);
+                                          },
+                                          child: Text(
+                                            'ACCEPT',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        TextButton(
+                                          onPressed: () {
+                                            cancelBooking(requestId);
+                                          },
+                                          child: Text(
+                                            'DECLINE',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  if (status == 1) // Show only if the status is accepted
+                                    ElevatedButton(
+                                      onPressed: () {},
+                                      child: Text('Accepted'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    ),
+                                  IconButton(
+                                    onPressed: () {
+                                      deleteBooking(requestId);
+                                    },
+                                    icon: Icon(Icons.delete),
+                                    color: Colors.red,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 5),
-                          Text(bookingRequest['packageName'] ?? ''),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Date : ${bookingRequest['date'] ?? ''}',
-                            style: TextStyle(color: Color.fromARGB(255, 92, 8, 71)),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Time : ${bookingRequest['time'] ?? ''}',
-                            style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
-                          ),
-                          SizedBox(height: 5),
-                          FutureBuilder(
-                            future: fetchUserDetails(userId),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return CircularProgressIndicator();
-                              } else {
-                                final userDetails = snapshot.data as Map<String, dynamic>;
-                                return Text(
-                                  'Address : ${userDetails['address'] ?? ''}',
-                                  style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 50),
-                            child: IconButton(
-                              onPressed: () {
-                                handleAccept(requestId);
-                              },
-                              icon: Icon(Icons.check),
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              handleCancel(requestId, index);
-                            },
-                            icon: Icon(Icons.cancel),
-                            color: Colors.deepPurple,
-                          )
-                        ],
-                      )
-                    ],
-                  ),
+                        ),
+                      );
+                    }
+                  },
                 );
-              }
-            },
-          );
-        },
+              },
+            ),
+            ListView.builder(
+              itemCount: payments.length,
+              itemBuilder: (context, index) {
+                final payment = payments[index].data();
+                final userId = payment['user_id'];
+
+                return FutureBuilder(
+                  future: fetchUserDetails(userId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      final userDetails = snapshot.data as Map<String, dynamic>;
+                      return Card(
+                        elevation: 3,
+                        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Description: ${payment['description'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                'Payment Type: ${payment['payment_type'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'User Details:',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'Name: ${userDetails['name'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                'Address: ${userDetails['address'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                'Phone No: ${userDetails['phone_no'] ?? ''}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

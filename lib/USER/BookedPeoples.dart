@@ -303,7 +303,7 @@ class _MyBookingsState extends State<MyBookings> {
                                             );
                                           },
                                           style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blue),
+                                              backgroundColor: const Color.fromARGB(255, 195, 199, 202)),
                                           child: Text('Feedback'),
                                         ),
                                       ),

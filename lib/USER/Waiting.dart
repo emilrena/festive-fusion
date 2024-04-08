@@ -5,9 +5,7 @@ import 'package:festive_fusion/USER/MakeupPayment.dart';
 import 'package:festive_fusion/USER/ViewBookingStatus.dart';
 
 class Waiting extends StatefulWidget {
-  const Waiting({
-    Key? key,
-  }) : super(key: key);
+  const Waiting({Key? key}) : super(key: key);
 
   @override
   State<Waiting> createState() => _WaitingState();
@@ -88,6 +86,26 @@ class _WaitingState extends State<Waiting> {
     }
   }
 
+  Future<String?> fetchPaymentStatus(String providerId) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('payments')
+              .where('provider_id', isEqualTo: providerId)
+              .limit(1)
+              .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first['status'];
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print('Error fetching payment status: $error');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,43 +169,56 @@ class _WaitingState extends State<Waiting> {
                                     : (status == 1 ? Colors.blue : Colors.red),
                               ),
                             ),
-                            trailing: ElevatedButton(
-                              onPressed: () {
-                                if (status == 1) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) {
-                                      return MyBookingsStatus(
-                                        providerName: providerName,
-                                        providerImage: providerImage,
-                                        packageId: booking['package_id'],
-                                        providerId: providerId,
-                                        type: type,
-                                      );
-                                    }),
-                                  );
+                            trailing: FutureBuilder<String?>(
+                              future: fetchPaymentStatus(providerId),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
                                 }
+                                if (snapshot.hasError) {
+                                  return SizedBox(); // Return an empty SizedBox if an error occurs
+                                }
+                                final paymentStatus = snapshot.data;
+
+                                return ElevatedButton(
+                                  onPressed: paymentStatus != 'Paid'
+                                      ? () {
+                                          if (status == 1) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) {
+                                                return MyBookingsStatus(
+                                                  providerName: providerName,
+                                                  providerImage: providerImage,
+                                                  packageId: booking['package_id'],
+                                                  providerId: providerId,
+                                                  type: type,
+                                                );
+                                              }),
+                                            );
+                                          }
+                                        }
+                                      : null, // Disable button if payment status is 'Paid'
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 8.0,
+                                      horizontal: 16.0,
+                                    ),
+                                    backgroundColor: status == 0
+                                        ? Colors.grey // Pending
+                                        : (status == 1
+                                            ? Colors.blue // Payment
+                                            : Colors.red), // Rejected
+                                  ),
+                                  child: Text(
+                                    status == 0 ? 'Pending' : (status == 1 ? 'Payment' : 'Rejected'),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                );
                               },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                  horizontal: 16.0,
-                                ),
-                                backgroundColor: status == 0
-                                    ? Colors.grey // Pending
-                                    : (status == 1
-                                        ? Colors.blue // Payment
-                                        : Colors.red), // Rejected
-                              ),
-                              child: Text(
-                                status == 0
-                                    ? 'Pending'
-                                    : (status == 1 ? 'Payment' : 'Rejected'),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
                             ),
                           ),
                         );

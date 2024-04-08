@@ -59,6 +59,7 @@ class _ItemsState extends State<Items> {
                         imageUrl: imageUrl,
                         description: description,
                         rate: rate,
+                        rental_id: widget.rental_id,
                       ),
                     ),
                   );
@@ -88,11 +89,13 @@ class FullImageView extends StatefulWidget {
   final String imageUrl;
   final String description;
   final double rate;
+  final String rental_id;
 
   const FullImageView({
     required this.imageUrl,
     required this.description,
     required this.rate,
+    required this.rental_id,
   });
 
   @override
@@ -223,8 +226,12 @@ class _FullImageViewState extends State<FullImageView> {
                         if (_showBookNowButton)
                           ElevatedButton(
                             onPressed: () async {
-                               SharedPreferences sp = await SharedPreferences.getInstance();
-      var userId = sp.getString('uid') ?? '';
+                              SharedPreferences sp = await SharedPreferences.getInstance();
+                              var userId = sp.getString('uid') ?? '';
+
+                              // Add the rental_id parameter to the booking process
+                              var rentalId = widget.rental_id;
+
                               // Implement booking logic here
                               // For example, save booking to Firestore
                               await FirebaseFirestore.instance
@@ -236,7 +243,9 @@ class _FullImageViewState extends State<FullImageView> {
                                 'date': _selectedDate.toString(),
                                 'time': _selectedTime.format(context),
                                 'user_id': userId,
+                                'rental_id': rentalId, // Pass rental_id here
                               });
+
                               Fluttertoast.showToast(
                                 msg: "Successfully booked!",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -246,7 +255,8 @@ class _FullImageViewState extends State<FullImageView> {
                                 textColor: Colors.white,
                                 fontSize: 16.0,
                               );
-                             Navigator.pop(context);
+
+                              Navigator.pop(context);
                             },
                             child: Text('Book Now'),
                           ),
@@ -264,4 +274,3 @@ class _FullImageViewState extends State<FullImageView> {
     );
   }
 }
-

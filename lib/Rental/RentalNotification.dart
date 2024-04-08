@@ -1,9 +1,8 @@
-import 'package:festive_fusion/Designers/DesignerHome.dart';
-import 'package:festive_fusion/Designers/DesignerProceeds.dart';
-import 'package:festive_fusion/Rental/RentalHome.dart';
-import 'package:festive_fusion/Rental/RentalHomee.dart';
-import 'package:festive_fusion/Rental/RentalProceed.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/Rental/RentalProceed.dart';
+import 'package:festive_fusion/Rental/RentalHome.dart';
 
 class RentalNotification extends StatefulWidget {
   const RentalNotification({Key? key}) : super(key: key);
@@ -13,6 +12,21 @@ class RentalNotification extends StatefulWidget {
 }
 
 class _RentalNotificationState extends State<RentalNotification> {
+  String? _userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  void _loadUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userId = prefs.getString('uid') ?? '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,98 +36,133 @@ class _RentalNotificationState extends State<RentalNotification> {
           style: TextStyle(color: Colors.deepPurpleAccent),
         ),
       ),
-      body: ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Container(
-            height: 350,
-            width: 200,
-            margin: EdgeInsets.all(10), // Add margin for space between containers
-            color: Color(0xFFFFFFFF),
-            child: Column(
-              
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('Assets/p4.jpg'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Text('ARON AROUSHANS'),
-                    )
-                  ],
-                ),
-                
-                SizedBox(height: 10), // Add space between the circle and text
-                Row(mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Text('PACKAGE CHOOSED:',style: TextStyle(color: Color.fromARGB(221, 83, 6, 77)),),
-                    ),
-                   
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('rental_booking')
+            .where('rental_id', isEqualTo: _userId)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('No notifications available'));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var data = snapshot.data!.docs[index];
+              var imageUrl = data['imageUrl'];
+              var description = data['description'];
+              var rate = data['rate'];
+              var date = data['date'];
+              var time = data['time'];
+              var userId = data['user_id'];
 
-                  
-                  ],
-                  
-                ),
-                SizedBox(height: 5,),
-                 Padding(
-                   padding: const EdgeInsets.only(right: 40),
-                   child: Text('engagement and wedding day '),
-                 ),
-                 SizedBox(height:10,),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 250),
-                      child: Text('Date : ',style: TextStyle(color: Color.fromARGB(255, 92, 8, 71)),),
+              return FutureBuilder(
+                future: FirebaseFirestore.instance
+                    .collection('User_Registration')
+                    .doc(userId)
+                    .get(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+                  if (userSnapshot.hasError) {
+                    return Text('Error: ${userSnapshot.error}');
+                  }
+                  if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                    return SizedBox(); // Return an empty SizedBox if user data doesn't exist
+                  }
+
+                  var userData = userSnapshot.data!;
+                  var userName = userData['name'];
+                  var userImageUrl = userData['image_url'];
+                  var userAddress = userData['Adress'];
+                  var userMobileNo = userData['mobile no'];
+
+                  return Card(
+                    elevation: 4,
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(userImageUrl),
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'From: $userName',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text('Address: $userAddress'),
+                                  Text('Mobile No: $userMobileNo'),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Booking Details:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.network(
+                                imageUrl,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Description: $description',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text('Rate: $rate'),
+                                    Text('Date: $date'),
+                                    Text('Time: $time'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(' 5/9/2024'),
-                     SizedBox(height:10,),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 250),
-                      child: Text('Time : ',style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),),
-                    ),
-                   
-                    Text('2.00 pm'),
-                     SizedBox(height:10,),
-                     Padding(
-                       padding: const EdgeInsets.only(right: 240),
-                       child: Text('Adress :  ',style: TextStyle(color: Color.fromARGB(255, 83, 4, 70)),),
-                     ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Text('Thalancheri house chettipadi(po)'),
-                    ),
-                    SizedBox(height: 20,),
-                    Row(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 50),
-                          child: IconButton(onPressed: (){
-                              Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return RentalProceed();
-                  }));
-                          }, icon: Icon(Icons.check),color: Colors.deepPurple,),
-                        ),
-                     IconButton(onPressed: (){
-                        Navigator.push(context,MaterialPageRoute(builder: (context){
-                    return RentHome();
-                  }));
-                     }, icon: Icon(Icons.cancel),color: Colors.deepPurple,)
-                      ],
-                  
-                    )
-             
-             ],
-            ),
+                  );
+                },
+              );
+            },
           );
         },
       ),
     );
   }
 }
-
-

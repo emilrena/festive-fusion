@@ -1,7 +1,7 @@
-import 'package:festive_fusion/USER/BokkedImage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/USER/BokkedImage.dart';
 
 class Payment extends StatefulWidget {
   final String provider_id;
@@ -47,7 +47,7 @@ class _PaymentState extends State<Payment> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Text(
-                'Total amount: ${widget.description}', // Show description here
+                'Total amount: ${widget.description}',
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
@@ -55,28 +55,25 @@ class _PaymentState extends State<Payment> {
               ),
             ),
             Container(
-              child: Material(
-                child: DropdownButtonFormField(
-                  hint: Text('PAYMENT'),
-                  onChanged: (value) {
-                    print(value);
-                    setState(() {
-                      amt = value.toString();
-                      if (amt == 'FULL AMOUNT') {
-                        balance.text = widget.description;
-                        remaining = 0.0; // Set remaining to zero when "FULL AMOUNT" is selected
-                      } else {
-                        total(); // Recalculate for "ADVANCE" option
-                      }
-                    });
-                  },
-                  items: _list.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
-                ),
+              child: DropdownButtonFormField(
+                hint: Text('PAYMENT'),
+                onChanged: (value) {
+                  setState(() {
+                    amt = value.toString();
+                    if (amt == 'FULL AMOUNT') {
+                      balance.text = widget.description;
+                      remaining = 0.0;
+                    } else {
+                      total();
+                    }
+                  });
+                },
+                items: _list.map((e) {
+                  return DropdownMenuItem(
+                    value: e,
+                    child: Text(e),
+                  );
+                }).toList(),
               ),
             ),
             SizedBox(
@@ -86,7 +83,7 @@ class _PaymentState extends State<Payment> {
               height: 45,
               child: TextFormField(
                 controller: balance,
-                readOnly: true, // Make the text field read-only
+                readOnly: true,
                 decoration: InputDecoration(
                   fillColor: Color.fromARGB(255, 223, 197, 218),
                   filled: true,
@@ -99,23 +96,21 @@ class _PaymentState extends State<Payment> {
             ),
             SizedBox(height: 20),
             Container(
-              child: Material(
-                child: DropdownButtonFormField(
-                  hint: Text('METHOD OF PAYMENT'),
-                  onChanged: (value) {
-                    print(value);
-                  },
-                  items: _list1.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
-                ),
+              child: DropdownButtonFormField(
+                hint: Text('METHOD OF PAYMENT'),
+                onChanged: (value) {
+                  print(value);
+                },
+                items: _list1.map((e) {
+                  return DropdownMenuItem(
+                    value: e,
+                    child: Text(e),
+                  );
+                }).toList(),
               ),
             ),
             SizedBox(height: 20),
-            if (amt != 'FULL AMOUNT') // Only show if payment option is not "FULL AMOUNT"
+            if (amt != 'FULL AMOUNT')
               Column(
                 children: [
                   Row(
@@ -128,7 +123,7 @@ class _PaymentState extends State<Payment> {
                   SizedBox(
                     height: 45,
                     child: TextFormField(
-                      readOnly: true, // Make the text field read-only
+                      readOnly: true,
                       decoration: InputDecoration(
                         fillColor: Color.fromARGB(255, 223, 197, 218),
                         filled: true,
@@ -141,19 +136,17 @@ class _PaymentState extends State<Payment> {
                   ),
                   SizedBox(height: 20),
                   Container(
-                    child: Material(
-                      child: DropdownButtonFormField(
-                        hint: Text('METHOD OF PAYMENT'),
-                        onChanged: (value) {
-                          print(value);
-                        },
-                        items: _list2.map((e) {
-                          return DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          );
-                        }).toList(),
-                      ),
+                    child: DropdownButtonFormField(
+                      hint: Text('METHOD OF PAYMENT'),
+                      onChanged: (value) {
+                        print(value);
+                      },
+                      items: _list2.map((e) {
+                        return DropdownMenuItem(
+                          value: e,
+                          child: Text(e),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ],
@@ -173,6 +166,7 @@ class _PaymentState extends State<Payment> {
                   'description': widget.description,
                   'payment_type': amt,
                   'user_id': userId,
+                  'status': 'Paid', // Add status as 'Paid'
                 };
 
                 if (amt == 'ADVANCE') {
@@ -183,12 +177,8 @@ class _PaymentState extends State<Payment> {
                   data['balance_payment_amount'] = double.parse(balance.text);
                 }
 
-                // Add data to the 'payments' collection
-                await FirebaseFirestore.instance
-                    .collection('payments')
-                    .add(data);
+                await FirebaseFirestore.instance.collection('payments').add(data);
 
-                // Navigate to AfterBooked screen
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -212,9 +202,8 @@ class _PaymentState extends State<Payment> {
   void total() {
     setState(() {
       finalprice = double.parse(widget.description) / 4;
-      print(finalprice);
       remaining = double.parse(widget.description) - finalprice;
-      balance.text = finalprice.toString(); // Update the balance text field with finalprice
+      balance.text = finalprice.toString();
     });
   }
 }
