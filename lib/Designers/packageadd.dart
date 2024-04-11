@@ -87,7 +87,8 @@ class _package_addState extends State<package_add> {
                                 .add({
                               'package': PackageName.text,
                               'description':Description.text,
-                              'package_id': a,
+                              'designer_id': a,
+                              
                               
                               
                               

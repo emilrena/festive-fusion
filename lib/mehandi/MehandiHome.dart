@@ -139,7 +139,7 @@ class _MehandiHomeState extends State<MehandiHome> {
                       }));
                     },
                     child: Text(
-                      '  PACKAGES  ',
+                      '  DESIGNES  ',
                       style: TextStyle(color: Colors.deepPurple),
                     ),
                     style: ElevatedButton.styleFrom(

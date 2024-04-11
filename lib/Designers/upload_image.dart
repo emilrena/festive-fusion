@@ -17,10 +17,13 @@ class Upload_pic_describe extends StatefulWidget {
   State<Upload_pic_describe> createState() => _Upload_pic_describeState();
 }
 
+
 class _Upload_pic_describeState extends State<Upload_pic_describe> {
   var describe = TextEditingController();
   final fkey = GlobalKey<FormState>();
   String imageUrl = '';
+  String? selectedCategory;
+  String? selectedDress;
 
   @override
   Widget build(BuildContext context) {
@@ -75,17 +78,69 @@ class _Upload_pic_describeState extends State<Upload_pic_describe> {
                 ),
               ),
               SizedBox(height: 20),
+              DropdownButtonFormField<String>(
+                value: selectedCategory,
+                hint: Text('Select category'),
+                onChanged: (value) {
+                  setState(() {
+                    selectedCategory = value;
+                    selectedDress = null; // Reset selected dress when category changes
+                  });
+                },
+                items: ['Bridal Dress', 'Groom Dress'].map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+              ),
+              if (selectedCategory == 'Bridal Dress')
+                DropdownButtonFormField<String>(
+                  value: selectedDress,
+                  hint: Text('Select bridal dress'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDress = value;
+                    });
+                  },
+                  items: ['haldi', 'mehandi', 'recepton','wedding'].map((String dress) {
+                    return DropdownMenuItem<String>(
+                      value: dress,
+                      child: Text(dress),
+                    );
+                  }).toList(),
+                ),
+              if (selectedCategory == 'Groom Dress')
+                DropdownButtonFormField<String>(
+                  value: selectedDress,
+                  hint: Text('Select groom dress'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDress = value;
+                    });
+                  },
+                  items: ['haldi', 'mehandi', 'reception','wedding'].map((String suit) {
+                    return DropdownMenuItem<String>(
+                      value: suit,
+                      child: Text(suit),
+                    );
+                  }).toList(),
+                ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  SharedPreferences sp =
-                            await SharedPreferences.getInstance();
-                        var a = sp.getString('uid');
+                  SharedPreferences sp = await SharedPreferences.getInstance();
+                  var a = sp.getString('uid');
 
                   try {
                     await uploadImage();
-                    await FirebaseFirestore.instance
-                        .collection('designer_upload_image')
-                        .add({'describe': describe.text, 'imageUrl': imageUrl,'designer_id': a});
+                    await FirebaseFirestore.instance.collection('designer_upload_image').add({
+                      'describe': describe.text,
+                      'imageUrl': imageUrl,
+                      'designer_id': a,
+                      'category': selectedCategory,
+                      'dress': selectedDress,
+                    });
 
                     if (fkey.currentState!.validate()) {
                       Navigator.push(
@@ -110,8 +165,8 @@ class _Upload_pic_describeState extends State<Upload_pic_describe> {
   Future<void> uploadImage() async {
     try {
       if (widget.imageFile != null) {
-        Reference storageReference =
-            FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        Reference storageReference = FirebaseStorage.instance.ref().child(
+            'images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
         // Upload the image
         await storageReference.putFile(widget.imageFile);

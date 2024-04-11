@@ -26,7 +26,7 @@ class _UserPckgState extends State<UserPckg> {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(' designer_package ')
-          .where('package_id', isEqualTo: widget.designer_id)
+          .where('designer_id', isEqualTo: widget.designer_id)
           .get();
       setState(() {
         _packages = snapshot.docs;
