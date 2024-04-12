@@ -1,17 +1,16 @@
-import 'package:festive_fusion/Rental/Rental_Message.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'Rental_UploadImage.dart'; 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/Rental/Rental_Message.dart';
+import 'package:festive_fusion/Rental/Rental_UploadImage.dart';
 
 class RentHome extends StatefulWidget {
-  RentHome({Key? key});
+  const RentHome({Key? key}) : super(key: key);
 
   @override
-  State<RentHome> createState() => _RentHomeState();
+  _RentHomeState createState() => _RentHomeState();
 }
 
 class _RentHomeState extends State<RentHome> {
@@ -19,10 +18,15 @@ class _RentHomeState extends State<RentHome> {
   File? _image;
   String? _userId;
   String? _userName;
-  dynamic _userImageUrl; // Updated declaration
-
+  dynamic _userImageUrl;
   List<String> _imageUrls = [];
+  List<String> _descriptions = [];
+  List<String> _items = [];
+  List<double> _rates = [];
+  List<int> _counts = [];
   bool _isLoading = false;
+  late String _selectedCategory = 'Bridal Dress'; // Default to Bridal Dress
+  late String _selectedDressCategory = 'Gown'; // Default to Gown
 
   @override
   void initState() {
@@ -36,10 +40,10 @@ class _RentHomeState extends State<RentHome> {
     setState(() {
       _userId = prefs.getString('uid');
       _userName = prefs.getString('name');
-      // Load user image URL from shared preferences
       String? imageUrl = prefs.getString('image_url');
-      // Set the image URL as the background image for CircleAvatar
-      _userImageUrl = imageUrl != null ? NetworkImage(imageUrl) : AssetImage('Assets/p4.jpg');
+      _userImageUrl = imageUrl != null
+          ? NetworkImage(imageUrl)
+          : AssetImage('Assets/p4.jpg');
     });
   }
 
@@ -83,11 +87,18 @@ class _RentHomeState extends State<RentHome> {
       final snapshot = await FirebaseFirestore.instance
           .collection('rental_upload_image')
           .where('rental_id', isEqualTo: _userId)
+          .where('category', isEqualTo: _selectedCategory)
+          .where('item', isEqualTo: _selectedDressCategory)
           .get();
 
       setState(() {
         _imageUrls =
             snapshot.docs.map((doc) => doc['image_url'] as String).toList();
+        _descriptions =
+            snapshot.docs.map((doc) => doc['description'] as String).toList();
+        _items = snapshot.docs.map((doc) => doc['item'] as String).toList();
+        _rates = snapshot.docs.map((doc) => doc['rate'] as double).toList();
+        _counts = snapshot.docs.map((doc) => doc['count'] as int).toList();
       });
     } catch (error) {
       print('Error loading images: $error');
@@ -100,109 +111,300 @@ class _RentHomeState extends State<RentHome> {
 
   @override
   Widget build(BuildContext context) {
-    if (_userId == null) {
-      // If _userId is not initialized yet, return a loading indicator or an empty container
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'HOME',
-            style: TextStyle(color: Colors.deepPurple),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'HOME',
+          style: TextStyle(color: Colors.deepPurple),
         ),
-        body: Center(
-          child: CircularProgressIndicator(),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.deepPurple,
+              ),
+              child: Text(
+                'Select Category',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Bridal Dress'),
+              onTap: () {
+                setState(() {
+                  _selectedCategory = 'Bridal Dress';
+                });
+                _showDressCategoryOptionsDialog(context);
+              },
+            ),
+            ListTile(
+              title: Text('Groom Dress'),
+              onTap: () {
+                setState(() {
+                  _selectedCategory = 'Groom Dress';
+                });
+                _showDressCategoryOptionsDialog(context);
+              },
+            ),
+            ListTile(
+              title: Text('Jewellary'),
+              onTap: () {
+                setState(() {
+                  _selectedCategory = 'Jewellery';
+                });
+                _showDressCategoryOptionsDialog(context);
+              },
+            ),
+          ],
         ),
-      );
-    } else {
-      // Once _userId is initialized, build the UI
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'HOME',
-            style: TextStyle(color: Colors.deepPurple),
-          ),
-        ),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 30),
-                child: Row(
-                  children: [
-                    Column(
+      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 30),
+              child: Row(
+                children: [
+                  Column(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: _userImageUrl,
+                        radius: 35,
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          backgroundImage: _userImageUrl, // Use the user's image URL here
-                          radius: 35,
+                        Text(
+                          'Welcome back,',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          _userName ?? '',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome back,',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            _userName ?? '',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: _getImage,
-                    child: Text('Upload Image'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _navigateToRentalMessagePage,
-                    child: Text('Enquiry'),
-                  ),
+                  )
                 ],
               ),
-              SizedBox(height: 20),
-              Expanded(
-                child: _isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : _imageUrls.isEmpty
-                        ? Center(child: Text('No images available'))
-                        : GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: _getImage,
+                  child: Text('Upload Image'),
+                ),
+                ElevatedButton(
+                  onPressed: _navigateToRentalMessagePage,
+                  child: Text('Enquiry'),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : _imageUrls.isEmpty
+                      ? Center(child: Text('No images available'))
+                      : SingleChildScrollView(
+                          child: Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: List.generate(
+                              _imageUrls.length,
+                              (index) => GestureDetector(
+                                onTap: () {
+                                  _showImageDetails(context, index);
+                                },
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width / 3 -
+                                      20,
+                                  height:
+                                      MediaQuery.of(context).size.width / 3 -
+                                          20,
+                                  child: Stack(
+                                    children: [
+                                      Image.network(
+                                        _imageUrls[index],
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            _deleteImage(index);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                            itemCount: _imageUrls.length,
-                            itemBuilder: (context, index) {
-                              return Image.network(
-                                _imageUrls[index],
-                                fit: BoxFit.cover,
-                              );
-                            },
                           ),
-              ),
-            ],
-          ),
+                        ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
+
+  void _showDressCategoryOptionsDialog(BuildContext context) async {
+    List<String> dressOptions = [];
+
+    switch (_selectedCategory) {
+      case 'Jewellery':
+        dressOptions = ['Choker', 'Earring', 'Bangles'];
+        break;
+      case 'Bridal Dress':
+        dressOptions = ['Gown', 'Lehenga', 'Saree'];
+        break;
+      case 'Groom Dress':
+        dressOptions = ['Suit', 'Sherwani', 'Kurta'];
+        break;
+      // Add more cases for additional categories if needed
+      default:
+        dressOptions = [];
+        break;
     }
+
+    String? selectedDressCategory = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Dress Category'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: dressOptions.map((option) {
+              return ListTile(
+                title: Text(option),
+                onTap: () {
+                  Navigator.pop(context, option);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+
+    if (selectedDressCategory != null) {
+      setState(() {
+        _selectedDressCategory = selectedDressCategory;
+        _loadImages();
+      });
+    }
+  }
+
+  void _showImageDetails(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (context) => ImageDetailsDialog(
+        imageUrl: _imageUrls[index],
+        description: _descriptions[index],
+        item: _items[index],
+        rate: _rates[index],
+        count: _counts[index],
+        onDelete: () {
+          _deleteImage(index);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _deleteImage(int index) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('rental_upload_image')
+          .where('image_url', isEqualTo: _imageUrls[index])
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.delete();
+        });
+      });
+      setState(() {
+        _imageUrls.removeAt(index);
+        _descriptions.removeAt(index);
+        _items.removeAt(index);
+        _rates.removeAt(index);
+        _counts.removeAt(index);
+      });
+    } catch (error) {
+      print('Error deleting image: $error');
+    }
+  }
+}
+
+class ImageDetailsDialog extends StatelessWidget {
+  final String imageUrl;
+  final String description;
+  final String item;
+  final double rate;
+  final int count;
+  final Function()? onDelete;
+
+  const ImageDetailsDialog({
+    required this.imageUrl,
+    required this.description,
+    required this.item,
+    required this.rate,
+    required this.count,
+    this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain, // Adjust fit as needed
+                width: MediaQuery.of(context).size.width * 0.9, // Adjust width to fit dialog
+                height: MediaQuery.of(context).size.height * 0.6, // Adjust height to fit dialog
+              ),
+            ),
+            SizedBox(height: 10),
+            Text('Description: $description'),
+            Text('Item: $item'),
+            Text('Rate: $rate'),
+            Text('Count: $count'),
+            if (onDelete != null)
+              ElevatedButton(
+                onPressed: onDelete,
+                child: Text('Delete Image'),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }

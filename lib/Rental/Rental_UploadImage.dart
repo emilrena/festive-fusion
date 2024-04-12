@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:festive_fusion/Rental/RentalHomee.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/Rental/RentalHomee.dart';
 
 class Rental_Upload_pic extends StatefulWidget {
   final File imageFile;
@@ -135,6 +135,7 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
               onPressed: () async {
                 String description = _descriptionController.text;
                 String category = _selectedCategory ?? '';
+                String? item = _items.isNotEmpty ? _items.first : null; // Get the first item
                 double rate = double.tryParse(_rateController.text) ?? 0.0;
                 int count = int.tryParse(_countController.text) ?? 0;
 
@@ -144,17 +145,20 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
                 try {
                   if (userId != null) {
                     String imageUrl = await uploadImage();
-                    await FirebaseFirestore.instance.collection('rental_items').add({
+                    DocumentReference docRef = await FirebaseFirestore.instance.collection('rental_upload_image').add({
                       'description': description,
                       'category': category,
-                      'item': _items,
+                      'item': item,
                       'rate': rate,
                       'count': count,
                       'image_url': imageUrl,
                       'rental_id': userId,
                     });
                     print('Data uploaded successfully');
-                    
+
+                    // Decrement count in Firestore
+                    await updateItemCount(docRef.id, count);
+
                     // Navigate to the rental home page
                     Navigator.pushReplacement(
                       context,
@@ -197,6 +201,19 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
       return await taskSnapshot.ref.getDownloadURL();
     } catch (error) {
       throw Exception('Error uploading image: $error');
+    }
+  }
+
+  // Function to update count in Firestore
+  Future<void> updateItemCount(String documentId, int count) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('rental_upload_image')
+          .doc(documentId)
+          .update({'count': count});
+      print('Item count updated successfully');
+    } catch (error) {
+      print('Error updating item count: $error');
     }
   }
 }
