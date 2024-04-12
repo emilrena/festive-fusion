@@ -120,7 +120,7 @@ Future<void> _loadImages() async {
                     );
                   },
                   child: Text(
-                    'PACKAGES',
+                    'DESIGNES',
                     style: TextStyle(color: Colors.black87),
                   ),
                   style: ElevatedButton.styleFrom(

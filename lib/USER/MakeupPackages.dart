@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/USER/MakeupWork.dart';
-import 'package:festive_fusion/USER/booking.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:festive_fusion/USER/DesignerWork.dart';
+import 'package:festive_fusion/USER/booking.dart';
 
 class MakeupPackages extends StatefulWidget {
-  final String makeup_id;
+  final String makeup_id;// Designer ID received from the previous screen
+
   const MakeupPackages({Key? key, required this.makeup_id}) : super(key: key);
 
   @override
@@ -13,12 +14,10 @@ class MakeupPackages extends StatefulWidget {
 }
 
 class _MakeupPackagesState extends State<MakeupPackages> {
-  late List<DocumentSnapshot> _packages;
+  List<DocumentSnapshot> _packages = [];
   bool _isLoading = true;
-  List c=[
-    Colors.brown,Colors.red,Colors.purple
-  ];
-   @override
+
+  @override
   void initState() {
     super.initState();
     _loadPackages();
@@ -27,7 +26,7 @@ class _MakeupPackagesState extends State<MakeupPackages> {
   Future<void> _loadPackages() async {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection(' designer_package ')
+          .collection('makeup_package')
           .where('package_id', isEqualTo: widget.makeup_id)
           .get();
       setState(() {
@@ -118,6 +117,8 @@ class _MakeupPackagesState extends State<MakeupPackages> {
                         itemCount: _packages.length,
                         itemBuilder: (context, index) {
                           var package = _packages[index];
+                          var package_id=package.id;
+                          print('________________$package_id');
                           var a = index % 2;
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -128,7 +129,7 @@ class _MakeupPackagesState extends State<MakeupPackages> {
                                   MaterialPageRoute(builder: (context) {
                                     return Booked(
                                       provider_id: widget.makeup_id,
-                                      package_id: package.id,
+                                      package_id: package_id,
                                       type: 'makeup',
                                     );
                                   }),
@@ -148,7 +149,7 @@ class _MakeupPackagesState extends State<MakeupPackages> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: Image.asset('Assets/wrk3.jpg'),
+                                      child: Image.asset('Assets/image1.jpg'),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 20),
@@ -158,11 +159,13 @@ class _MakeupPackagesState extends State<MakeupPackages> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            package['package'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                          SizedBox(width: 150,
+                                            child: Text(
+                                              package['package'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(height: 8),

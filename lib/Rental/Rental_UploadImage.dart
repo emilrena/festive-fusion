@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
- 
 
 class Rental_Upload_pic extends StatefulWidget {
   final File imageFile;
@@ -17,36 +16,32 @@ class Rental_Upload_pic extends StatefulWidget {
 
 class _Rental_Upload_picState extends State<Rental_Upload_pic> {
   TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _rateController = TextEditingController(); // Added rate controller
+  TextEditingController _rateController = TextEditingController();
+  TextEditingController _countController = TextEditingController(); // Added count controller
 
-  List<String> _categories = [
-    'Jewellery',
-    'Bridal Dress',
-    'Dupatta',
-    'Groom Dress',
-  ];
-
+  List<String> _categories = ['Jewellery', 'Bridal Dress', 'Groom Dress'];
   String? _selectedCategory;
+  List<String> _items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SELECTED'),
+        title: Text('UPLOAD RENTAL ITEM'),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                'ENTER THE DETAILS:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+            Text(
+              'UPLOAD IMAGE',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
             ),
+            SizedBox(height: 20.0),
             Container(
               height: 300,
-              width: 300,
+              width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: FileImage(widget.imageFile),
@@ -54,55 +49,85 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextFormField(
-                controller: _descriptionController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText: 'Describe here',
-                  fillColor: Color.fromARGB(255, 182, 174, 196),
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+            SizedBox(height: 20.0),
+            Text(
+              'DESCRIPTION',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            SizedBox(height: 10.0),
+            TextFormField(
+              controller: _descriptionController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: 'Enter description...',
+                border: OutlineInputBorder(),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                hint: Text('Select Category'),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-                items: _categories.map((category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
+            SizedBox(height: 20.0),
+            Text(
+              'CATEGORY',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            SizedBox(height: 10.0),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              hint: Text('Select category...'),
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                  _items = _getItemsForCategory(value!);
+                });
+              },
+              items: _categories.map((category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              'ITEM',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            SizedBox(height: 10.0),
+            DropdownButtonFormField<String>(
+              value: null,
+              hint: Text('Select item...'),
+              onChanged: (value) {},
+              items: _items.map((item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              'RATE',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            SizedBox(height: 10.0),
+            TextFormField(
+              controller: _rateController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Enter rate...',
+                border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextFormField(
-                controller: _rateController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Rate',
-                  fillColor: Color.fromARGB(255, 182, 174, 196),
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+            SizedBox(height: 20.0),
+            Text(
+              'TOTAL AVAILABLE COUNT',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            SizedBox(height: 10.0),
+            TextFormField(
+              controller: _countController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Enter total count...',
+                border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 20.0),
@@ -111,33 +136,36 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
                 String description = _descriptionController.text;
                 String category = _selectedCategory ?? '';
                 double rate = double.tryParse(_rateController.text) ?? 0.0;
+                int count = int.tryParse(_countController.text) ?? 0;
 
                 SharedPreferences sp = await SharedPreferences.getInstance();
-                var a = sp.getString('uid');
+                var userId = sp.getString('uid');
                 
                 try {
-                  if (a != null) {
+                  if (userId != null) {
                     String imageUrl = await uploadImage();
-                    await FirebaseFirestore.instance.collection('rental_upload_image').add({
+                    await FirebaseFirestore.instance.collection('rental_items').add({
                       'description': description,
                       'category': category,
+                      'item': _items,
                       'rate': rate,
+                      'count': count,
                       'image_url': imageUrl,
-                      'rental_id': a, // Adding user_id
+                      'rental_id': userId,
                     });
                     print('Data uploaded successfully');
+                    
+                    // Navigate to the rental home page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => RentHome()),
+                    );
                   } else {
                     print('User ID not found');
                   }
                 } catch (error) {
                   print('Error uploading data: $error');
                 }
-
-                // Navigate to the rental home page
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => RentHome()),
-                );
               },
               child: Text('UPLOAD'),
             ),
@@ -145,6 +173,19 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
         ),
       ),
     );
+  }
+
+  List<String> _getItemsForCategory(String category) {
+    switch (category) {
+      case 'Jewellery':
+        return ['Choker', 'Earring', 'Bangles'];
+      case 'Bridal Dress':
+        return ['Gown', 'Lehenga', 'Saree'];
+      case 'Groom Dress':
+        return ['Suit', 'Sherwani', 'Kurta'];
+      default:
+        return [];
+    }
   }
 
   Future<String> uploadImage() async {

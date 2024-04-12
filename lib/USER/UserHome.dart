@@ -1,18 +1,26 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:festive_fusion/USER/DesignerProffesinalsView.dart';
 import 'package:festive_fusion/USER/MakeupProffesionals.dart';
 import 'package:festive_fusion/USER/MehandiProffesionalsView.dart';
 import 'package:festive_fusion/USER/RentalProffesionals.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+ // Assuming UserTypePage is the page where the user selects their type
 
 class UserHome extends StatefulWidget {
-  const UserHome({super.key});
+  const UserHome({Key? key}) : super(key: key);
 
   @override
   State<UserHome> createState() => _UserHomeState();
 }
 
 class _UserHomeState extends State<UserHome> {
+  void _logout() {
+    // Perform logout action here
+    // For example, clear user authentication and navigate to the user type page
+    // After performing logout action, navigate to the user type page
+    Navigator.pushReplacementNamed(context, '/usertype');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,6 +29,12 @@ class _UserHomeState extends State<UserHome> {
           'HOME',
           style: TextStyle(color: Color.fromARGB(255, 15, 15, 15)),
         ),
+        actions: [
+          IconButton(
+            onPressed: _logout,
+            icon: Icon(Icons.logout),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -54,21 +68,25 @@ class _UserHomeState extends State<UserHome> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
-                              padding: const EdgeInsets.only(left: 40),
-                              child: InkWell(onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return DesignerProffesional_View();
-                          },));
+                            padding: const EdgeInsets.only(left: 40),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return DesignerProffesional_View();
+                                  }),
+                                );
                               },
-                                child: Text(
-                                  'Designers',
-                                  style: GoogleFonts.irishGrover(
-                                      color: Color.fromARGB(255, 20, 20, 20),
-                                      fontSize: 25),
-                                ),
-                              )),
+                              child: Text(
+                                'Designers',
+                                style: GoogleFonts.irishGrover(
+                                    color: Color.fromARGB(255, 20, 20, 20),
+                                    fontSize: 25),
+                              ),
+                            ),
+                          ),
                         ],
                       )
                     ],
@@ -93,14 +111,17 @@ class _UserHomeState extends State<UserHome> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                             padding: const EdgeInsets.only(left: 40),
-                            child: InkWell(onTap: (){Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return RentalProffesional_View();
-                          },));
-
-                            },
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return RentalProffesional_View();
+                                  }),
+                                );
+                              },
                               child: Text(
                                 'Rentals',
                                 style: GoogleFonts.irishGrover(
@@ -133,26 +154,22 @@ class _UserHomeState extends State<UserHome> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                             padding: const EdgeInsets.only(left: 40),
-                            child: InkWell(onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MakeupProffesional_View();
-                          },));
-
-                            },
-                              child: InkWell(onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MakeupProffesional_View();
-                          },));
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return MakeupProffesional_View();
+                                  }),
+                                );
                               },
-                                child: Text(
-                                  'Make up',
-                                  style: GoogleFonts.irishGrover(
-                                      color: Color.fromARGB(255, 20, 20, 20),
-                                      fontSize: 25),
-                                ),
+                              child: Text(
+                                'Makeup',
+                                style: GoogleFonts.irishGrover(
+                                    color: Color.fromARGB(255, 20, 20, 20),
+                                    fontSize: 25),
                               ),
                             ),
                           ),
@@ -180,25 +197,22 @@ class _UserHomeState extends State<UserHome> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          //Expanded(child: Padding(padding: const EdgeInsets.all(2),)),
                           Padding(
                             padding: const EdgeInsets.only(left: 40),
-                            child: InkWell(onTap: (){Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MehandiProffesional_View();
-                          },));
-
-                            },
-                              child: InkWell(onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return MehandiProffesional_View();
-                          },));
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return MehandiProffesional_View();
+                                  }),
+                                );
                               },
-                                child: Text(
-                                  'Mehandi',
-                                  style: GoogleFonts.irishGrover(
-                                      color: Color.fromARGB(255, 20, 20, 20),
-                                      fontSize: 25),
-                                ),
+                              child: Text(
+                                'Mehandi',
+                                style: GoogleFonts.irishGrover(
+                                    color: Color.fromARGB(255, 20, 20, 20),
+                                    fontSize: 25),
                               ),
                             ),
                           ),

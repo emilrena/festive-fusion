@@ -18,6 +18,7 @@ class _DesignerWorkState extends State<DesignerWork> {
   bool _isLoading = false;
   late String _selectedCategory;
   late String _selectedDressCategory;
+  String _designerImageUrl = '';
 
   @override
   void initState() {
@@ -25,6 +26,7 @@ class _DesignerWorkState extends State<DesignerWork> {
     _selectedCategory = ''; // Initialize to empty string
     _selectedDressCategory = ''; // Initialize to empty string
     _loadImages();
+    _loadDesignerImage();
   }
 
   Future<void> _loadImages() async {
@@ -58,6 +60,23 @@ class _DesignerWorkState extends State<DesignerWork> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadDesignerImage() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('designer register')
+          .doc(widget.designer_id)
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          _designerImageUrl = snapshot['image_url'];
+        });
+      }
+    } catch (error) {
+      print('Error loading designer image: $error');
     }
   }
 
@@ -183,7 +202,9 @@ class _DesignerWorkState extends State<DesignerWork> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage('Assets/p3.jpg'),
+                  backgroundImage: _designerImageUrl.isNotEmpty
+                      ? NetworkImage(_designerImageUrl)
+                      : AssetImage('Assets/p3.jpg') as ImageProvider,
                   radius: 30,
                 ),
                 IconButton(
