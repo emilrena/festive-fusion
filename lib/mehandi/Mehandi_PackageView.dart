@@ -13,27 +13,8 @@ class Mehndi_package_view extends StatefulWidget {
 }
 
 class _Mehndi_package_viewState extends State<Mehndi_package_view> {
-  late Future<List<DocumentSnapshot>> _packagesFuture;
-
-  Future<List<DocumentSnapshot>> getPackages() async {
-    try {
-      print('..................');
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('mehandi_package')
-          .get();
-
-      print('Number of documents: ${snapshot.docs}');
-      snapshot.docs.forEach((doc) {
-        print('Document ID: ${doc.id}');
-        print('Document data: ${doc.data()}');
-      });
-
-      return snapshot.docs;
-    } catch (e) {
-      print('Error fetching packages: $e');
-      throw e; // Re-throw the error to handle it in the UI
-    }
-  }
+ TextEditingController _packageNameController = TextEditingController();
+  TextEditingController _packageDescriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +22,24 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
       appBar: AppBar(
         title: Center(child: Text('PACKAGES')),
       ),
-      body: FutureBuilder<List<DocumentSnapshot>>(
-        future: getPackages(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+             .collection('mehandi_package')
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
+            List<DocumentSnapshot> packages = snapshot.data!.docs;
+
             return ListView.builder(
-              itemCount: snapshot.data!.length,
+              itemCount: packages.length,
               itemBuilder: (context, index) {
-                final document = snapshot.data![index];
-                final id = document.id;
+                final document = packages[index];
+                final documentId = document.id;
                 final packageData = document.data() as Map<String, dynamic>;
-                print(packageData);
                 final packageName = packageData['package'] ?? '';
                 final packageDescription = packageData['description'] ?? '';
 
@@ -63,7 +47,7 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     height: 150,
-                    width: 300,
+                    width: 200,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 204, 193, 200),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -92,22 +76,47 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                // Handle delete action
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => _buildEditDialog(
+                                      context,
+                                      documentId,
+                                      packageName,
+                                      packageDescription),
+                                );
                               },
-                              icon: Icon(Icons.delete),
+                              icon: Icon(Icons.edit),
                             ),
                             SizedBox(width: 20),
                             IconButton(
                               onPressed: () {
-                                // Navigate to EditService widget passing the package ID
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(builder: (context) {
-                                //     return EditServices_(packageData: id);
-                                //   }),
-                                // );
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text('Delete Package'),
+                                      content: Text(
+                                          'Are you sure you want to delete this package?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            deletePackage(documentId);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Delete'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
-                              icon: Icon(Icons.change_circle),
+                              icon: Icon(Icons.delete),
                             ),
                           ],
                         )
@@ -132,5 +141,70 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  Widget _buildEditDialog(BuildContext context, String documentId,
+      String packageName, String packageDescription) {
+    _packageNameController.text = packageName;
+    _packageDescriptionController.text = packageDescription;
+
+    return AlertDialog(
+      title: Text('Edit Package'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _packageNameController,
+            decoration: InputDecoration(labelText: 'Package Name'),
+          ),
+          TextField(
+            controller: _packageDescriptionController,
+            decoration: InputDecoration(labelText: 'Package Description'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            updatePackage(documentId);
+            Navigator.pop(context);
+          },
+          child: Text('Save'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> deletePackage(String documentId) async {
+    try {
+      await FirebaseFirestore.instance
+           .collection('mehandi_package')
+          .doc(documentId)
+          .delete();
+      print('Package deleted successfully.');
+    } catch (e) {
+      print('Error deleting package: $e');
+    }
+  }
+
+  Future<void> updatePackage(String documentId) async {
+    try {
+      await FirebaseFirestore.instance
+           .collection('mehandi_package')
+          .doc(documentId)
+          .update({
+        'package': _packageNameController.text,
+        'description': _packageDescriptionController.text,
+      });
+      print('Package updated successfully.');
+    } catch (e) {
+      print('Error updating package: $e');
+    }
   }
 }

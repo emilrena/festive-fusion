@@ -16,6 +16,20 @@ class _RentalProffesional_ViewState
     extends State<RentalProffesional_View> {
   var search = TextEditingController();
 
+  late List<Map<String, dynamic>> rental = [];
+  late List<Map<String, dynamic>> filteredrental = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getData().then((value) {
+      setState(() {
+        rental = value;
+        filteredrental = rental;
+      });
+    });
+  }
+
   // Function to calculate the average rating from feedback documents
   double calculateAverageRating(QuerySnapshot feedbackSnapshot) {
     if (feedbackSnapshot.docs.isEmpty) {
@@ -53,9 +67,9 @@ class _RentalProffesional_ViewState
 
         final feedbackSnapshot = await FirebaseFirestore.instance
             .collection('feedback')
-            .where('provider_id', isEqualTo: rentalId)
-            .get();
-
+          .where('type', isEqualTo: 'rental')
+          .where('provider_id', isEqualTo: rentalId)
+          .get();
         final averageRating = calculateAverageRating(feedbackSnapshot);
 
         rentalWithRatings.add({
@@ -72,50 +86,74 @@ class _RentalProffesional_ViewState
     }
   }
 
+  // Function to filter designers based on search query
+  void filterrental(String query) {
+    setState(() {
+      filteredrental = rental
+          .where((rental) =>
+              rental['rentalData']['name']
+                  .toString()
+                  .toLowerCase()
+                  .contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('PROFESSIONALS'),
+        title: Text('Find Professionals'),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.all(10.0),
               child: TextField(
                 controller: search,
-                style: TextStyle(fontSize: 8),
+                onChanged: (value) {
+                  filterrental(value);
+                },
                 decoration: InputDecoration(
-                  labelText: 'SEARCH',
-                  border: OutlineInputBorder(),
+                  hintText: 'Search by name...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
             Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: getData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        final rentalData = snapshot.data![index]['rentalData'];
-                        final rating = snapshot.data![index]['rating'];
-                        final imageUrl = rentalData['image_url'];
+              child: ListView.builder(
+                itemCount: filteredrental.length,
+                itemBuilder: (context, index) {
+                  final rentalData = filteredrental[index]['rentalData'];
+                  final rating = filteredrental[index]['rating'];
+                  final imageUrl = rentalData['image_url'];
 
-                        return ListTile(
-                          onTap: () {},
-                          title: Text(rentalData['name'] ?? 'Name not available'),
-                          subtitle: SizedBox(
-                            width: 5,
+                  return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: ListTile(
+                      onTap: () {
+                        // Do nothing when tapping on the card
+                      },
+                      leading: CircleAvatar(
+                        backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : AssetImage('assets/default_avatar.png') as ImageProvider,
+                        radius: 30.0,
+                      ),
+                      title: Text(
+                        rentalData['name'] ?? 'Name not available',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 4.0),
+                          IgnorePointer(
+                            ignoring: true,
                             child: RatingBar.builder(
                               itemSize: 20,
                               initialRating: rating,
@@ -125,52 +163,39 @@ class _RentalProffesional_ViewState
                               itemCount: 5,
                               itemBuilder: (context, _) => Icon(
                                 Icons.star,
-                                size: 3,
-                                color: Color.fromARGB(255, 124, 4, 94),
+                                color: Color.fromARGB(255, 141, 43, 133),
                               ),
                               onRatingUpdate: (_) {
                                 // Do nothing, rating is not editable
                               },
                             ),
                           ),
-                          leading: imageUrl != null
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(imageUrl),
-                                  radius: 30,
-                                )
-                              : CircleAvatar(
-                                  child: Icon(Icons.person),
-                                  radius: 30,
-                                ),
-                          trailing: ElevatedButton(
-                            onPressed: () {
-                              print("rental");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RentalWorkView(
-                                  rental_id: snapshot.data![index]['rentalId'],
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 16.0),
-                              backgroundColor: Colors.deepPurple,
-                            ),
-                            child: Text(
-                              'CHOOSE',
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 231, 234, 236),
-                                fontSize: 10,
+                        ],
+                      ),
+                      trailing: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RentalWorkView(
+                                rental_id: filteredrental[index]['rentalId'],
                               ),
                             ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), backgroundColor: Colors.deepPurple,
+                        ),
+                        child: Text(
+                          'Choose',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
                           ),
-                        );
-                      },
-                    );
-                  }
+                        ),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),

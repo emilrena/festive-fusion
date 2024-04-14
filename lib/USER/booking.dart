@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:festive_fusion/USER/MakeupPayment.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/USER/MakeupPayment.dart';
 
 class Booked extends StatefulWidget {
   final String provider_id;
@@ -30,8 +30,7 @@ class _BookedState extends State<Booked> {
   String? state;
   String? pin;
   String? district;
-  // var img
-  var waitingForResponse = 0;
+  var waitingForResponse = false;
   String? requestDocumentId;
 
   @override
@@ -52,9 +51,8 @@ class _BookedState extends State<Booked> {
   }
 
   void fetchDesignerPackageDetails() {
-    print('object');
     FirebaseFirestore.instance
-        .collection(' designer_package ')
+        .collection('designer_package')
         .doc(widget.package_id)
         .get()
         .then((doc) {
@@ -99,7 +97,7 @@ class _BookedState extends State<Booked> {
         });
       }
     }).catchError((error) {
-      print('Error fetching mehandi package details: $error');
+      print('Error fetching makeup package details: $error');
     });
   }
 
@@ -109,8 +107,7 @@ class _BookedState extends State<Booked> {
       address = prefs.getString('Adress');
       state = prefs.getString('state');
       pin = prefs.getString('pin');
-      district = prefs.getString('district');
-      // img = prefs.get('image_url');
+      district = prefs.getString('District');
     });
   }
 
@@ -143,217 +140,247 @@ class _BookedState extends State<Booked> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Booking',
-            style: TextStyle(color: Colors.deepPurpleAccent),
-          ),
+      appBar: AppBar(
+        title: Text(
+          'Booking',
+          style: TextStyle(color: Colors.deepPurpleAccent),
         ),
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SingleChildScrollView(
-              child: Container(
-                width: 300,
-                child: Column(
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Select Time:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              GestureDetector(
+                onTap: () => _selectTime(context),
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 40,
-                        ),
-                        Text('TIME:'),
-                        SizedBox(width: 20),
-                        GestureDetector(
-                          onTap: () => _selectTime(context),
-                          child: Text(
-                            '${selectedTime.format(context)}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
+                    Icon(Icons.access_time),
+                    SizedBox(width: 10),
+                    Text(
+                      '${selectedTime.format(context)}',
+                      style: TextStyle(fontSize: 16),
                     ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('DATE:'),
-                        SizedBox(width: 20),
-                        GestureDetector(
-                          onTap: () => _selectDate(context),
-                          child: Text(
-                            '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text('SELECTED PACKAGE:'),
-                    Container(
-                      height: 80,
-                      width: 300,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 224, 206, 221),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Package Name: $packageName',
-                              style: TextStyle(fontSize: 16)),
-                          Text('Package Description: $packageDescription',
-                              style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(onPressed: () {}, child: Text('CHANGE')),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text('CURRENT ADDRESS:'),
-                    Container(
-                      height: 160,
-                      width: 300,
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 224, 206, 221),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Address: $address',
-                              style: TextStyle(fontSize: 16)),
-                          Text('State: $state', style: TextStyle(fontSize: 16)),
-                          Text('Pin: $pin', style: TextStyle(fontSize: 16)),
-                          Text('District: $district',
-                              style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(onPressed: () {}, child: Text('CHANGE')),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        SharedPreferences sp =
-                            await SharedPreferences.getInstance();
-                        var a = sp.getString('uid');
-                        print('..........$a');
-                        // Change the UI to waiting status
-                      
-                        String dateAsString =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
-                        String timeAsString = DateFormat('HH:mm').format(
-                            DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
-                                selectedTime.hour,
-                                selectedTime.minute));
-                        await FirebaseFirestore.instance
-                            .collection('requests')
-                            .add({
-                          'user_id': a,
-                          'package_id': widget.package_id,
-                          'provider_id': widget.provider_id,
-                          'date': dateAsString,
-                          'packageName':packageName,
-                          
-                          'time': timeAsString.toString(),
-                          'status': 0,
-                           'type': widget.type,
-                          
-                          
-                          
-                        });
-                          setState(() {
-                          // Update UI to indicate waiting status
-                          waitingForResponse = 1;
-                              // Assuming you have a boolean variable to track waiting status
-                        });
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Availability request sent!')),
-                        );
-
-                       
-                      },
-                      child: waitingForResponse==1
-                          ? Text(
-                              'Waiting for provider response...') // Show waiting status
-                          : Text('Check Availability',
-                              style: TextStyle(color: Colors.deepPurple)),
-                    ),
-
-// Display a message or UI based on the status of the request
-                    // StreamBuilder<DocumentSnapshot>(
-                    //   stream: FirebaseFirestore.instance
-                    //       .collection('requests')
-                    //       .doc(requestDocumentId)
-                    //       .snapshots(),
-                    //   builder: (context, snapshot) {
-                    //     if (snapshot.connectionState ==
-                    //         ConnectionState.waiting) {
-                    //       // Show a loading indicator while waiting for the data
-                    //       return CircularProgressIndicator();
-                    //     } else {
-                    //       // Check the status field of the document
-                    //       int? status = snapshot.data?['status'];
-                    //       if (status == 0) {
-
-                    //         return Text('Waiting for provider response...');
-                    //       } else if (status == 1) {
-
-                    //         return ElevatedButton(
-                    //           onPressed: () {
-                    //             Navigator.push(context,
-                    //                 MaterialPageRoute(builder: (context) {
-                    //               return Payment(
-                    //                 package_id: widget.package_id,
-                    //                 provider_id: widget.provider_id,
-                    //                 type: widget.type,
-                    //                 description: packageDescription,
-                    //               );
-                    //             }));
-                    //           },
-                    //           child: Text('NEXT',
-                    //               style: TextStyle(color: Colors.deepPurple)),
-                    //         );
-                    //       } else if (status == 2) {
-                    //         return Column(
-                    //           children: [
-                    //             Text('Request rejected.'),
-                    //             ElevatedButton(
-                    //               onPressed: () {},
-                    //               child: Text('Select Designer',
-                    //                   style:
-                    //                       TextStyle(color: Colors.deepPurple)),
-                    //             ),
-                    //           ],
-                    //         );
-                    //       } else {
-                    //         return Text('Status: $status');
-                    //       }
-                    //     }
-                    //   },
-                    // )
                   ],
                 ),
               ),
-            ),
-          ],
-        ));
+              SizedBox(height: 20),
+              Text(
+                'Select Date:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today),
+                    SizedBox(width: 10),
+                    Text(
+                      '${DateFormat('dd/MM/yyyy').format(selectedDate)}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Selected Package:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Package Name: $packageName',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Package Description: $packageDescription',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Current Address:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Address: $address',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'State: $state',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Pin: $pin',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'District: $district',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: waitingForResponse
+                    ? null
+                    : () async {
+                        SharedPreferences sp =
+                            await SharedPreferences.getInstance();
+                        var userId = sp.getString('uid');
+                        String dateAsString =
+                            DateFormat('yyyy-MM-dd').format(selectedDate);
+                        String timeAsString = DateFormat('HH:mm').format(
+                          DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          ),
+                        );
+
+                        setState(() {
+                          waitingForResponse = true;
+                        });
+
+                        try {
+                          DocumentReference docRef =
+                              await FirebaseFirestore.instance
+                                  .collection('requests')
+                                  .add({
+                            'user_id': userId,
+                            'package_id': widget.package_id,
+                            'provider_id': widget.provider_id,
+                            'date': dateAsString,
+                            'time': timeAsString.toString(),
+                            'status': 0,
+                            'type': widget.type,
+                          });
+                          setState(() {
+                            requestDocumentId = docRef.id;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Availability request sent successfully!'),
+                            ),
+                          );
+                        } catch (error) {
+                          print('Error sending availability request: $error');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Failed to send availability request. Please try again later.',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                child: waitingForResponse
+                    ? Text(
+                        'Waiting for provider response...',
+                        style: TextStyle(color: Color.fromARGB(255, 85, 24, 82)),
+                      )
+                    : Text(
+                        'Check Availability',
+                        style: TextStyle(color: Color.fromARGB(255, 128, 34, 96)),
+                      ),
+              ),
+              if (requestDocumentId != null)
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('requests')
+                      .doc(requestDocumentId)
+                      .snapshots(),
+                  builder: (cPontext, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else {
+                      int? status = snapshot.data?['status'];
+                      if (status == 0) {
+                        return Text(
+                          'Waiting for provider response...',
+                          style: TextStyle(fontSize: 16),
+                        );
+                      } else if (status == 1) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Payment(
+                                  package_id: widget.package_id,
+                                  provider_id: widget.provider_id,
+                                  type: widget.type,
+                                  description: packageDescription,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Proceed to Payment',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      } else if (status == 2) {
+                        return Column(
+                          children: [
+                            Text(
+                              'Request rejected.',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: Text(
+                                'Select a different option',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Text(
+                          'Status: $status',
+                          style: TextStyle(fontSize: 16),
+                        );
+                      }
+                    }
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

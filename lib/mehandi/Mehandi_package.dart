@@ -81,7 +81,7 @@ class _Mehndi_package_addState extends State<Mehndi_package_add> {
                                   .add({
                                 'package': package.text,
                                 'description':Description.text,
-                                'package_id':a,
+                                'mehandi_id':a,
                                 
                                 
                               });

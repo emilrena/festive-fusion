@@ -67,7 +67,7 @@ class _WaitingState extends State<Waiting> {
       } else if (type == 'designer') {
         collectionName = 'designer register';
       } else if (type == 'makeup') {
-        collectionName = 'makeup_register';
+        collectionName = 'Makeup register';
       } else {
         collectionName = 'default_collection';
       }

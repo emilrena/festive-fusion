@@ -149,7 +149,7 @@ class _MakeupPackagesState extends State<MakeupPackages> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: Image.asset('Assets/image1.jpg'),
+                                      child: Image.asset('Assets/th.jpg'),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 20),

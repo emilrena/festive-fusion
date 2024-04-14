@@ -83,7 +83,7 @@ class _Makeup_Package_AddState extends State<Makeup_Package_Add> {
                                 .add({
                               'package': package.text,
                               'description':Description.text,
-                              'package_id':a,
+                              'makeup_id':a,
                               
                               
                               

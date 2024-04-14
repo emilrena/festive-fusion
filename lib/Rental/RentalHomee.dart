@@ -92,13 +92,11 @@ class _RentHomeState extends State<RentHome> {
           .get();
 
       setState(() {
-        _imageUrls =
-            snapshot.docs.map((doc) => doc['image_url'] as String).toList();
-        _descriptions =
-            snapshot.docs.map((doc) => doc['description'] as String).toList();
+        _imageUrls = snapshot.docs.map((doc) => doc['image_url'] as String).toList();
+        _descriptions = snapshot.docs.map((doc) => doc['description'] as String).toList();
         _items = snapshot.docs.map((doc) => doc['item'] as String).toList();
         _rates = snapshot.docs.map((doc) => doc['rate'] as double).toList();
-        _counts = snapshot.docs.map((doc) => doc['count'] as int).toList();
+        _counts = snapshot.docs.map((doc) => doc['count'] as int).toList(); // Fetch count
       });
     } catch (error) {
       print('Error loading images: $error');
@@ -318,7 +316,8 @@ class _RentHomeState extends State<RentHome> {
     }
   }
 
-  void _showImageDetails(BuildContext context, int index) {
+  void _showImageDetails(BuildContext context, int index) async {
+    DocumentSnapshot? snapshot = await _fetchImageCount(index);
     showDialog(
       context: context,
       builder: (context) => ImageDetailsDialog(
@@ -326,7 +325,7 @@ class _RentHomeState extends State<RentHome> {
         description: _descriptions[index],
         item: _items[index],
         rate: _rates[index],
-        count: _counts[index],
+        count: snapshot != null ? (snapshot['count'] as double).toInt() : 0, // Convert double to int
         onDelete: () {
           _deleteImage(index);
           Navigator.pop(context);
@@ -334,6 +333,24 @@ class _RentHomeState extends State<RentHome> {
       ),
     );
   }
+
+ Future<DocumentSnapshot?> _fetchImageCount(int index) async {
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('rental_upload_image')
+        .where('image_url', isEqualTo: _imageUrls[index])
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      return snapshot.docs[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    print('Error fetching image count: $error');
+    return null;
+  }
+}
 
   void _deleteImage(int index) async {
     try {

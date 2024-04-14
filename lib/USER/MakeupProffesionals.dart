@@ -16,119 +16,186 @@ class _MakeupProffesional_ViewState
     extends State<MakeupProffesional_View> {
   var search = TextEditingController();
 
-  // Function to fetch data from Firestore
-  Future<List<DocumentSnapshot>> getData() async {
+  late List<Map<String, dynamic>> makeup = [];
+  late List<Map<String, dynamic>> filteredmakeup = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getData().then((value) {
+      setState(() {
+        makeup = value;
+        filteredmakeup = makeup;
+      });
+    });
+  }
+
+  // Function to calculate the average rating from feedback documents
+  double calculateAverageRating(QuerySnapshot feedbackSnapshot) {
+    if (feedbackSnapshot.docs.isEmpty) {
+      return 0;
+    }
+
+    // Calculate the total rating and count of feedback documents
+    double totalRating = 0;
+    int feedbackCount = 0;
+
+    for (final feedbackDoc in feedbackSnapshot.docs) {
+      final rating = feedbackDoc['rating'];
+      if (rating != null) {
+        totalRating += (rating as num).toDouble();
+        feedbackCount++;
+      }
+    }
+
+    // Calculate and return the average rating
+    return totalRating / feedbackCount;
+  }
+
+  // Function to fetch data from Firestore including feedback ratings
+  Future<List<Map<String, dynamic>>> getData() async {
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      final makeupSnapshot = await FirebaseFirestore.instance
           .collection('Makeup register')
           .get();
-      print('Fetched ${snapshot.docs.length} documents');
-      return snapshot.docs;
+
+      // Fetch feedback ratings for each designer
+      final List<Map<String, dynamic>> makeupWithRatings = [];
+      for (final makeupDoc in makeupSnapshot.docs) {
+        final makeupData = makeupDoc.data() as Map<String, dynamic>;
+        final makeupId = makeupDoc.id;
+
+        final feedbackSnapshot = await FirebaseFirestore.instance
+            .collection('feedback')
+          .where('type', isEqualTo: 'makeup')
+          .where('provider_id', isEqualTo: makeupId)
+          .get();
+        final averageRating = calculateAverageRating(feedbackSnapshot);
+
+        makeupWithRatings.add({
+          'makeupId': makeupId,
+          'makeupData': makeupData,
+          'rating': averageRating,
+        });
+      }
+
+      return makeupWithRatings;
     } catch (e) {
       print('Error fetching data: $e');
       throw e; // Rethrow the error to handle it in the FutureBuilder
     }
   }
 
+  // Function to filter designers based on search query
+  void filtermakeup(String query) {
+    setState(() {
+      filteredmakeup = makeup
+          .where((makeup) =>
+              makeup['makeupData']['name']
+                  .toString()
+                  .toLowerCase()
+                  .contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('PROFESSIONALS'),
+        title: Text('Find Professionals'),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.all(10.0),
               child: TextField(
                 controller: search,
-                style: TextStyle(fontSize: 8),
+                onChanged: (value) {
+                  filtermakeup(value);
+                },
                 decoration: InputDecoration(
-                  labelText: 'SEARCH',
-                  border: OutlineInputBorder(),
+                  hintText: 'Search by name...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
             Expanded(
-              child: FutureBuilder(
-                future: getData(),
-                builder: (context,
-                    AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        final document = snapshot.data![index];
-                        final data =
-                            document.data() as Map<String, dynamic>;
-                        final imageUrl = data['image_url']; 
-                        return ListTile(
-                          onTap: () {},
-                          title: Text(data['name'] ?? 'Name not available'),
-                          subtitle: SizedBox(
-                            width: 5,
+              child: ListView.builder(
+                itemCount: filteredmakeup.length,
+                itemBuilder: (context, index) {
+                  final makeupData = filteredmakeup[index]['makeupData'];
+                  final rating = filteredmakeup[index]['rating'];
+                  final imageUrl = makeupData['image_url'];
+
+                  return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: ListTile(
+                      onTap: () {
+                        // Do nothing when tapping on the card
+                      },
+                      leading: CircleAvatar(
+                        backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : AssetImage('assets/default_avatar.png') as ImageProvider,
+                        radius: 30.0,
+                      ),
+                      title: Text(
+                        makeupData['name'] ?? 'Name not available',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 4.0),
+                          IgnorePointer(
+                            ignoring: true,
                             child: RatingBar.builder(
                               itemSize: 20,
-                              initialRating:
-                                  (data['rating'] ?? 0).toDouble(),
+                              initialRating: rating,
                               minRating: 1,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
                               itemCount: 5,
                               itemBuilder: (context, _) => Icon(
                                 Icons.star,
-                                size: 3,
-                                color: Color.fromARGB(255, 124, 4, 94),
+                                color: Color.fromARGB(255, 141, 43, 133),
                               ),
-                              onRatingUpdate: (rating) {
-                                print(rating);
+                              onRatingUpdate: (_) {
+                                // Do nothing, rating is not editable
                               },
                             ),
                           ),
-                          leading: imageUrl != null
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(imageUrl),
-                                  radius: 30,
-                                )
-                              : CircleAvatar(
-                                  child: Icon(Icons.person),
-                                  radius: 30,
-                                ),
-                          trailing: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MakeupWorkView(makeup_id:snapshot.data![index].id,),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 16.0),
-                              backgroundColor: Colors.deepPurple,
-                            ),
-                            child: Text(
-                              'CHOOSE',
-                              style: TextStyle(
-                                color:
-                                    const Color.fromARGB(255, 231, 234, 236),
-                                fontSize: 10,
+                        ],
+                      ),
+                      trailing: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MakeupWorkView(
+                                makeup_id: filteredmakeup[index]['makeupId'],
                               ),
                             ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), backgroundColor: Colors.deepPurple,
+                        ),
+                        child: Text(
+                          'Choose',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
                           ),
-                        );
-                      },
-                    );
-                  }
+                        ),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),

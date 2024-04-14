@@ -5,235 +5,224 @@ import 'package:festive_fusion/Navigationbar.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Edit extends StatefulWidget {
-  const Edit({Key? key}) : super(key: key);
+  const Edit({Key? key});
 
   @override
   State<Edit> createState() => _EditState();
 }
 
 class _EditState extends State<Edit> {
-  XFile? pickedFile;
-  var profileImage;
-  final Name = TextEditingController();
-  final Email = TextEditingController();
-  final Adress = TextEditingController();
-  final District = TextEditingController();
-  final Pin = TextEditingController();
-  final password = TextEditingController();
-  final confirmPass = TextEditingController();
-  final StateController = TextEditingController();
-  final Mobile = TextEditingController();
-  String gender = "";
-  final GlobalKey<FormState> fkey = GlobalKey<FormState>();
-  String imageUrl = '';
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Map<String, String>? _userData;
+  File? _profileImage;
+  String? _imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String uid = prefs.getString('uid') ?? '';
+
+    DocumentSnapshot<Map<String, dynamic>> userSnapshot =
+        await FirebaseFirestore.instance
+            .collection('User_Registration')
+            .doc(uid)
+            .get();
+    if (userSnapshot.exists) {
+      setState(() {
+        _userData = Map<String, String>.from(userSnapshot.data() ?? {});
+        _imageUrl = _userData!['image_url'];
+      });
+    } else {
+      print('User data not found.');
+    }
+  }
+
+  Widget _buildProfileImage() {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: CircleAvatar(
+        radius: 50,
+        backgroundImage: _profileImage != null
+            ? FileImage(_profileImage!)
+            : _imageUrl != null
+                ? NetworkImage(_imageUrl!)
+                : AssetImage('assets/placeholder_image.jpg') as ImageProvider<Object>?,
+        child: _profileImage == null &&
+                (_userData == null || _userData!['image_url'] == null)
+            ? Icon(Icons.camera_alt, size: 30)
+            : null,
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    if (_formKey.currentState!.validate()) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String uid = prefs.getString('uid') ?? '';
+
+      if (_userData != null) {
+        await FirebaseFirestore.instance
+            .collection('User_Registration')
+            .doc(uid)
+            .update(_userData!);
+      }
+
+      if (_profileImage != null) {
+        await _uploadProfileImage(uid);
+      }
+
+      await _fetchUserData();
+
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _uploadProfileImage(String uid) async {
+    try {
+      Reference storageReference =
+          FirebaseStorage.instance.ref().child('profile_images/$uid.jpg');
+      await storageReference.putFile(_profileImage!);
+      String downloadURL = await storageReference.getDownloadURL();
+
+      await FirebaseFirestore.instance
+          .collection('User_Registration')
+          .doc(uid)
+          .update({'image_url': downloadURL});
+    } catch (e) {
+      print('Error uploading profile image: $e');
+    }
+  }
+
+  Widget _buildEditButton() {
+    return ElevatedButton(
+      onPressed: _showEditDialog,
+      child: Text('Edit Profile'),
+    );
+  }
+
+  Future<void> _showEditDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Profile'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    initialValue: _userData?['name'],
+                    decoration: InputDecoration(labelText: 'Name'),
+                    onChanged: (value) {
+                      _userData?['name'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['email'],
+                    decoration: InputDecoration(labelText: 'Email'),
+                    onChanged: (value) {
+                      _userData!['email'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['pin'],
+                    decoration: InputDecoration(labelText: 'Pin'),
+                    onChanged: (value) {
+                      _userData!['pin'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['gender'],
+                    decoration: InputDecoration(labelText: 'Gender'),
+                    onChanged: (value) {
+                      _userData!['gender'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['District'],
+                    decoration: InputDecoration(labelText: 'District'),
+                    onChanged: (value) {
+                      _userData!['District'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['state'],
+                    decoration: InputDecoration(labelText: 'State'),
+                    onChanged: (value) {
+                      _userData!['state'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['Adress'],
+                    decoration: InputDecoration(labelText: 'Address'),
+                    onChanged: (value) {
+                      _userData!['Adress'] = value;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _saveChanges();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Edit')),
+        title: const Center(child: Text('EditProfile')),
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Form(
-            key: fkey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      final picker = ImagePicker();
-                      pickedFile = await picker.pickImage(
-                        source: ImageSource.gallery,
-                      );
-
-                      setState(() {
-                        if (pickedFile != null) {
-                          profileImage = File(pickedFile!.path);
-                        }
-                      });
-                    },
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage:
-                          profileImage != null ? FileImage(profileImage!) : null,
-                      child: profileImage == null
-                          ? Icon(
-                              Icons.camera_alt,
-                              size: 30,
-                            )
-                          : null,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Text('Name'),
-                  TextFormField(
-                    controller: Name,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Email'),
-                  TextFormField(
-                    controller: Email,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Gender'),
-                  RadioListTile(
-                    title: Text('Male'),
-                    value: 'Male',
-                    groupValue: gender,
-                    onChanged: (value) {
-                      setState(() {
-                        gender = value.toString();
-                      });
-                    },
-                  ),
-                  RadioListTile(
-                    title: Text('Female'),
-                    value: 'Female',
-                    groupValue: gender,
-                    onChanged: (value) {
-                      setState(() {
-                        gender = value.toString();
-                      });
-                    },
-                  ),
-                  RadioListTile(
-                    title: Text('Others'),
-                    value: 'Others',
-                    groupValue: gender,
-                    onChanged: (value) {
-                      setState(() {
-                        gender = value.toString();
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Address'),
-                  TextFormField(
-                    controller: Adress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('State'),
-                  TextFormField(
-                    controller: StateController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('District'),
-                  TextFormField(
-                    controller: District,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Pin No'),
-                  TextFormField(
-                    controller: Pin,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Mobile Number'),
-                  TextFormField(
-                    controller: Mobile,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Password'),
-                  TextFormField(
-                    controller: password,
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text('Confirm Password'),
-                  TextFormField(
-                    controller: confirmPass,
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Field is empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (fkey.currentState!.validate()) {
-                        await uploadImage();
-                        await FirebaseFirestore.instance
-                            .collection('user edit profile')
-                            .add({
-                          'name': Name.text,
-                          'email': Email.text,
-                          'address': Adress.text,
-                          'state': StateController.text,
-                          'district': District.text,
-                          'pin': Pin.text,
-                          'mobile no': Mobile.text,
-                          'password': password.text,
-                          'confirm password': confirmPass.text,
-                          'gender': gender,
-                          'image_url': imageUrl,
-                        });
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Navigationbar()),
-                        );
-                      }
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildProfileImage(),
+                SizedBox(height: 20),
+                if (_userData != null) ..._buildUserDataFields(),
+                SizedBox(height: 20),
+                _buildEditButton(),
+              ],
             ),
           ),
         ),
@@ -241,18 +230,49 @@ class _EditState extends State<Edit> {
     );
   }
 
-  Future<void> uploadImage() async {
-    try {
-      if (profileImage != null) {
-        final storageReference = FirebaseStorage.instance.ref().child('image/${pickedFile!.name}');
-        final uploadTask = storageReference.putFile(profileImage!);
-        await uploadTask.whenComplete(() async {
-          imageUrl = await storageReference.getDownloadURL();
-          print('Image URL: $imageUrl');
-        });
+  List<Widget> _buildUserDataFields() {
+    List<String> order = [
+      'name',
+      'Adress',
+      'email',
+      'pin',
+      'gender',
+      'mobile',
+      'District',
+      'state',
+    ];
+
+    List<Widget> fields = [];
+    order.forEach((key) {
+      if (_userData!.containsKey(key)) {
+        fields.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Column(
+              children: [
+                Text(
+                  key,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                SizedBox(height: 4),
+                TextFormField(
+                  initialValue: _userData![key],
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       }
-    } catch (e) {
-      print('Error uploading image: $e');
-    }
+    });
+    return fields;
   }
 }

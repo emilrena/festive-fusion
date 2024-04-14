@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DesignerMessage extends StatefulWidget {
   const DesignerMessage({Key? key});
@@ -10,105 +9,137 @@ class DesignerMessage extends StatefulWidget {
 }
 
 class _DesignerMessageState extends State<DesignerMessage> {
-  final TextEditingController _msgController = TextEditingController();
-  final fkey = GlobalKey<FormState>();
-  List<String> _DesignerMessages = [];
+  final List<Map<String, dynamic>> _messageRequests = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMessageRequests();
+  }
+
+  Future<void> _fetchMessageRequests() async {
+    final QuerySnapshot messageRequestsSnapshot =
+        await FirebaseFirestore.instance.collection('user_designer_message').get();
+
+    final List<Map<String, dynamic>> requests = [];
+
+    for (final doc in messageRequestsSnapshot.docs) {
+      final Map<String, dynamic> requestData = doc.data() as Map<String, dynamic>;
+      final String? userId = requestData['user_id'];
+
+      if (userId != null) {
+        final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('User_Registration')
+            .doc(userId)
+            .get();
+
+        if (userSnapshot.exists) {
+          final Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+          final String? username = userData['name'];
+
+          if (username != null) {
+            requestData['username'] = username;
+            requests.add(requestData);
+          }
+        }
+      }
+    }
+
+    setState(() {
+      _messageRequests.addAll(requests.reversed);
+    });
+  }
+
+  Future<void> _sendReply(String? messageId) async {
+    if (messageId != null) {
+      final TextEditingController _replyController = TextEditingController();
+
+      final DocumentSnapshot messageSnapshot =
+          await FirebaseFirestore.instance.collection('user_designer_message').doc(messageId).get();
+
+      if (messageSnapshot.exists) {
+        final Map<String, dynamic> messageData =
+            messageSnapshot.data() as Map<String, dynamic>;
+        final String? userId = messageData['user_id'];
+        final String? messageText = messageData['text'] as String?;
+
+        if (userId != null && messageText != null) {
+          final String? reply = await showDialog<String>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Reply to Message'),
+              content: TextField(
+                controller: _replyController,
+                decoration: InputDecoration(hintText: 'Enter your reply'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, _replyController.text);
+                  },
+                  child: Text('Send'),
+                ),
+              ],
+            ),
+          );
+
+          _replyController.dispose();
+
+          if (reply != null && userId != null) {
+            await FirebaseFirestore.instance.collection('designer_user_message').add({
+              'user_id': userId,
+              'message': reply,
+              'sender': 'Designer',
+              'timestamp': Timestamp.now(),
+            });
+
+            await FirebaseFirestore.instance.collection('user_designer_message').doc(messageId).delete();
+          }
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'ENQUIRIES',
+          'Message Requests',
           style: TextStyle(color: Colors.deepPurpleAccent),
         ),
         centerTitle: true,
       ),
-      body: Form(key: fkey,
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: _DesignerMessages.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_DesignerMessages[index]),
-                    // Align DesignerMessages to the right for user's DesignerMessages
-                    trailing: index % 2 == 0 ? null : Icon(Icons.person),
-                    // Align DesignerMessages to the left for responder's DesignerMessages
-                    leading: index % 2 != 0 ? null : Icon(Icons.person),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _msgController,
-                       validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'field is empty';
-                          }
-                          return null;
-                        },
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        fillColor: Color.fromARGB(255, 224, 206, 221),
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        hintText: 'Type your DesignerMessage here',
-                        suffixIcon: Container(
-                          margin: EdgeInsets.all(8),
-                          child: ElevatedButton(
-                            onPressed: _sendDesignerMessage,
-                            child: Icon(Icons.send, size: 18),
-                            style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                                EdgeInsets.zero,
-                              ),
-                              minimumSize: MaterialStateProperty.all<Size>(
-                                Size(36, 36),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _messageRequests.length,
+              itemBuilder: (context, index) {
+                final request = _messageRequests[index];
+                final String? message = request['text'] as String?;
+                final String? username = request['username'] as String?;
+                final String? messageId = request['message_id'] as String?;
+
+                return ListTile(
+                  title: Text(message != null ? message : 'No message'),
+                  subtitle: Text(username != null ? username : 'Unknown user'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.check),
+                    onPressed: () {
+                      _sendReply(messageId);
+                    },
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  void _sendDesignerMessage() async {
-  if (_msgController.text.isNotEmpty && fkey.currentState!.validate()) {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    var a = sp.getString('uid');
-    await FirebaseFirestore.instance.collection('designer_message').add({
-      'sender_message': _msgController.text,
-      'designer_id': a,
-    });
-    setState(() {
-      _DesignerMessages.insert(0, _msgController.text); // Add user's message
-      _msgController.clear(); // Clear the text field
-    });
-  }
-}
-
-
-  @override
-  void dispose() {
-    _msgController.dispose(); // Dispose the TextEditingController
-    super.dispose();
   }
 }
