@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
+import 'package:festive_fusion/common%20screens/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Desgn_Reg extends StatefulWidget {
@@ -23,15 +24,15 @@ class _Desgn_RegState extends State<Desgn_Reg> {
   var Email = TextEditingController();
   var Adress = TextEditingController();
   var District = TextEditingController();
-  var Pin= TextEditingController();
+  var Pin = TextEditingController();
   var password = TextEditingController();
   var confirmPass = TextEditingController();
-   var State = TextEditingController();
-    var Mobile = TextEditingController();
+  var State = TextEditingController();
+  var Mobile = TextEditingController();
   String gender = "";
   String selectedExperience = '0-1 years';
   final fkey = GlobalKey<FormState>();
-String imageUrl='';
+  String imageUrl = '';
   // List of years of experience options
   List<String> experienceOptions = [
     '0-1 years',
@@ -40,7 +41,6 @@ String imageUrl='';
     '3-5 years',
     '5+ years',
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,8 @@ String imageUrl='';
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Form(key: fkey,
+              Form(
+                key: fkey,
                 child: Container(
                   width: 300,
                   child: SingleChildScrollView(
@@ -99,8 +100,9 @@ String imageUrl='';
                             ),
                           ],
                         ),
-                        TextFormField(controller: Name,
-                         validator: (value) {
+                        TextFormField(
+                          controller: Name,
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'enter Name';
                             }
@@ -109,7 +111,8 @@ String imageUrl='';
                             fillColor: Color.fromARGB(255, 224, 206, 221),
                             filled: true,
                             border: UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(40)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40)),
                               borderSide: BorderSide.none,
                             ),
                           ),
@@ -126,8 +129,9 @@ String imageUrl='';
                             ),
                           ],
                         ),
-                        TextFormField(controller: Email,
-                         validator: (value) {
+                        TextFormField(
+                          controller: Email,
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'enter email';
                             }
@@ -136,7 +140,8 @@ String imageUrl='';
                             fillColor: Color.fromARGB(255, 224, 206, 221),
                             filled: true,
                             border: UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(40)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40)),
                               borderSide: BorderSide.none,
                             ),
                           ),
@@ -178,7 +183,7 @@ String imageUrl='';
                             Text('Female'),
                           ],
                         ),
-                         Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
@@ -189,7 +194,7 @@ String imageUrl='';
                         ),
                         TextFormField(
                           controller: Adress,
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -212,7 +217,7 @@ String imageUrl='';
                           ],
                         ),
                         TextFormField(
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -237,7 +242,7 @@ String imageUrl='';
                         ),
                         TextFormField(
                           controller: District,
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -261,7 +266,7 @@ String imageUrl='';
                         ),
                         TextFormField(
                           controller: Pin,
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -286,7 +291,7 @@ String imageUrl='';
                         ),
                         TextFormField(
                           controller: Mobile,
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -311,7 +316,7 @@ String imageUrl='';
                         ),
                         TextFormField(
                           controller: password,
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -335,7 +340,7 @@ String imageUrl='';
                         ),
                         TextFormField(
                           controller: confirmPass,
-                           validator: (value) {
+                          validator: (value) {
                             if (value!.isEmpty) {
                               return 'field is empty';
                             }
@@ -348,7 +353,7 @@ String imageUrl='';
                                       BorderRadius.all(Radius.circular(40)),
                                   borderSide: BorderSide.none)),
                         ),
-                
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -376,56 +381,62 @@ String imageUrl='';
                             fillColor: Color.fromARGB(255, 224, 206, 221),
                             filled: true,
                             border: UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(40)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40)),
                               borderSide: BorderSide.none,
                             ),
                           ),
                         ),
                         // ... (remaining code)
-                
+
                         SizedBox(
                           height: 50,
                         ),
                         ElevatedButton(
-                          
-                          
                           onPressed: () async {
+                            // Perform image upload
                             await uploadImage();
-                            
-                            await FirebaseFirestore.instance
-                                .collection('designer register')
-                                .add({
-                              'name': Name.text,
-                              'email': Email.text,
-                              'Adress': Adress.text,
-                              'state': State.text,
-                              'District': District.text,
-                              'pin': Pin.text,
-                              'mobile no': Mobile.text,
-                              'password': password.text,
-                              'conform password': confirmPass.text,
-                              'gender': gender,
-                              'experience': selectedExperience,
-                              'image_url': imageUrl,
-                            });
-                            print(Name.text);
-                              print(Email.text);
-                              print(Adress.text);
-                              print(State.text);
-                              print(District.text);
-                              print(Pin.text);
-                              print(Mobile.text);
-                              print(password.text);
-                              print(confirmPass.text);
-                               if (fkey.currentState!.validate()) {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return DesignerNav();
-                                
-                            }));
-                               }
+
+                            // Register user in Firebase Authentication
+                            try {
+                              UserCredential userCredential = await FirebaseAuth
+                                  .instance
+                                  .createUserWithEmailAndPassword(
+                                email: Email.text,
+                                password: password.text,
+                              );
+
+                              // If user creation is successful, proceed to store user data in Firestore
+                              await FirebaseFirestore.instance
+                                  .collection('designer register')
+                                  .add({
+                                'name': Name.text,
+                                'email': Email.text,
+                                'Adress': Adress.text,
+                                'state': State.text,
+                                'District': District.text,
+                                'pin': Pin.text,
+                                'mobile no': Mobile.text,
+                                'password': password.text,
+                                'conform password': confirmPass.text,
+                                'gender': gender,
+                                'experience': selectedExperience,
+                                'image_url': imageUrl,
+                                // Optionally, store additional designer data
+                              });
+
+                              // Navigate to next screen upon successful registration
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return Login(type: 'designer',);
+                                },
+                              ));
+                            } catch (e) {
+                              print('Error creating designer: $e');
+                              // Handle any errors that occur during designer creation
+                            }
                           },
-                          child: Text('register'),
+                          child: Text('REGISTER'),
                         ),
                       ],
                     ),
@@ -437,21 +448,18 @@ String imageUrl='';
         ),
       ),
     );
-
   }
-Future<void> uploadImage() async {
+
+  Future<void> uploadImage() async {
     try {
       if (profileImage != null) {
-        
         Reference storageReference =
-            FirebaseStorage.instance
-                .ref()
-                .child('image/${pickedFile!.name}');
+            FirebaseStorage.instance.ref().child('image/${pickedFile!.name}');
 
         await storageReference.putFile(profileImage!);
 
         // Get the download URL
-         imageUrl = await storageReference.getDownloadURL();
+        imageUrl = await storageReference.getDownloadURL();
 
         // Now you can use imageUrl as needed (e.g., save it to Firestore)
         print('Image URL: $imageUrl');

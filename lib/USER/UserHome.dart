@@ -1,3 +1,4 @@
+import 'package:festive_fusion/common%20screens/UserType.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:festive_fusion/USER/DesignerProffesinalsView.dart';
@@ -15,10 +16,14 @@ class UserHome extends StatefulWidget {
 
 class _UserHomeState extends State<UserHome> {
   void _logout() {
-    // Perform logout action here
-    // For example, clear user authentication and navigate to the user type page
-    // After performing logout action, navigate to the user type page
-    Navigator.pushReplacementNamed(context, '/usertype');
+    
+   Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => TypeUser(),
+  ),
+);
+
   }
 
   @override

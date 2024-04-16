@@ -1,3 +1,4 @@
+import 'package:festive_fusion/Navigationbar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -182,7 +183,7 @@ class _PaymentState extends State<Payment> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AfterBooked(),
+                    builder: (context) =>Navigationbar(),
                   ),
                 );
               },

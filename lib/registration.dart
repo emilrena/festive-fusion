@@ -1,417 +1,299 @@
-// import 'package:festive_fusion/USER/user_functions.dart';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/Navigationbar.dart';
-import 'package:festive_fusion/USER/UserHome.dart';
-import 'package:festive_fusion/USER/functions.dart';
+import 'package:festive_fusion/common%20screens/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Registration extends StatefulWidget {
-  const Registration({super.key});
+  const Registration({Key? key}) : super(key: key);
 
   @override
   State<Registration> createState() => _RegistrationState();
 }
 
 class _RegistrationState extends State<Registration> {
-  
   var profileImage;
   XFile? pickedFile;
   File? image;
   var Name = TextEditingController();
   var Email = TextEditingController();
-  var HouseName = TextEditingController();
-  var State = TextEditingController();
-  var District = TextEditingController();
+  var Adress = TextEditingController();
+  var District = TextEditingController(); // Added District controller
   var Pin = TextEditingController();
+  var password = TextEditingController();
+  var confirmPass = TextEditingController();
+  var State = TextEditingController();
   var Mobile = TextEditingController();
-  var Pass = TextEditingController();
-  var conformPass = TextEditingController();
   String gender = "";
   final fkey = GlobalKey<FormState>();
-  String imageUrl='';
+  String imageUrl = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Center(child: Text('Registration')),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Form(key: fkey,
-                child: Container(
-                  width: 300,
-                  child: SingleChildScrollView(
-                    child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                ImagePicker picker = ImagePicker();
-                                pickedFile = await picker.pickImage(
-                                    source: ImageSource.gallery);
-                  
-                                setState(() {
-                                  if (pickedFile != null) {
-                                    profileImage = File(pickedFile!.path);
-                                  }
-                                });
-                              },
-                              child: ClipOval(
-                                child: CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage: profileImage != null
-                                      ? FileImage(profileImage)
-                                      : null,
-                                  child: profileImage == null
-                                      ? Icon(
-                                          Icons.camera_alt,
-                                          size: 30,
-                                        )
-                                      : null,
-                                ),
-                              ),
-                            ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('Name'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: Name,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('Email'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: Email,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('Gender'),
-                            ),
-                          ],
-                        ),
-                        RadioListTile(
-                            title: Text('Male'),
-                            value: 'Male',
-                            groupValue: gender,
-                            onChanged: (value) {
-                              setState(() {
-                                gender = value.toString();
-                              });
-                            }),
-                        RadioListTile(
-                            title: Text('Female'),
-                            value: 'Female',
-                            groupValue: gender,
-                            onChanged: (value) {
-                              setState(() {
-                                gender = value.toString();
-                              });
-                            }),
-                        RadioListTile(
-                            title: Text('Others'),
-                            value: 'others',
-                            groupValue: gender,
-                            onChanged: (value) {
-                              setState(() {
-                                gender = value.toString();
-                              });
-                            }),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('House name'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: HouseName,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('state'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: State,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('District'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: District,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('Pin No'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: Pin,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('Mobile Number'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: Mobile,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('Password'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: Pass,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text('confirm password'),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          controller: conformPass,
-                           validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'field is empty';
-                                }
-                                return null;
-                              },
-                          decoration: InputDecoration(
-                              fillColor: Color.fromARGB(255, 224, 206, 221),
-                              filled: true,
-                              border: UnderlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
-                                  borderSide: BorderSide.none)),
-                        ),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              await uploadImage();
-                              await FirebaseFirestore.instance
-                                  .collection('User_Registration')
-                                  .add({
-                                'name': Name.text,
-                                'email': Email.text,
-                                'Adress': HouseName.text,
-                                'state': State.text,
-                                'District': District.text,
-                                'pin': Pin.text,
-                                'mobile no': Mobile.text,
-                                'password': Pass.text,
-                                'conform password': conformPass.text,
-                                'gender': gender,
-                               
-                                'image_url': imageUrl,
-                              });
-                              if (fkey.currentState!.validate()) {
-                               
-                              print(Name.text);
-                              print(Email.text);
-                              print(HouseName.text);
-                              print(State.text);
-                              print(District.text);
-                              print(Pin.text);
-                              print(Mobile.text);
-                              print(Pass.text);
-                              print(conformPass.text);
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) {
-                                  return Navigationbar();
-                                },
-                              ));
-                             } },
-                            child: Text('REGISTOR')),
-                      ],
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Form(key: fkey,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      ImagePicker picker = ImagePicker();
+                      pickedFile = await picker.pickImage(
+                        source: ImageSource.gallery,
+                      );
+              
+                      setState(() {
+                        if (pickedFile != null) {
+                          profileImage = File(pickedFile!.path);
+                        }
+                      });
+                    },
+                    child: ClipOval(
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage:
+                            profileImage != null ? FileImage(profileImage) : null,
+                        child: profileImage == null
+                            ? Icon(
+                                Icons.camera_alt,
+                                size: 30,
+                              )
+                            : null,
+                      ),
                     ),
                   ),
-                ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: Name,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter Name';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: Email,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter Email';
+                      }
+                      // You can add email format validation here if needed
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Text('Gender:'),
+                      Radio(
+                        value: 'Male',
+                        groupValue: gender,
+                        onChanged: (value) {
+                          setState(() {
+                            gender = value.toString();
+                          });
+                        },
+                      ),
+                      Text('Male'),
+                      Radio(
+                        value: 'Female',
+                        groupValue: gender,
+                        onChanged: (value) {
+                          setState(() {
+                            gender = value.toString();
+                          });
+                        },
+                      ),
+                      Text('Female'),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: Adress,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter House name';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'House name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: District,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter District';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'District',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: Pin,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter Pin No';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Pin No',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: State,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter State';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'State',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: Mobile,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter Mobile Number';
+                      }
+                      // You can add mobile number format validation here if needed
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Mobile Number',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: password,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter Password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password should be at least 6 characters long';
+                      }
+                      // You can add more password validation here if needed
+                      return null;
+                    },
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: confirmPass,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter Confirm Password';
+                      }
+                      if (value != password.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await uploadImage();
+                      try {
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
+                            .createUserWithEmailAndPassword(
+                          email: Email.text,
+                          password: password.text,
+                        );
+              
+                        await FirebaseFirestore.instance
+                            .collection('User_Registration')
+                            .add({
+                          'name': Name.text,
+                          'email': Email.text,
+                          'Adress': Adress.text,
+                          'District': District.text,
+                          'pin': Pin.text,
+                          'mobile no': Mobile.text,
+                          'password': password.text,
+                          'gender': gender,
+                          'image_url': imageUrl,
+                        });
+              
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(
+                              type: "user",
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        print('Error creating designer: $e');
+                      }
+                    },
+                    child: Text('REGISTER'),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
-
   }
+
   Future<void> uploadImage() async {
     try {
       if (profileImage != null) {
-        
         Reference storageReference =
-            FirebaseStorage.instance
-                .ref()
-                .child('image/${pickedFile!.name}');
+            FirebaseStorage.instance.ref().child('image/${DateTime.now()}.jpg');
 
         await storageReference.putFile(profileImage!);
 
-        // Get the download URL
-         imageUrl = await storageReference.getDownloadURL();
-
-        // Now you can use imageUrl as needed (e.g., save it to Firestore)
+        imageUrl = await storageReference.getDownloadURL();
         print('Image URL: $imageUrl');
       }
     } catch (e) {

@@ -14,6 +14,7 @@ class Waiting extends StatefulWidget {
 class _WaitingState extends State<Waiting> {
   List<QueryDocumentSnapshot>? bookings;
   String? userId;
+  Map<String, bool> paymentMadeMap = {};
 
   @override
   void initState() {
@@ -88,6 +89,7 @@ class _WaitingState extends State<Waiting> {
 
   Future<String?> fetchPaymentStatus(String providerId) async {
     try {
+      print('Fetching payment status...');
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
               .collection('payments')
@@ -96,8 +98,11 @@ class _WaitingState extends State<Waiting> {
               .get();
 
       if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs.first['status'];
+        final status = snapshot.docs.first['status'];
+        print('Payment status: $status');
+        return status;
       } else {
+        print('No payment data found for provider ID: $providerId');
         return null;
       }
     } catch (error) {
@@ -127,10 +132,12 @@ class _WaitingState extends State<Waiting> {
                     final providerId = booking['provider_id'];
                     final status = booking['status'];
 
-                    return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    return FutureBuilder<
+                        DocumentSnapshot<Map<String, dynamic>>>(
                       future: fetchProviderDetails(type, providerId),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
 
@@ -162,64 +169,58 @@ class _WaitingState extends State<Waiting> {
                             subtitle: Text(
                               status == 0
                                   ? 'Status: Pending'
-                                  : (status == 1 ? 'Status: Payment' : 'Status: Rejected'),
+                                  : (status == 1
+                                      ? 'Status: Payment'
+                                      : 'Status: Rejected'),
                               style: TextStyle(
                                 color: status == 0
                                     ? Colors.grey
                                     : (status == 1 ? Colors.blue : Colors.red),
                               ),
                             ),
-                            trailing: FutureBuilder<String?>(
-                              future: fetchPaymentStatus(providerId),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                }
-                                if (snapshot.hasError) {
-                                  return SizedBox(); // Return an empty SizedBox if an error occurs
-                                }
-                                final paymentStatus = snapshot.data;
-
-                                return ElevatedButton(
-                                  onPressed: paymentStatus != 'Paid'
-                                      ? () {
-                                          if (status == 1) {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) {
-                                                return MyBookingsStatus(
-                                                  providerName: providerName,
-                                                  providerImage: providerImage,
-                                                  packageId: booking['package_id'],
-                                                  providerId: providerId,
-                                                  type: type,
-                                                );
-                                              }),
-                                            );
-                                          }
-                                        }
-                                      : null, // Disable button if payment status is 'Paid'
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 8.0,
-                                      horizontal: 16.0,
+                            trailing: status == 1 && !paymentMadeMap.containsKey(providerId)
+                                ? ElevatedButton(
+                                    onPressed: () async {
+                                      // Mark payment as made
+                                      paymentMadeMap[providerId] = true;
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) {
+                                          // Set the buttonPressed value to true
+                                          return MyBookingsStatus(
+                                            providerName: providerName,
+                                            providerImage: providerImage,
+                                            packageId: booking['package_id'],
+                                            providerId: providerId,
+                                            type: type,
+                                          );
+                                        }),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                        horizontal: 16.0,
+                                      ),
+                                      backgroundColor: status == 0
+                                          ? Colors.grey // Pending
+                                          : (status == 1
+                                              ? Colors.blue // Payment
+                                              : Colors.red), // Rejected
                                     ),
-                                    backgroundColor: status == 0
-                                        ? Colors.grey // Pending
-                                        : (status == 1
-                                            ? Colors.blue // Payment
-                                            : Colors.red), // Rejected
-                                  ),
-                                  child: Text(
-                                    status == 0 ? 'Pending' : (status == 1 ? 'Payment' : 'Rejected'),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
+                                    child: Text(
+                                      status == 0
+                                          ? 'Pending'
+                                          : (status == 1
+                                              ? 'Payment'
+                                              : 'Rejected'),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
+                                  )
+                                : SizedBox(),
                           ),
                         );
                       },

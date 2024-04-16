@@ -52,7 +52,7 @@ class _BookedState extends State<Booked> {
 
   void fetchDesignerPackageDetails() {
     FirebaseFirestore.instance
-        .collection('designer_package')
+        .collection(' designer_package ')
         .doc(widget.package_id)
         .get()
         .then((doc) {

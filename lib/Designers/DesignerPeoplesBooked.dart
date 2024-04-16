@@ -72,14 +72,82 @@ class _DesignerNotificationState extends State<DesignerNotification> {
     }
   }
 
-  Future<void> acceptBooking(String requestId) async {
+  Future<Map<String, dynamic>> fetchPackageDetails(String package_id) async {
     try {
-      await FirebaseFirestore.instance.collection('requests').doc(requestId).update({
-        'status': 1, // 1 indicates booking accepted
-      });
+      final DocumentSnapshot<Map<String, dynamic>> packageSnapshot = await FirebaseFirestore.instance
+          .collection(' designer_package ')
+          .doc(package_id)
+          .get();
+
+      final packageDetails = packageSnapshot.data() ?? {};
+      print('Fetched package details for packageId: $package_id');
+
+      return packageDetails;
+    } catch (e) {
+      print('Error fetching package details for packageId: $package_id - $e');
+      return {};
+    }
+  }
+
+  Future<void> acceptBooking(BuildContext context, String requestId, String userId, String packageId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String designerId = prefs.getString('uid') ?? '';
+
+      // Fetch package details using packageId
+      final packageDetails = await fetchPackageDetails(packageId);
+
+      // Display the package name and description from packageDetails
+      String packageName = packageDetails['package'] ?? '';
+      String packageDescription = packageDetails['description'] ?? '';
+
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          TextEditingController deliveryDateController = TextEditingController();
+          return AlertDialog(
+            title: Text("Enter Delivery Date"),
+            content: TextField(
+              controller: deliveryDateController,
+              keyboardType: TextInputType.datetime,
+              decoration: InputDecoration(
+                hintText: "YYYY-MM-DD",
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  String deliveryDate = deliveryDateController.text;
+                  if (deliveryDate.isNotEmpty) {
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                    
+                    // Update the booking status
+                    await FirebaseFirestore.instance.collection('requests').doc(requestId).update({
+                      'status': 1, // 1 indicates booking accepted
+                    });
+
+                    // Store the delivery date, package name, and package description in the designer_delivery collection
+                    await FirebaseFirestore.instance.collection('designer_delivery').doc(requestId).set({
+                      'request_id': requestId,
+                      'user_id': userId, // Pass the userId
+                      'designer_id': designerId, // Save the designer ID
+                      'delivery_date': deliveryDate,
+                      'package_name': packageName,
+                      'package_description': packageDescription,
+                    });
+
+                    // Fetch updated requests
+                    fetchBookingRequests();
+                  }
+                },
+                child: Text("Submit"),
+              ),
+            ],
+          );
+        },
+      );
       print('Booking request accepted');
-      // After accepting, fetch updated requests
-      fetchBookingRequests();
     } catch (e) {
       print('Error accepting booking request: $e');
     }
@@ -138,6 +206,7 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                 final userId = bookingRequest['user_id'];
                 final requestId = bookingRequests[index].id;
                 final status = bookingRequest['status'];
+                final packageId = bookingRequest['package_id']; // Add this line
 
                 return FutureBuilder(
                   future: fetchUserDetails(userId),
@@ -172,9 +241,19 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                                 'Package Chosen:',
                                 style: TextStyle(color: Colors.grey),
                               ),
-                              Text(
-                                bookingRequest['packageName'] ?? '',
-                                style: TextStyle(fontSize: 16),
+                              FutureBuilder(
+                                future: fetchPackageDetails(packageId),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else {
+                                    final packageDetails = snapshot.data as Map<String, dynamic>;
+                                    return Text(
+                                      packageDetails['package'] ?? '',
+                                      style: TextStyle(fontSize: 16),
+                                    );
+                                  }
+                                },
                               ),
                               SizedBox(height: 10),
                               Text(
@@ -198,7 +277,7 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                                       children: [
                                         TextButton(
                                           onPressed: () {
-                                            acceptBooking(requestId);
+                                            acceptBooking(context, requestId, userId, bookingRequest['package_id'] ?? '');
                                           },
                                           child: Text(
                                             'ACCEPT',
