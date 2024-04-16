@@ -5,6 +5,7 @@ import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
 // import 'package:festive_fusion/Designers/MakeupHome.dart';
 import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
 import 'package:festive_fusion/Makeup/BookingNotification.dart';
+import 'package:festive_fusion/Makeup/MakeupFeedbackComplaint.dart';
 import 'package:festive_fusion/Makeup/MakeupHome.dart';
 import 'package:festive_fusion/Makeup/Makeup_editProfile.dart';
 import 'package:festive_fusion/USER/BookedPeoples.dart';
@@ -26,6 +27,7 @@ class _MakeupNavState extends State<MakeupNav> {
    static const List<dynamic>option=[
     MakeupNotification(),
     MakeupHome(),
+    Makeupresponce(),
     Makeup_EditProfile(),
     
 
@@ -45,6 +47,7 @@ bottomNavigationBar: BottomNavigationBar(items: [
   BottomNavigationBarItem(icon: Icon(Icons.notification_add,),label: 'Notification'),
 
   BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
+   BottomNavigationBarItem(icon: Icon(Icons.stacked_bar_chart,),label: 'response'),
 
   BottomNavigationBarItem(icon: Icon(Icons.person),label: 'edit profile'),
 ],

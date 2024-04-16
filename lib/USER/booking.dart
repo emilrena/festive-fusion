@@ -285,6 +285,7 @@ class _BookedState extends State<Booked> {
                             'time': timeAsString.toString(),
                             'status': 0,
                             'type': widget.type,
+                            'payy':0,
                           });
                           setState(() {
                             requestDocumentId = docRef.id;

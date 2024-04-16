@@ -14,7 +14,6 @@ class Waiting extends StatefulWidget {
 class _WaitingState extends State<Waiting> {
   List<QueryDocumentSnapshot>? bookings;
   String? userId;
-  Map<String, bool> paymentMadeMap = {};
 
   @override
   void initState() {
@@ -87,27 +86,14 @@ class _WaitingState extends State<Waiting> {
     }
   }
 
-  Future<String?> fetchPaymentStatus(String providerId) async {
+  Future<void> updatePaymentStatus(String bookingId) async {
     try {
-      print('Fetching payment status...');
-      final QuerySnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance
-              .collection('payments')
-              .where('provider_id', isEqualTo: providerId)
-              .limit(1)
-              .get();
-
-      if (snapshot.docs.isNotEmpty) {
-        final status = snapshot.docs.first['status'];
-        print('Payment status: $status');
-        return status;
-      } else {
-        print('No payment data found for provider ID: $providerId');
-        return null;
-      }
+      await FirebaseFirestore.instance
+          .collection('requests')
+          .doc(bookingId)
+          .update({'payy': 1});
     } catch (error) {
-      print('Error fetching payment status: $error');
-      return null;
+      print('Error updating payment status: $error');
     }
   }
 
@@ -131,6 +117,8 @@ class _WaitingState extends State<Waiting> {
                     final type = booking['type'];
                     final providerId = booking['provider_id'];
                     final status = booking['status'];
+                    final bookingId = booking.id; // Document ID of the booking
+                    final payy = booking['payy']; // Payment status
 
                     return FutureBuilder<
                         DocumentSnapshot<Map<String, dynamic>>>(
@@ -178,15 +166,31 @@ class _WaitingState extends State<Waiting> {
                                     : (status == 1 ? Colors.blue : Colors.red),
                               ),
                             ),
-                            trailing: status == 1 && !paymentMadeMap.containsKey(providerId)
+                            trailing: payy == 1
                                 ? ElevatedButton(
+                                    onPressed: null, // Button disabled
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                        horizontal: 16.0,
+                                      ),
+                                      backgroundColor: Colors.grey,
+                                    ),
+                                    child: Text(
+                                      'Payment Made',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  )
+                                : ElevatedButton(
                                     onPressed: () async {
-                                      // Mark payment as made
-                                      paymentMadeMap[providerId] = true;
+                                      // Update payment status and navigate to payment page
+                                      await updatePaymentStatus(bookingId);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(builder: (context) {
-                                          // Set the buttonPressed value to true
                                           return MyBookingsStatus(
                                             providerName: providerName,
                                             providerImage: providerImage,
@@ -219,8 +223,7 @@ class _WaitingState extends State<Waiting> {
                                         fontSize: 12,
                                       ),
                                     ),
-                                  )
-                                : SizedBox(),
+                                  ),
                           ),
                         );
                       },

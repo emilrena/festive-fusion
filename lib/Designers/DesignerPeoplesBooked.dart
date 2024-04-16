@@ -42,8 +42,13 @@ class _DesignerNotificationState extends State<DesignerNotification> {
 
   Future<void> fetchPayments() async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance.collection('payments').get();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var uid = prefs.getString('uid') ?? '';
+
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+          .collection('payments')
+          .where('provider_id', isEqualTo: uid) // Filter payments by provider_id
+          .get();
 
       setState(() {
         payments = snapshot.docs;
@@ -71,7 +76,6 @@ class _DesignerNotificationState extends State<DesignerNotification> {
       return {};
     }
   }
-
   Future<Map<String, dynamic>> fetchPackageDetails(String package_id) async {
     try {
       final DocumentSnapshot<Map<String, dynamic>> packageSnapshot = await FirebaseFirestore.instance

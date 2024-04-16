@@ -8,6 +8,7 @@ import 'package:festive_fusion/USER/BookedPeoples.dart';
 import 'package:festive_fusion/USER/UserHome.dart';
 import 'package:festive_fusion/USER/booking.dart';
 import 'package:festive_fusion/USER/enquiery.dart';
+import 'package:festive_fusion/mehandi/MehandiFeedbackComplainr.dart';
 import 'package:festive_fusion/mehandi/MehandiHome.dart';
 import 'package:festive_fusion/mehandi/MehandiNotificatin.dart';
 import 'package:festive_fusion/mehandi/Mehandi_editProfile.dart';
@@ -26,6 +27,7 @@ class _MehandiNavState extends State<MehandiNav> {
    static const List<dynamic>option=[
     MehandiNotificaton(),
     MehandiHome(),
+     Mehandiresponce(),
     Mehandi_EditProfile(),
     
 
@@ -45,7 +47,7 @@ bottomNavigationBar: BottomNavigationBar(items: [
   BottomNavigationBarItem(icon: Icon(Icons.notification_add,),label: 'Notification'),
 
   BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
-
+BottomNavigationBarItem(icon: Icon(Icons.stacked_bar_chart,),label: 'response'),
   BottomNavigationBarItem(icon: Icon(Icons.person),label: 'edit profile'),
 ],
 type: BottomNavigationBarType.shifting,

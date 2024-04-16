@@ -2,6 +2,7 @@ import 'package:festive_fusion/ADMIN/AdminComplaintView.dart';
 import 'package:festive_fusion/ADMIN/AdminDesignerView.dart';
 import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
+import 'package:festive_fusion/Designers/DesignerFeedbackComplaint.dart';
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
 import 'package:festive_fusion/USER/BookedPeoples.dart';
@@ -23,6 +24,7 @@ class _DesignerNavState extends State<DesignerNav> {
    static const List<dynamic>option=[
     DesignerNotification(),
     DesignerHome(),
+    FeedbackComplaintDesigner(),
     DsgEdit(),
     
 
@@ -42,6 +44,8 @@ bottomNavigationBar: BottomNavigationBar(items: [
   BottomNavigationBarItem(icon: Icon(Icons.notification_add,),label: 'Notification'),
 
   BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
+
+  BottomNavigationBarItem(icon: Icon(Icons.stacked_bar_chart,),label: 'response'),
 
   BottomNavigationBarItem(icon: Icon(Icons.person),label: 'edit profile'),
 ],

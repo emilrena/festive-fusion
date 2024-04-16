@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/Makeup/Makeup_package.dart';
-import 'package:festive_fusion/mehandi/Mehandi_package.dart';
 import 'package:flutter/material.dart';
-import 'package:festive_fusion/Designers/EditService.dart';
-import 'package:festive_fusion/Designers/packageadd.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:festive_fusion/mehandi/Mehandi_package.dart';
 
 class Mehndi_package_view extends StatefulWidget {
   const Mehndi_package_view({Key? key}) : super(key: key);
@@ -13,8 +11,22 @@ class Mehndi_package_view extends StatefulWidget {
 }
 
 class _Mehndi_package_viewState extends State<Mehndi_package_view> {
- TextEditingController _packageNameController = TextEditingController();
+  TextEditingController _packageNameController = TextEditingController();
   TextEditingController _packageDescriptionController = TextEditingController();
+  String? mehandiId;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMehandiId();
+  }
+
+  void fetchMehandiId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      mehandiId = prefs.getString('uid');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +36,8 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-             .collection('mehandi_package')
+            .collection('mehandi_package')
+            .where('mehandi_id', isEqualTo: mehandiId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -79,10 +92,11 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => _buildEditDialog(
-                                      context,
-                                      documentId,
-                                      packageName,
-                                      packageDescription),
+                                    context,
+                                    documentId,
+                                    packageName,
+                                    packageDescription,
+                                  ),
                                 );
                               },
                               icon: Icon(Icons.edit),
@@ -143,8 +157,12 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
     );
   }
 
-  Widget _buildEditDialog(BuildContext context, String documentId,
-      String packageName, String packageDescription) {
+  Widget _buildEditDialog(
+    BuildContext context,
+    String documentId,
+    String packageName,
+    String packageDescription,
+  ) {
     _packageNameController.text = packageName;
     _packageDescriptionController.text = packageDescription;
 
@@ -184,7 +202,7 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
   Future<void> deletePackage(String documentId) async {
     try {
       await FirebaseFirestore.instance
-           .collection('mehandi_package')
+          .collection('mehandi_package')
           .doc(documentId)
           .delete();
       print('Package deleted successfully.');
@@ -196,7 +214,7 @@ class _Mehndi_package_viewState extends State<Mehndi_package_view> {
   Future<void> updatePackage(String documentId) async {
     try {
       await FirebaseFirestore.instance
-           .collection('mehandi_package')
+          .collection('mehandi_package')
           .doc(documentId)
           .update({
         'package': _packageNameController.text,

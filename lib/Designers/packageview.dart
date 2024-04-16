@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/Designers/packageadd.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Vservice extends StatefulWidget {
   const Vservice({Key? key}) : super(key: key);
@@ -12,6 +13,20 @@ class Vservice extends StatefulWidget {
 class _VserviceState extends State<Vservice> {
   TextEditingController _packageNameController = TextEditingController();
   TextEditingController _packageDescriptionController = TextEditingController();
+  String? designerId;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDesignerId();
+  }
+
+  void fetchDesignerId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      designerId = prefs.getString('uid');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +36,8 @@ class _VserviceState extends State<Vservice> {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-             .collection(' designer_package ')
+            .collection(' designer_package ')
+            .where('designer_id', isEqualTo: designerId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -181,7 +197,7 @@ class _VserviceState extends State<Vservice> {
   Future<void> deletePackage(String documentId) async {
     try {
       await FirebaseFirestore.instance
-           .collection(' designer_package ')
+          .collection(' designer_package ')
           .doc(documentId)
           .delete();
       print('Package deleted successfully.');
@@ -193,7 +209,7 @@ class _VserviceState extends State<Vservice> {
   Future<void> updatePackage(String documentId) async {
     try {
       await FirebaseFirestore.instance
-           .collection(' designer_package ')
+          .collection(' designer_package ')
           .doc(documentId)
           .update({
         'package': _packageNameController.text,

@@ -552,6 +552,126 @@ class _MyBookingsState extends State<MyBookings> {
                                             ),
                                           ],
                                         ),
+                                        SizedBox(height: 16),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: Text("Feedback"),
+                                                      content: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                              "Rate your experience"),
+                                                          RatingBar.builder(
+                                                            initialRating:
+                                                                rating,
+                                                            minRating: 1,
+                                                            direction: Axis
+                                                                .horizontal,
+                                                            allowHalfRating:
+                                                                true,
+                                                            itemCount: 5,
+                                                            itemSize: 20,
+                                                            itemPadding:
+                                                                EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 4.0,
+                                                            ),
+                                                            itemBuilder:
+                                                                (context, _) =>
+                                                                    Icon(
+                                                              Icons.star,
+                                                              color:
+                                                                  Colors.purple,
+                                                            ),
+                                                            onRatingUpdate:
+                                                                (value) {
+                                                              setState(() {
+                                                                rating = value;
+                                                              });
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      actions: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            // Call function to submit feedback
+                                                          },
+                                                          child: Text('Submit'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: Text('Cancel'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Text('Feedback'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title:
+                                                          Text("Complaint"),
+                                                      content: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                              "Please describe your complaint"),
+                                                          TextField(
+                                                            onChanged: (value) {
+                                                              complaint = value;
+                                                            },
+                                                            decoration:
+                                                                InputDecoration(
+                                                              labelText:
+                                                                  'Complaint',
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      actions: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            // Call function to submit complaint
+                                                          },
+                                                          child: Text('Submit'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context)
+                                                                .pop();
+                                                          },
+                                                          child: Text('Cancel'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Text('Complaint'),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
