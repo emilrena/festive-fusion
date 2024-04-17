@@ -4,6 +4,7 @@ import 'package:festive_fusion/ADMIN/AdminHome.dart';
 import 'package:festive_fusion/Designers/DesignerEditProfile.dart';
 import 'package:festive_fusion/Designers/DesignerHome.dart';
 import 'package:festive_fusion/Designers/DesignerPeoplesBooked.dart';
+import 'package:festive_fusion/Rental/RentalFeedbackComplaint.dart';
 import 'package:festive_fusion/Rental/RentalHome.dart';
 import 'package:festive_fusion/Rental/RentalHomee.dart';
 import 'package:festive_fusion/Rental/RentalNotification.dart';
@@ -28,7 +29,8 @@ class _RentalNavState extends State<RentalNav> {
   int selectedindex=1;
    static  List<dynamic>option=[
     RentalNotification(),
-     RentHome(),                                               
+     RentHome(), 
+     RentalResponse(),                                              
     Rental_Edit_Profile(),
     
 
@@ -48,6 +50,7 @@ bottomNavigationBar: BottomNavigationBar(items: [
   BottomNavigationBarItem(icon: Icon(Icons.notification_add,),label: 'Notification'),
 
   BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'home'),
+  BottomNavigationBarItem(icon: Icon(Icons.stacked_bar_chart,),label: 'response'),
 
   BottomNavigationBarItem(icon: Icon(Icons.person),label: 'edit profile'),
 ],

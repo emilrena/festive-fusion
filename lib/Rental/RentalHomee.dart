@@ -35,17 +35,38 @@ class _RentHomeState extends State<RentHome> {
     _loadImages();
   }
 
-  Future<void> _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+ Future<void> _loadUserData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  setState(() {
+    _userId = prefs.getString('uid');
+    _userName = prefs.getString('name');
+  });
+
+  // Fetch user data from Firestore
+  try {
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('rental_register')
+        .doc(_userId)
+        .get();
+
+    if (userSnapshot.exists) {
+      setState(() {
+        _userImageUrl = NetworkImage(userSnapshot['image_url']);
+      });
+    } else {
+      // If user document doesn't exist, set default image
+      setState(() {
+        _userImageUrl = AssetImage('Assets/p4.jpg');
+      });
+    }
+  } catch (error) {
+    print('Error loading user data: $error');
+    // Set default image in case of error
     setState(() {
-      _userId = prefs.getString('uid');
-      _userName = prefs.getString('name');
-      String? imageUrl = prefs.getString('image_url');
-      _userImageUrl = imageUrl != null
-          ? NetworkImage(imageUrl)
-          : AssetImage('Assets/p4.jpg');
+      _userImageUrl = AssetImage('Assets/p4.jpg');
     });
   }
+}
 
   Future<void> _getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);

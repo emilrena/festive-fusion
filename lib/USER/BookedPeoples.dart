@@ -489,6 +489,8 @@ class _MyBookingsState extends State<MyBookings> {
                           final imageUrl = rental['imageUrl'] ?? '';
                           final description = rental['description'] ?? '';
                           final rate = rental['rate'] ?? '';
+                          final rentalId =
+                              rental['rental_id'] ?? ''; // Get rental_id
                           final time = 'pickup: after 10 days';
 
                           return Padding(
@@ -519,6 +521,14 @@ class _MyBookingsState extends State<MyBookings> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        Text(
+                                          'Rental ID: $rentalId', // Display rental_id
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
                                         Text(
                                           'Description:',
                                           style: TextStyle(
@@ -558,7 +568,105 @@ class _MyBookingsState extends State<MyBookings> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             ElevatedButton(
-                                              onPressed: () {
+                                              onPressed: () async {
+                                                // Fetch the current rental ID from the rental_booking collection
+                                                // DocumentSnapshot snapshot =
+                                                //     await FirebaseFirestore.instance
+                                                //         .collection('rental_booking')
+                                                //         .doc(rental_id)
+                                                //         .get();
+                                                // String rentalId = snapshot['rental_id']; // Assuming 'rental_id' is the field name in your rental_booking collection
+
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    String complaintText =
+                                                        ''; // Variable to hold the complaint text
+                                                    return AlertDialog(
+                                                      title: Text("Complaint"),
+                                                      content: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                              "Please describe your complaint"),
+                                                          TextField(
+                                                            onChanged: (value) {
+                                                              complaintText =
+                                                                  value; // Update complaint text as user types
+                                                            },
+                                                            decoration:
+                                                                InputDecoration(
+                                                              labelText:
+                                                                  'Complaint',
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      actions: [
+                                                        ElevatedButton(
+                                                          onPressed: () async {
+                                                            SharedPreferences
+                                                                prefs =
+                                                                await SharedPreferences
+                                                                    .getInstance();
+                                                            String userId =
+                                                                prefs.getString(
+                                                                        'uid') ??
+                                                                    '';
+                                                            String userName =
+                                                                prefs.getString(
+                                                                        'name') ??
+                                                                    '';
+
+                                                            // Store complaint in Firestore
+                                                            await FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'complaints')
+                                                                .add({
+                                                              'provider_id':
+                                                                  rentalId,
+                                                              'name': userName,
+                                                              'complaint':
+                                                                  complaintText,
+                                                              'type': 'rental',
+                                                            });
+
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Close dialog
+                                                          },
+                                                          child: Text('Submit'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Close dialog
+                                                          },
+                                                          child: Text('Cancel'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Text('Complaint'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                // Fetch the current rental ID from the rental_booking collection
+                                                // DocumentSnapshot snapshot =
+                                                //     await FirebaseFirestore
+                                                //         .instance
+                                                //         .collection(
+                                                //             'rental_booking')
+                                                //         .doc(rental_id)
+                                                //         .get();
+                                                // Assuming 'rental_id' is the field name in your rental_booking collection
+
                                                 showDialog(
                                                   context: context,
                                                   builder:
@@ -575,17 +683,16 @@ class _MyBookingsState extends State<MyBookings> {
                                                             initialRating:
                                                                 rating,
                                                             minRating: 1,
-                                                            direction: Axis
-                                                                .horizontal,
+                                                            direction:
+                                                                Axis.horizontal,
                                                             allowHalfRating:
                                                                 true,
                                                             itemCount: 5,
                                                             itemSize: 20,
-                                                            itemPadding:
-                                                                EdgeInsets
-                                                                    .symmetric(
-                                                              horizontal: 4.0,
-                                                            ),
+                                                            itemPadding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        4.0),
                                                             itemBuilder:
                                                                 (context, _) =>
                                                                     Icon(
@@ -604,14 +711,40 @@ class _MyBookingsState extends State<MyBookings> {
                                                       ),
                                                       actions: [
                                                         ElevatedButton(
-                                                          onPressed: () {
-                                                            // Call function to submit feedback
+                                                          onPressed: () async {
+                                                            SharedPreferences
+                                                                prefs =
+                                                                await SharedPreferences
+                                                                    .getInstance();
+                                                            String userName =
+                                                                prefs.getString(
+                                                                        'name') ??
+                                                                    '';
+
+                                                            // Store feedback in Firestore with rental ID
+                                                            await FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'feedback')
+                                                                .add({
+                                                             'provider_id':
+                                                                  rentalId,
+                                                              'name': userName,
+                                                              'rating': rating,
+                                                              'type': 'rental',
+                                                            });
+
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Close dialog
                                                           },
                                                           child: Text('Submit'),
                                                         ),
                                                         TextButton(
                                                           onPressed: () {
-                                                            Navigator.of(context).pop();
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Close dialog
                                                           },
                                                           child: Text('Cancel'),
                                                         ),
@@ -621,54 +754,6 @@ class _MyBookingsState extends State<MyBookings> {
                                                 );
                                               },
                                               child: Text('Feedback'),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title:
-                                                          Text("Complaint"),
-                                                      content: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Text(
-                                                              "Please describe your complaint"),
-                                                          TextField(
-                                                            onChanged: (value) {
-                                                              complaint = value;
-                                                            },
-                                                            decoration:
-                                                                InputDecoration(
-                                                              labelText:
-                                                                  'Complaint',
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      actions: [
-                                                        ElevatedButton(
-                                                          onPressed: () {
-                                                            // Call function to submit complaint
-                                                          },
-                                                          child: Text('Submit'),
-                                                        ),
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            Navigator.of(context)
-                                                                .pop();
-                                                          },
-                                                          child: Text('Cancel'),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              child: Text('Complaint'),
                                             ),
                                           ],
                                         ),

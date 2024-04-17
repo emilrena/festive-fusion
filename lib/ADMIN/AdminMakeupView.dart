@@ -107,7 +107,7 @@ class _AdminMakeupViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MakeupFullProfile(),
+                                  builder: (context) => MakeupFullProfile( makeup_id: document.id,),
                                 ),
                               );
                             },

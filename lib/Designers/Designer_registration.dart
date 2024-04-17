@@ -422,6 +422,7 @@ class _Desgn_RegState extends State<Desgn_Reg> {
                                 'gender': gender,
                                 'experience': selectedExperience,
                                 'image_url': imageUrl,
+                                       
                                 // Optionally, store additional designer data
                               });
 

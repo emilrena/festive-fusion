@@ -422,6 +422,7 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                               'gender': gender,
                               'experience': selectedExperience,
                               'image_url': imageUrl,
+                              'status':0 
                             });
                             if (fkey.currentState!.validate()) {
                               print(Name.text);
