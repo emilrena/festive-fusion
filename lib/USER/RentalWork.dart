@@ -64,11 +64,11 @@ class _RentalWorkViewState extends State<RentalWorkView> {
              child: Row(mainAxisAlignment: MainAxisAlignment.start,
                children: [
                  CircleAvatar(backgroundImage: AssetImage('Assets/p3.jpg'),radius: 30,),
-                 IconButton(onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder:(context) {
-                            return Rental_Message();
-                          },));
-                 }, icon: Icon(Icons.message))
+                //  IconButton(onPressed: (){
+                //   Navigator.push(context, MaterialPageRoute(builder:(context) {
+                //             return Rental_Message();
+                //           },));
+                //  }, icon: Icon(Icons.message))
                ],
              ),
            ),

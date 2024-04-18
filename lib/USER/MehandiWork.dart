@@ -76,17 +76,17 @@ Future<void> _loadImages() async {
                   backgroundImage: AssetImage('Assets/p3.jpg'),
                   radius: 30,
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return User_Mehandi_Message();
-                      }),
-                    );
-                  },
-                  icon: Icon(Icons.message),
-                )
+                // IconButton(
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(builder: (context) {
+                //         return User_Mehandi_Message();
+                //       }),
+                //     );
+                //   },
+                //   icon: Icon(Icons.message),
+                // )
               ],
             ),
           ),

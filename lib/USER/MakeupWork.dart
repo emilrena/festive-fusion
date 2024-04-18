@@ -72,17 +72,17 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
                   backgroundImage: AssetImage('Assets/p3.jpg'),
                   radius: 30,
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return Makeup_Message();
-                      }),
-                    );
-                  },
-                  icon: Icon(Icons.message),
-                )
+                // IconButton(
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(builder: (context) {
+                //         return Makeup_Message();
+                //       }),
+                //     );
+                //   },
+                //   icon: Icon(Icons.message),
+                // )
               ],
             ),
           ),

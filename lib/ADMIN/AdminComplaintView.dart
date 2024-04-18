@@ -9,7 +9,7 @@ class ComplaintView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'ENQUIRIES',
+          'complaints',
           style: TextStyle(color: Colors.deepPurpleAccent),
         ),
       ),
@@ -89,7 +89,7 @@ class ComplaintView extends StatelessWidget {
 
   Future<DocumentSnapshot> _fetchProviderDetails(String type, String providerId) async {
     String collectionName;
-
+  
     switch (type) {
       case 'designer':
         collectionName = 'designer register';
@@ -101,13 +101,18 @@ class ComplaintView extends StatelessWidget {
         collectionName = 'Makeup register';
         break;
       case 'rental':
-        collectionName = 'rental_register';
+        collectionName = 'Rental register';
         break;
       default:
         // Handle other types here if needed
         return Future.value(null);
     }
-
-    return await FirebaseFirestore.instance.collection(collectionName).doc(providerId).get();
+    
+    try {
+      return await FirebaseFirestore.instance.collection(collectionName).doc(providerId).get();
+    } catch (error) {
+      print('Error fetching provider details: $error');
+      throw error; // Rethrow the error to handle it outside this function
+    }
   }
 }

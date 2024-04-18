@@ -21,8 +21,8 @@ class DesignerWork extends StatefulWidget {
 class _DesignerWorkState extends State<DesignerWork> {
   late List<String> _imageUrls;
   bool _isLoading = false;
-  late String _selectedCategory;
-  late String _selectedDressCategory;
+  String ?_selectedCategory;
+  String ?_selectedDressCategory;
   String _designerImageUrl = '';
   late String _senderId;
   late Timestamp _timestamp;
@@ -30,8 +30,8 @@ class _DesignerWorkState extends State<DesignerWork> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory = '';
-    _selectedDressCategory = '';
+    _selectedCategory ;
+    _selectedDressCategory;
     _loadImages();
     _loadDesignerImage();
     _getSenderId();
@@ -50,38 +50,44 @@ class _DesignerWorkState extends State<DesignerWork> {
   }
 
   Future<void> _loadImages() async {
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      QuerySnapshot snapshot;
-      if (_selectedCategory.isNotEmpty && _selectedDressCategory.isNotEmpty) {
-        snapshot = await FirebaseFirestore.instance
-            .collection('designer_upload_image')
-            .where('designer_id', isEqualTo: widget.designer_id)
-            .where('category', isEqualTo: _selectedCategory)
-            .where('dress', isEqualTo: _selectedDressCategory)
-            .get();
-      } else {
-        snapshot = await FirebaseFirestore.instance
-            .collection('designer_upload_image')
-            .where('designer_id', isEqualTo: widget.designer_id)
-            .get();
-      }
-
-      setState(() {
-        _imageUrls =
-            snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
-      });
-    } catch (error) {
-      print('Error loading images: $error');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+  try {
+    QuerySnapshot snapshot;
+    if (_selectedCategory != null && _selectedDressCategory != null) {
+      snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: widget.designer_id)
+          .where('category', isEqualTo: _selectedCategory!)
+          .where('dress', isEqualTo: _selectedDressCategory!)
+          .get();
+    } else if (_selectedCategory != null) {
+      snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: widget.designer_id)
+          .where('category', isEqualTo: _selectedCategory!)
+          .get();
+    } else {
+      snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: widget.designer_id)
+          .get();
     }
+
+    setState(() {
+      _imageUrls =
+          snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+    });
+  } catch (error) {
+    print('Error loading images: $error');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   Future<void> _loadDesignerImage() async {
     try {
@@ -124,9 +130,9 @@ class _DesignerWorkState extends State<DesignerWork> {
                 onTap: () {
                   setState(() {
                     _selectedCategory = 'Bridal Dress';
-                    _selectedDressCategory = 'Mehendi';
+                    _selectedDressCategory = 'mehendi';
                   });
-                  Navigator.pop(context, 'Mehendi');
+                  Navigator.pop(context, 'mehendi');
                 },
               ),
               ListTile(
@@ -134,9 +140,9 @@ class _DesignerWorkState extends State<DesignerWork> {
                 onTap: () {
                   setState(() {
                     _selectedCategory = 'Bridal Dress';
-                    _selectedDressCategory = 'Reception';
+                    _selectedDressCategory = 'reception';
                   });
-                  Navigator.pop(context, 'Reception');
+                  Navigator.pop(context, 'reception');
                 },
               ),
               ListTile(

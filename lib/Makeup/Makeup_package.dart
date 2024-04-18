@@ -61,7 +61,7 @@ class _Makeup_Package_AddState extends State<Makeup_Package_Add> {
                     maxLines: 5,
                     decoration: InputDecoration(
                      
-                        hintText: 'Describe here',
+                        hintText: 'Rate',
                         fillColor: Color.fromARGB(255, 182, 174, 196),
                         filled: true,
                         border:

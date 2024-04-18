@@ -3,6 +3,7 @@ import 'package:festive_fusion/Makeup/Makeup_package.dart';
 import 'package:flutter/material.dart';
 import 'package:festive_fusion/Designers/EditService.dart';
 import 'package:festive_fusion/Designers/packageadd.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Makeup_Package_View extends StatefulWidget {
   const Makeup_Package_View({Key? key}) : super(key: key);
@@ -14,6 +15,20 @@ class Makeup_Package_View extends StatefulWidget {
 class _Makeup_Package_ViewState extends State<Makeup_Package_View> {
    TextEditingController _packageNameController = TextEditingController();
   TextEditingController _packageDescriptionController = TextEditingController();
+   String? makeupId;
+
+   @override
+  void initState() {
+    super.initState();
+    fetchMakeupId();
+  }
+
+  void fetchMakeupId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      makeupId = prefs.getString('uid');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +38,8 @@ class _Makeup_Package_ViewState extends State<Makeup_Package_View> {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-             .collection('makeup_package')
+            .collection('makeup_package')
+            .where('makeup_id', isEqualTo: makeupId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -183,7 +199,7 @@ class _Makeup_Package_ViewState extends State<Makeup_Package_View> {
   Future<void> deletePackage(String documentId) async {
     try {
       await FirebaseFirestore.instance
-           .collection('makeup_package')
+          .collection('makeup_package')
           .doc(documentId)
           .delete();
       print('Package deleted successfully.');
@@ -195,7 +211,7 @@ class _Makeup_Package_ViewState extends State<Makeup_Package_View> {
   Future<void> updatePackage(String documentId) async {
     try {
       await FirebaseFirestore.instance
-           .collection('makeup_package')
+          .collection('makeup_package')
           .doc(documentId)
           .update({
         'package': _packageNameController.text,

@@ -19,8 +19,8 @@ class _DesignerHomeState extends State<DesignerHome> {
   late File _image;
   late List<String> _imageUrls;
   bool _isLoading = false;
-  late String _selectedCategory = 'Bridal Dress'; // Default to Bridal Dress
-  late String _selectedDressCategory = 'Haldi'; // Default to Haldi
+  String? _selectedCategory ;// Default to Bridal Dress
+  String? _selectedDressCategory ; // Default to Haldi
 
   Future<void> _getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -47,7 +47,7 @@ class _DesignerHomeState extends State<DesignerHome> {
   var img;
   var id;
 
-  Future<void> _loadImages() async {
+ Future<void> _loadImages() async {
   SharedPreferences spr = await SharedPreferences.getInstance();
   setState(() {
     sp = spr.get('name');
@@ -58,29 +58,43 @@ class _DesignerHomeState extends State<DesignerHome> {
     _isLoading = true;
   });
 
-  try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('designer_upload_image')
-        .where('designer_id', isEqualTo: id)
-        .where('category', isEqualTo: _selectedCategory)
-        .where('dress', isEqualTo: _selectedDressCategory)
-        .get();
+  print('_selectedCategory: $_selectedCategory');
+  print('_selectedDressCategory: $_selectedDressCategory');
 
-    print(snapshot.docs.length); // This prints the number of documents returned by the query
+  try {
+    QuerySnapshot snapshot;
+    if (_selectedCategory != null && _selectedDressCategory != null) {
+      snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: id)
+          .where('category', isEqualTo: _selectedCategory)
+          .where('dress', isEqualTo: _selectedDressCategory)
+          .get();
+    } else if (_selectedCategory != null) {
+      snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: id)
+          .where('category', isEqualTo: _selectedCategory)
+          .get();
+    } else {
+      snapshot = await FirebaseFirestore.instance
+          .collection('designer_upload_image')
+          .where('designer_id', isEqualTo: id)
+          .get();
+    }
+
     setState(() {
       _imageUrls =
           snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
-      print(_imageUrls); // This prints the list of image URLs fetched from Firestore
     });
   } catch (error) {
-    print('Error loading images: $error'); // This prints any error that occurs during the fetching process
+    print('Error loading images: $error');
   } finally {
     setState(() {
       _isLoading = false;
     });
   }
 }
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +160,7 @@ class _DesignerHomeState extends State<DesignerHome> {
                       CircleAvatar(
                         backgroundImage: img != null ? NetworkImage(img) : null,
                         radius: 35,
-                        backgroundColor: Colors.grey, 
+                        backgroundColor: Colors.grey,
                       ),
                     ],
                   ),
@@ -240,7 +254,7 @@ class _DesignerHomeState extends State<DesignerHome> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                title: Text('haldi'),
+                title: Text('Haldi'),
                 onTap: () {
                   Navigator.pop(context, 'haldi');
                 },
@@ -252,18 +266,17 @@ class _DesignerHomeState extends State<DesignerHome> {
                 },
               ),
               ListTile(
-                title: Text('reception'),
+                title: Text('Reception'),
                 onTap: () {
                   Navigator.pop(context, 'reception');
                 },
               ),
               ListTile(
-                title: Text('wedding'),
+                title: Text('Wedding'),
                 onTap: () {
-                  Navigator.pop(context, 'wedding');
+                  Navigator.pop(context, 'Wedding');
                 },
               ),
-              // Add more options as needed
             ],
           ),
         );
@@ -274,7 +287,6 @@ class _DesignerHomeState extends State<DesignerHome> {
       setState(() {
         _selectedDressCategory = selectedDressCategory;
         _loadImages();
-     
       });
     }
   }

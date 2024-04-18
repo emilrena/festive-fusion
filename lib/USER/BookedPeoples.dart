@@ -171,63 +171,63 @@ class _MyBookingsState extends State<MyBookings> {
     }
   }
 
-  void showDeliveryStatus(String designer_id, String type) async {
-  // Fetch delivery details from 'designer_delivery' collection
-  final deliverySnapshot = await FirebaseFirestore.instance
-      .collection('designer_delivery')
-      .doc(designer_id)
-      .get();
+//   void showDeliveryStatus(String designer_id, String type) async {
+//   // Fetch delivery details from 'designer_delivery' collection
+//   final deliverySnapshot = await FirebaseFirestore.instance
+//       .collection('designer_delivery')
+//       .doc(designer_id)
+//       .get();
 
-  // Check if the document exists and if the required fields exist
-  if (deliverySnapshot.exists) {
-    final deliveryDate = deliverySnapshot.data()?['delivery_date'];
-    final packageName = deliverySnapshot.data()?['package_name'];
+//   // Check if the document exists and if the required fields exist
+//   if (deliverySnapshot.exists) {
+//     final deliveryDate = deliverySnapshot.data()?['delivery_date'];
+//     final packageName = deliverySnapshot.data()?['package_name'];
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delivery Status'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Delivery Date: $deliveryDate'),
-              Text('Package Name: $packageName'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  } else {
-    // Handle case where the document does not exist
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delivery Status'),
-          content: Text('Delivery details not found.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: Text('Delivery Status'),
+//           content: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Text('Delivery Date: $deliveryDate'),
+//               Text('Package Name: $packageName'),
+//             ],
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: Text('Close'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   } else {
+//     // Handle case where the document does not exist
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: Text('Delivery Status'),
+//           content: Text('Delivery details not found.'),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: Text('Close'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
 
   @override
@@ -257,206 +257,200 @@ class _MyBookingsState extends State<MyBookings> {
         child: bookings == null
             ? Center(child: CircularProgressIndicator())
             :  ListView.builder(
-                itemCount: bookings!.length,
-                itemBuilder: (context, index) {
-                  final booking = bookings![index];
-                  final type = booking['type'];
-                  final providerId = booking['provider_id'];
+  itemCount: bookings!.length,
+  itemBuilder: (context, index) {
+    final booking = bookings![index];
+    final type = booking['type'];
+    final providerId = booking['provider_id'];
 
-                  return FutureBuilder<
-                      DocumentSnapshot<Map<String, dynamic>>>(
-                    future: fetchProviderDetails(type, providerId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return Center(
-                            child: CircularProgressIndicator());
-                      }
+    return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      future: fetchProviderDetails(type, providerId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-                      if (!snapshot.hasData ||
-                          !snapshot.data!.exists) {
-                        // Handle case where provider details are not found
-                        return ListTile(
-                          title: Text('Provider details not found'),
-                        );
-                      }
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          // Handle case where provider details are not found
+          return ListTile(
+            title: Text('Provider details not found'),
+          );
+        }
 
-                      final providerData = snapshot.data!;
-                      final providerName = providerData['name'];
-                      final providerImage = providerData['image_url'];
+        final providerData = snapshot.data!;
+        final providerName = providerData['name'];
+        final providerImage = providerData['image_url'];
 
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 16.0),
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(providerImage),
-                                  radius: 30,
-                                ),
-                                title: Text(
-                                  providerName,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text("Complaint"),
-                                            content: Column(
-                                              mainAxisSize:
-                                                  MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                    "Please describe your complaint"),
-                                                TextField(
-                                                  onChanged:
-                                                      (value) {
-                                                    complaint =
-                                                        value;
-                                                  },
-                                                  decoration:
-                                                      InputDecoration(
-                                                    labelText:
-                                                        'Complaint',
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            actions: [
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  submitComplaint(
-                                                      providerId,
-                                                      type,
-                                                      complaint);
-                                                },
-                                                child: Text('Submit'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(
-                                                          context)
-                                                      .pop();
-                                                },
-                                                child: Text('Cancel'),
-                                              ),
-                                            ],
-                                          );
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListTile(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(providerImage),
+                      radius: 30,
+                    ),
+                    title: Text(
+                      providerName,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8), // Add spacing
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Complaint"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text("Please describe your complaint"),
+                                      TextField(
+                                        onChanged: (value) {
+                                          complaint = value;
                                         },
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                    ),
-                                    child: Text('Complaint'),
+                                        decoration: InputDecoration(
+                                          labelText: 'Complaint',
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      showDeliveryStatus(
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        submitComplaint(
                                           providerId,
-                                          type);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                    ),
-                                    child: Text('Delivery Status'),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 8), // Add spacing
-                              Center(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text("Feedback"),
-                                          content: Column(
-                                            mainAxisSize:
-                                                MainAxisSize.min,
-                                            children: [
-                                              Text("Rate your experience"),
-                                              RatingBar.builder(
-                                                initialRating: rating,
-                                                minRating: 1,
-                                                direction: Axis.horizontal,
-                                                allowHalfRating: true,
-                                                itemCount: 5,
-                                                itemSize: 20,
-                                                itemPadding:
-                                                    EdgeInsets.symmetric(
-                                                  horizontal: 4.0,
-                                                ),
-                                                itemBuilder: (context, _) =>
-                                                    Icon(
-                                                  Icons.star,
-                                                  color: Colors.purple,
-                                                ),
-                                                onRatingUpdate: (value) {
-                                                  setState(() {
-                                                    rating = value;
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                          actions: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                submitFeedback(
-                                                    providerId,
-                                                    providerName,
-                                                    type);
-                                              },
-                                              child: Text('Submit'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text('Cancel'),
-                                            ),
-                                          ],
+                                          type,
+                                          complaint,
                                         );
                                       },
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromARGB(255, 195, 199, 202),
-                                  ),
-                                  child: Text('Feedback'),
-                                ),
-                              ),
-                            ],
+                                      child: Text('Submit'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white, backgroundColor: Colors.red,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
+                          child: Text('Complaint'),
                         ),
-                      );
-                    },
-                  );
-                },
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Feedback"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text("Rate your experience"),
+                                      RatingBar.builder(
+                                        initialRating: rating,
+                                        minRating: 1,
+                                        direction: Axis.horizontal,
+                                        allowHalfRating: true,
+                                        itemCount: 5,
+                                        itemSize: 20,
+                                        itemPadding: EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                        ),
+                                        itemBuilder: (context, _) => Icon(
+                                          Icons.star,
+                                          color: Colors.purple,
+                                        ),
+                                        onRatingUpdate: (value) {
+                                          setState(() {
+                                            rating = value;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        submitFeedback(
+                                          providerId,
+                                          providerName,
+                                          type,
+                                        );
+                                      },
+                                      child: Text('Submit'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white, backgroundColor: Colors.purple,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text('Feedback'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
+            ),
+          ),
+        );
+      },
+    );
+  },
+),
+
+
       ),
     ),
   ],
@@ -505,13 +499,13 @@ class _MyBookingsState extends State<MyBookings> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Rental ID: $rentalId', // Display rental_id
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
+                                        // Text(
+                                        //   'Rental ID: $rentalId', // Display rental_id
+                                        //   style: TextStyle(
+                                        //     fontWeight: FontWeight.bold,
+                                        //     fontSize: 16,
+                                        //   ),
+                                        // ),
                                         SizedBox(height: 8),
                                         Text(
                                           'Description:',

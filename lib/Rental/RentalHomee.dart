@@ -45,7 +45,7 @@ class _RentHomeState extends State<RentHome> {
   // Fetch user data from Firestore
   try {
     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        .collection('rental_register')
+        .collection('rental_upload_image')
         .doc(_userId)
         .get();
 
@@ -100,33 +100,49 @@ class _RentHomeState extends State<RentHome> {
   }
 
   Future<void> _loadImages() async {
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final snapshot = await FirebaseFirestore.instance
+  try {
+    QuerySnapshot snapshot;
+    if (_selectedCategory != null && _selectedDressCategory != null) {
+      snapshot = await FirebaseFirestore.instance
           .collection('rental_upload_image')
           .where('rental_id', isEqualTo: _userId)
           .where('category', isEqualTo: _selectedCategory)
           .where('item', isEqualTo: _selectedDressCategory)
           .get();
-
-      setState(() {
-        _imageUrls = snapshot.docs.map((doc) => doc['image_url'] as String).toList();
-        _descriptions = snapshot.docs.map((doc) => doc['description'] as String).toList();
-        _items = snapshot.docs.map((doc) => doc['item'] as String).toList();
-        _rates = snapshot.docs.map((doc) => doc['rate'] as double).toList();
-        _counts = snapshot.docs.map((doc) => doc['count'] as int).toList(); // Fetch count
-      });
-    } catch (error) {
-      print('Error loading images: $error');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+    } else if (_selectedCategory != null) {
+      snapshot = await FirebaseFirestore.instance
+          .collection('rental_upload_image')
+          .where('rental_id', isEqualTo: _userId)
+          .where('category', isEqualTo: _selectedCategory)
+          .get();
+    } else {
+      // Fetch all images for the user
+      snapshot = await FirebaseFirestore.instance
+          .collection('rental_upload_image')
+          .where('rental_id', isEqualTo: _userId)
+          .get();
     }
+
+    setState(() {
+      _imageUrls = snapshot.docs.map((doc) => doc['image_url'] as String).toList();
+      _descriptions = snapshot.docs.map((doc) => doc['description'] as String).toList();
+      _items = snapshot.docs.map((doc) => doc['item'] as String).toList();
+      _rates = snapshot.docs.map((doc) => doc['rate'] as double).toList();
+      _counts = snapshot.docs.map((doc) => doc['count'] as int).toList(); // Fetch count
+    });
+  } catch (error) {
+    print('Error loading images: $error');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -232,10 +248,10 @@ class _RentHomeState extends State<RentHome> {
                   onPressed: _getImage,
                   child: Text('Upload Image'),
                 ),
-                ElevatedButton(
-                  onPressed: _navigateToRentalMessagePage,
-                  child: Text('Enquiry'),
-                ),
+                // ElevatedButton(
+                //   onPressed: _navigateToRentalMessagePage,
+                //   child: Text('Enquiry'),
+                // ),
               ],
             ),
             SizedBox(height: 20),
