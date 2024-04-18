@@ -2,13 +2,11 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
-import 'package:festive_fusion/Makeup/MakupNav.dart';
-import 'package:festive_fusion/Rental/RentalNav.dart';
+
+import 'package:festive_fusion/common%20screens/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Makeup_Registration extends StatefulWidget {
@@ -34,8 +32,7 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
   String gender = "";
   String selectedExperience = '0-1 years';
   final fkey = GlobalKey<FormState>();
-  String imageUrl='';
-
+  String imageUrl = '';
   // List of years of experience options
   List<String> experienceOptions = [
     '0-1 years',
@@ -106,10 +103,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: Name,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'field is empty';
+                            if (value!.isEmpty) {
+                              return 'enter Name';
                             }
-                            return null;
                           },
                           decoration: InputDecoration(
                             fillColor: Color.fromARGB(255, 224, 206, 221),
@@ -136,10 +132,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: Email,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'field is empty';
+                            if (value!.isEmpty) {
+                              return 'enter email';
                             }
-                            return null;
                           },
                           decoration: InputDecoration(
                             fillColor: Color.fromARGB(255, 224, 206, 221),
@@ -200,10 +195,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: Adress,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
                           decoration: InputDecoration(
                               fillColor: Color.fromARGB(255, 224, 206, 221),
@@ -223,13 +217,12 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                           ],
                         ),
                         TextFormField(
-                          controller: State,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
+                          controller: State,
                           decoration: InputDecoration(
                               fillColor: Color.fromARGB(255, 224, 206, 221),
                               filled: true,
@@ -250,10 +243,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: District,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
                           decoration: InputDecoration(
                               fillColor: Color.fromARGB(255, 224, 206, 221),
@@ -275,10 +267,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: Pin,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
@@ -301,10 +292,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: Mobile,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
@@ -327,10 +317,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: password,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
                           decoration: InputDecoration(
                               fillColor: Color.fromARGB(255, 224, 206, 221),
@@ -352,10 +341,9 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         TextFormField(
                           controller: confirmPass,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'field is empty';
                             }
-                            return null;
                           },
                           decoration: InputDecoration(
                               fillColor: Color.fromARGB(255, 224, 206, 221),
@@ -406,41 +394,51 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
+                            // Perform image upload
                             await uploadImage();
-                            await FirebaseFirestore.instance
-                                .collection('Makeup register')
-                                .add({
-                              'name': Name.text,
-                              'email': Email.text,
-                              'Adress': Adress.text,
-                              'state': State.text,
-                              'District': District.text,
-                              'pin': Pin.text,
-                              'mobile no': Mobile.text,
-                              'password': password.text,
-                              'conform password': confirmPass.text,
-                              'gender': gender,
-                              'experience': selectedExperience,
-                              'image_url': imageUrl,
-                              'status':0 
-                            });
-                            if (fkey.currentState!.validate()) {
-                              print(Name.text);
-                              print(Email.text);
-                              print(Adress.text);
-                              print(State.text);
-                              print(District.text);
-                              print(Pin.text);
-                              print(Mobile.text);
-                              print(password.text);
-                              print(confirmPass.text);
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return MakeupNav();
-                              }));
+
+                            // Register user in Firebase Authentication
+                            try {
+                              UserCredential userCredential = await FirebaseAuth
+                                  .instance
+                                  .createUserWithEmailAndPassword(
+                                email: Email.text,
+                                password: password.text,
+                              );
+
+                              // If user creation is successful, proceed to store user data in Firestore
+                              await FirebaseFirestore.instance
+                                  .collection('Makeup register')
+                                  .add({
+                                'name': Name.text,
+                                'email': Email.text,
+                                'Adress': Adress.text,
+                                'state': State.text,
+                                'District': District.text,
+                                'pin': Pin.text,
+                                'mobile no': Mobile.text,
+                                'password': password.text,
+                                'conform password': confirmPass.text,
+                                'gender': gender,
+                                'experience': selectedExperience,
+                                'image_url': imageUrl,
+                                'status':0,
+                                       
+                                // Optionally, store additional makeup data
+                              });
+
+                              // Navigate to next screen upon successful registration
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return Login(type: 'makeup',);
+                                },
+                              ));
+                            } catch (e) {
+                              print('Error creating makeup: $e');
+                              // Handle any errors that occur during makeup creation
                             }
                           },
-                          child: Text('register'),
+                          child: Text('REGISTER'),
                         ),
                       ],
                     ),
@@ -453,19 +451,17 @@ class _Makeup_RegistrationState extends State<Makeup_Registration> {
       ),
     );
   }
-Future<void> uploadImage() async {
+
+  Future<void> uploadImage() async {
     try {
       if (profileImage != null) {
-        
         Reference storageReference =
-            FirebaseStorage.instance
-                .ref()
-                .child('image/${pickedFile!.name}');
+            FirebaseStorage.instance.ref().child('image/${pickedFile!.name}');
 
         await storageReference.putFile(profileImage!);
 
         // Get the download URL
-         imageUrl = await storageReference.getDownloadURL();
+        imageUrl = await storageReference.getDownloadURL();
 
         // Now you can use imageUrl as needed (e.g., save it to Firestore)
         print('Image URL: $imageUrl');

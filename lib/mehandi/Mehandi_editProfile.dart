@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Mehandi_EditProfile extends StatefulWidget {
@@ -12,6 +16,8 @@ class Mehandi_EditProfile extends StatefulWidget {
 class _Mehandi_EditProfileState extends State<Mehandi_EditProfile> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Map<String, String>? _userData;
+  File? _profileImage;
+  String? _imageUrl;
 
   @override
   void initState() {
@@ -33,6 +39,7 @@ class _Mehandi_EditProfileState extends State<Mehandi_EditProfile> {
     if (userSnapshot.exists) {
       setState(() {
         _userData = Map<String, String>.from(userSnapshot.data() ?? {});
+        _imageUrl = _userData!['image_url'];
       });
     } else {
       print('User data not found.');
@@ -52,8 +59,28 @@ class _Mehandi_EditProfileState extends State<Mehandi_EditProfile> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                if (_userData != null) ..._buildUserDataFields(),
-                SizedBox(height: 10),
+                if (_userData != null) ...[
+                  GestureDetector(
+                    onTap: () {
+                      _selectImageForDialog();
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : _imageUrl != null
+                              ? NetworkImage(_imageUrl!)
+                              : AssetImage(
+                                  'assets/placeholder_image.jpg') as ImageProvider<Object>?,
+                      child: _profileImage == null &&
+                              (_userData == null || _userData!['image_url'] == null)
+                          ? Icon(Icons.camera_alt, size: 30)
+                          : null,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ..._buildUserDataFields(),
+                ],
               ],
             ),
           ),
@@ -127,11 +154,36 @@ class _Mehandi_EditProfileState extends State<Mehandi_EditProfile> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  GestureDetector(
+                    onTap: () {
+                      _selectImageForDialog();
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : _imageUrl != null
+                              ? NetworkImage(_imageUrl!)
+                              : AssetImage(
+                                  'assets/placeholder_image.jpg') as ImageProvider<Object>?,
+                      child: _profileImage == null &&
+                              (_userData == null || _userData!['image_url'] == null)
+                          ? Icon(Icons.camera_alt, size: 30)
+                          : null,
+                    ),
+                  ),
                   TextFormField(
                     initialValue: _userData?['name'],
                     decoration: InputDecoration(labelText: 'Name'),
                     onChanged: (value) {
                       _userData?['name'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['Address'],
+                    decoration: InputDecoration(labelText: 'Address'),
+                    onChanged: (value) {
+                      _userData!['Address'] = value;
                     },
                   ),
                   TextFormField(
@@ -153,6 +205,13 @@ class _Mehandi_EditProfileState extends State<Mehandi_EditProfile> {
                     decoration: InputDecoration(labelText: 'Gender'),
                     onChanged: (value) {
                       _userData!['gender'] = value;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData!['mobile'],
+                    decoration: InputDecoration(labelText: 'Mobile'),
+                    onChanged: (value) {
+                      _userData!['mobile'] = value;
                     },
                   ),
                   TextFormField(
@@ -201,24 +260,64 @@ class _Mehandi_EditProfileState extends State<Mehandi_EditProfile> {
   }
 
   Future<void> _saveChanges() async {
-  // Perform validation if needed
-  if (_formKey.currentState!.validate()) {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String uid = prefs.getString('uid') ?? '';
+    // Perform validation if needed
+    if (_formKey.currentState!.validate()) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String uid = prefs.getString('uid') ?? '';
 
-    // Update data in Firestore
-    if (_userData != null) {
-      await FirebaseFirestore.instance
-          .collection('Rental register')
-          .doc(uid)
-          .update(_userData!);
+      // Update data in Firestore
+      if (_userData != null) {
+        await FirebaseFirestore.instance
+            .collection('Mehandi register')
+            .doc(uid)
+            .update(_userData!);
+      }
+
+      // Upload profile image if it has been changed
+      if (_profileImage != null) {
+        await _uploadProfileImage(uid);
+      }
+
+      // Fetch updated data
+      await _fetchUserData();
+
+      // Close dialog and return to previous page
+      Navigator.of(context).pop();
     }
-
-    // Fetch updated data
-    await _fetchUserData();
-
-    // Close dialog and return to previous page
-    Navigator.of(context).pop();
   }
-}
+
+  Future<void> _selectImageForDialog() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+        _imageUrl = null; // Reset imageUrl when a new image is selected
+      });
+    }
+  }
+
+  Future<void> _uploadProfileImage(String uid) async {
+    if (_profileImage == null) return;
+
+    try {
+      Reference storageReference = FirebaseStorage.instance
+          .ref()
+          .child('user_profile_images')
+          .child('$uid.jpg');
+
+      await storageReference.putFile(_profileImage!);
+
+      String downloadURL = await storageReference.getDownloadURL();
+
+      // Update user data in Firestore with the new image URL
+      await FirebaseFirestore.instance
+          .collection('Mehandi register')
+          .doc(uid)
+          .update({'image_url': downloadURL});
+    } catch (error) {
+      print('Error uploading image: $error');
+    }
+  }
 }

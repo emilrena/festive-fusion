@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/ADMIN/AdminNavigationBar.dart';
+import 'package:festive_fusion/Designers/DesignerForgot.dart';
 import 'package:festive_fusion/Designers/DesignerNavigationBar.dart';
 import 'package:festive_fusion/Designers/Designer_registration.dart';
 import 'package:festive_fusion/Makeup/Makeup_registration.dart';
 import 'package:festive_fusion/Makeup/MakupNav.dart';
 import 'package:festive_fusion/Navigationbar.dart';
+import 'package:festive_fusion/Rental/RentalForgot.dart';
 import 'package:festive_fusion/Rental/RentalNav.dart';
 import 'package:festive_fusion/Rental/Rental_Registration.dart';
 import 'package:festive_fusion/USER/functions.dart';
+import 'package:festive_fusion/Makeup/forgotpassword.dart';
+import 'package:festive_fusion/mehandi/MehandiForgot.dart';
 import 'package:festive_fusion/mehandi/MehandiNav.dart';
 import 'package:festive_fusion/mehandi/Mehandi_registration.dart';
 import 'package:festive_fusion/registration.dart';
@@ -138,49 +142,79 @@ class _LoginState extends State<Login> {
       }
     }
     // makeup login
-    if (widget.type == 'makeup') {
-      print('__________makeup');
-      final QuerySnapshot makeupshot = await FirebaseFirestore.instance
-          .collection('Makeup register')
-          .where('email', isEqualTo: Email.text)
-          .where('password', isEqualTo: Pass.text)
-          // .where('status', isEqualTo: 1)
-          .get();
-      if (makeupshot.docs.isNotEmpty) {
-        print('_________________________________');
-        var userid = makeupshot.docs[0].id;
-        var image_url = makeupshot.docs[0]['image_url'];
-        var username = makeupshot.docs[0]['name'];
-        print('userid:_____$userid');
-        SharedPreferences sp = await SharedPreferences.getInstance();
-        sp.setString('uid', userid);
-        sp.setString('name', username);
-        sp.setString('image_url', image_url);
-        if (makeupshot.docs.isNotEmpty) {
-          Fluttertoast.showToast(msg: 'Login Successful ');
+   // makeup login
+// makeup login
+if (widget.type == 'makeup') {
+  print('__________makeup');
+  final QuerySnapshot makeupshot = await FirebaseFirestore.instance
+      .collection('Makeup register')
+      .where('email', isEqualTo: Email.text)
+      .where('password', isEqualTo: Pass.text)
+      .where('status', isEqualTo: 0)
+      .get();
 
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return MakeupNav();
-          }));
-        }
-      } else {
-        // Show an error message to the user
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Login Failed'),
-            content: Text('Invalid username or password. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
-      }
+  if (makeupshot.docs.isNotEmpty) {
+    final makeupData = makeupshot.docs.first.data() as Map<String, dynamic>;
+    final status = makeupData['status'];
+    
+    if (status == 1) {
+      // If status is 1, the makeup artist is blocked
+      print('Makeup artist is blocked. Cannot login.');
+      // Show a dialog indicating that the account is blocked
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Blocked by Admin'),
+          content: Text('Your account has been blocked by the admin.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // If status is 0, the makeup artist is not blocked
+      print('Makeup artist is not blocked. Proceed with login.');
+      
+      var userid = makeupshot.docs[0].id;
+      var image_url = makeupData['image_url'];
+      var username = makeupData['name'];
+      print('userid:_____$userid');
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      sp.setString('uid', userid);
+      sp.setString('name', username);
+      sp.setString('image_url', image_url);
+
+      Fluttertoast.showToast(msg: 'Login Successful ');
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return MakeupNav();
+      }));
     }
+  } else {
+    // If no document matches the query, the user credentials are invalid
+    print('Invalid email or password.');
+    // Show a message to the user indicating invalid credentials
+    // You can use a snackbar, dialog, or any other UI element to display the message
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Login Failed'),
+        content: Text('Invalid username or password. Please try again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
     //Designer login
     if (widget.type == 'designer') {
       print('designer');
@@ -349,20 +383,46 @@ class _LoginState extends State<Login> {
                                   BorderRadius.all(Radius.circular(40))),
                           hintText: ('ENTER YOUR PASSWORD')),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          "forgot password?",
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              color: Color.fromARGB(255, 20, 97, 160)),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
+                  Row(
+  
+  mainAxisAlignment: MainAxisAlignment.end,
+  children: [
+    InkWell(
+      onTap: () {
+        // Check the type and navigate accordingly
+        if (widget.type == "designer") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ForgotPassDesigner()),
+          );
+        } else if (widget.type == "mehandi") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ForgotPassMehandi()),
+          );
+        } else if (widget.type == "makeup") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ForgotPass()),
+          );
+        } else if (widget.type == "rental") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ForgotPassRental ()),
+          );
+        }
+      },
+      child: Text(
+        "forgot password?",
+        style: TextStyle(
+          decoration: TextDecoration.underline,
+          color: Color.fromARGB(255, 20, 97, 160),
+        ),
+      ),
+    ),
+  ],
+),
+
                     ElevatedButton(
                         onPressed: () async {
                           if (fkey.currentState!.validate()) {

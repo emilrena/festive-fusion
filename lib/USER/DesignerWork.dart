@@ -1,13 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:festive_fusion/USER/CHAT.DART';
+
+import 'package:festive_fusion/USER/package.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:festive_fusion/USER/enquiery.dart';
-import 'package:festive_fusion/USER/package.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DesignerWork extends StatefulWidget {
-  final String designer_id; // Define the designer_id parameter
+  final String designer_id;
 
-  const DesignerWork({Key? key, required this.designer_id}) : super(key: key);
+  const DesignerWork({
+    Key? key,
+    required this.designer_id,
+  }) : super(key: key);
 
   @override
   State<DesignerWork> createState() => _DesignerWorkState();
@@ -19,14 +24,29 @@ class _DesignerWorkState extends State<DesignerWork> {
   late String _selectedCategory;
   late String _selectedDressCategory;
   String _designerImageUrl = '';
+  late String _senderId;
+  late Timestamp _timestamp;
 
   @override
   void initState() {
     super.initState();
-    _selectedCategory = ''; // Initialize to empty string
-    _selectedDressCategory = ''; // Initialize to empty string
+    _selectedCategory = '';
+    _selectedDressCategory = '';
     _loadImages();
     _loadDesignerImage();
+    _getSenderId();
+  }
+
+  // Fetch senderId from shared preferences and include timestamp
+  Future<void> _getSenderId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    DateTime currentTime = DateTime.now();
+    Timestamp timestamp =
+        Timestamp.fromDate(currentTime); // Convert to Timestamp
+    setState(() {
+      _senderId = prefs.getString('uid') ?? ''; // assuming 'uid' is the key
+      _timestamp = timestamp;
+    });
   }
 
   Future<void> _loadImages() async {
@@ -129,7 +149,6 @@ class _DesignerWorkState extends State<DesignerWork> {
                   Navigator.pop(context, 'Wedding');
                 },
               ),
-              // Add more options as needed
             ],
           ),
         );
@@ -202,18 +221,18 @@ class _DesignerWorkState extends State<DesignerWork> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  backgroundImage: _designerImageUrl.isNotEmpty
-                      ? NetworkImage(_designerImageUrl)
-                      : AssetImage('Assets/p3.jpg') as ImageProvider,
+                  backgroundImage: AssetImage('Assets/p3.jpg'),
                   radius: 30,
                 ),
                 IconButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) {
-                        return Message(designer_id: widget.designer_id);
-                      }),
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(
+                          receiverId: widget.designer_id,
+                        ),
+                      ),
                     );
                   },
                   icon: Icon(Icons.message),

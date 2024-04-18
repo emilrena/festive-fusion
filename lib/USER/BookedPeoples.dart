@@ -172,17 +172,17 @@ class _MyBookingsState extends State<MyBookings> {
   }
 
   void showDeliveryStatus(String designer_id, String type) async {
-    // Fetch delivery details from 'designer_delivery' collection
-    final deliverySnapshot = await FirebaseFirestore.instance
-        .collection('designer_delivery')
-        .doc(designer_id)
-        .get();
+  // Fetch delivery details from 'designer_delivery' collection
+  final deliverySnapshot = await FirebaseFirestore.instance
+      .collection('designer_delivery')
+      .doc(designer_id)
+      .get();
 
-    // Extract delivery date and package name
-    final deliveryDate = deliverySnapshot['delivery_date'];
-    final packageName = deliverySnapshot['package_name'];
+  // Check if the document exists and if the required fields exist
+  if (deliverySnapshot.exists) {
+    final deliveryDate = deliverySnapshot.data()?['delivery_date'];
+    final packageName = deliverySnapshot.data()?['package_name'];
 
-    // Show delivery details in a dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -207,7 +207,28 @@ class _MyBookingsState extends State<MyBookings> {
         );
       },
     );
+  } else {
+    // Handle case where the document does not exist
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delivery Status'),
+          content: Text('Delivery details not found.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -229,255 +250,218 @@ class _MyBookingsState extends State<MyBookings> {
               body: SafeArea(
                 child: bookings == null
                     ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: bookings!.length,
-                        itemBuilder: (context, index) {
-                          final booking = bookings![index];
-                          final type = booking['type'];
-                          final providerId = booking['provider_id'];
+                    : TabBarView(
+  children: [
+    Scaffold(
+      body: SafeArea(
+        child: bookings == null
+            ? Center(child: CircularProgressIndicator())
+            :  ListView.builder(
+                itemCount: bookings!.length,
+                itemBuilder: (context, index) {
+                  final booking = bookings![index];
+                  final type = booking['type'];
+                  final providerId = booking['provider_id'];
 
-                          return FutureBuilder<
-                              DocumentSnapshot<Map<String, dynamic>>>(
-                            future: fetchProviderDetails(type, providerId),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              }
+                  return FutureBuilder<
+                      DocumentSnapshot<Map<String, dynamic>>>(
+                    future: fetchProviderDetails(type, providerId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Center(
+                            child: CircularProgressIndicator());
+                      }
 
-                              if (!snapshot.hasData || !snapshot.data!.exists) {
-                                // Handle case where provider details are not found
-                                return ListTile(
-                                  title: Text('Provider details not found'),
-                                );
-                              }
+                      if (!snapshot.hasData ||
+                          !snapshot.data!.exists) {
+                        // Handle case where provider details are not found
+                        return ListTile(
+                          title: Text('Provider details not found'),
+                        );
+                      }
 
-                              final providerData = snapshot.data!;
-                              final providerName = providerData['name'];
-                              final providerImage = providerData['image_url'];
+                      final providerData = snapshot.data!;
+                      final providerName = providerData['name'];
+                      final providerImage = providerData['image_url'];
 
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Card(
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 8.0),
-                                        child: Text(
-                                          providerName,
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(
-                                            ''), // Empty title to maintain alignment
-                                        leading: CircleAvatar(
-                                          backgroundImage:
-                                              NetworkImage(providerImage),
-                                          radius: 30,
-                                        ),
-                                        trailing: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SizedBox(
-                                              width: 100,
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title:
-                                                            Text("Complaint"),
-                                                        content: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Text(
-                                                                "Please describe your complaint"),
-                                                            TextField(
-                                                              onChanged:
-                                                                  (value) {
-                                                                complaint =
-                                                                    value;
-                                                              },
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                labelText:
-                                                                    'Complaint',
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        actions: [
-                                                          ElevatedButton(
-                                                            onPressed: () {
-                                                              submitComplaint(
-                                                                  providerId,
-                                                                  type,
-                                                                  complaint);
-                                                            },
-                                                            child:
-                                                                Text('Submit'),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                            child:
-                                                                Text('Cancel'),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.red,
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                                ),
-                                                child: Text(
-                                                  'Complaint',
-                                                  style:
-                                                      TextStyle(fontSize: 12),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 100,
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  showDeliveryStatus(providerId,
-                                                      type); // This line calls the method
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.green,
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                                ),
-                                                child: Text(
-                                                  'Delivery Status',
-                                                  style:
-                                                      TextStyle(fontSize: 12),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 100,
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Text("Feedback"),
-                                                        content: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Text(
-                                                                "Rate your experience"),
-                                                            RatingBar.builder(
-                                                              initialRating:
-                                                                  rating,
-                                                              minRating: 1,
-                                                              direction: Axis
-                                                                  .horizontal,
-                                                              allowHalfRating:
-                                                                  true,
-                                                              itemCount: 5,
-                                                              itemSize: 20,
-                                                              itemPadding:
-                                                                  EdgeInsets
-                                                                      .symmetric(
-                                                                horizontal: 4.0,
-                                                              ),
-                                                              itemBuilder:
-                                                                  (context,
-                                                                          _) =>
-                                                                      Icon(
-                                                                Icons.star,
-                                                                color: Colors
-                                                                    .purple,
-                                                              ),
-                                                              onRatingUpdate:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  rating =
-                                                                      value;
-                                                                });
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        actions: [
-                                                          ElevatedButton(
-                                                            onPressed: () {
-                                                              submitFeedback(
-                                                                  providerId,
-                                                                  providerName,
-                                                                  type);
-                                                            },
-                                                            child:
-                                                                Text('Submit'),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                            child:
-                                                                Text('Cancel'),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Color.fromARGB(
-                                                          255, 195, 199, 202),
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                                ),
-                                                child: Text(
-                                                  'Feedback',
-                                                  style:
-                                                      TextStyle(fontSize: 12),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(providerImage),
+                                  radius: 30,
+                                ),
+                                title: Text(
+                                  providerName,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text("Complaint"),
+                                            content: Column(
+                                              mainAxisSize:
+                                                  MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                    "Please describe your complaint"),
+                                                TextField(
+                                                  onChanged:
+                                                      (value) {
+                                                    complaint =
+                                                        value;
+                                                  },
+                                                  decoration:
+                                                      InputDecoration(
+                                                    labelText:
+                                                        'Complaint',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  submitComplaint(
+                                                      providerId,
+                                                      type,
+                                                      complaint);
+                                                },
+                                                child: Text('Submit'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(
+                                                          context)
+                                                      .pop();
+                                                },
+                                                child: Text('Cancel'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    child: Text('Complaint'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      showDeliveryStatus(
+                                          providerId,
+                                          type);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                    ),
+                                    child: Text('Delivery Status'),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8), // Add spacing
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("Feedback"),
+                                          content: Column(
+                                            mainAxisSize:
+                                                MainAxisSize.min,
+                                            children: [
+                                              Text("Rate your experience"),
+                                              RatingBar.builder(
+                                                initialRating: rating,
+                                                minRating: 1,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: true,
+                                                itemCount: 5,
+                                                itemSize: 20,
+                                                itemPadding:
+                                                    EdgeInsets.symmetric(
+                                                  horizontal: 4.0,
+                                                ),
+                                                itemBuilder: (context, _) =>
+                                                    Icon(
+                                                  Icons.star,
+                                                  color: Colors.purple,
+                                                ),
+                                                onRatingUpdate: (value) {
+                                                  setState(() {
+                                                    rating = value;
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                submitFeedback(
+                                                    providerId,
+                                                    providerName,
+                                                    type);
+                                              },
+                                              child: Text('Submit'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text('Cancel'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color.fromARGB(255, 195, 199, 202),
+                                  ),
+                                  child: Text('Feedback'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
-            ),
+      ),
+    ),
+  ],
+),
+              )),
             Scaffold(
               body: SafeArea(
                 child: rentalBookings == null

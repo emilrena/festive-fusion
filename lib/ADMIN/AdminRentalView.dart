@@ -107,7 +107,7 @@ class _AdminRentalViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => RentalFullProfile(),
+                                  builder: (context) => RentalFullProfile(rental_id:document.id ),
                                 ),
                               );
                             },

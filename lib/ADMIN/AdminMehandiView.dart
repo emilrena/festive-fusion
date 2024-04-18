@@ -107,7 +107,7 @@ class _AdminMehandiViewState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MehandiFullProfile(),
+                                  builder: (context) => MehandiFullProfile(mehandi_id:document.id ,),
                                 ),
                               );
                             },

@@ -25,8 +25,8 @@ class _RentHomeState extends State<RentHome> {
   List<double> _rates = [];
   List<int> _counts = [];
   bool _isLoading = false;
-  late String _selectedCategory = 'Bridal Dress'; // Default to Bridal Dress
-  late String _selectedDressCategory = 'Gown'; // Default to Gown
+  late String _selectedCategory ;// Default to Bridal Dress
+  late String _selectedDressCategory ;// Default to Gown
 
   @override
   void initState() {
@@ -243,7 +243,7 @@ class _RentHomeState extends State<RentHome> {
               child: _isLoading
                   ? Center(child: CircularProgressIndicator())
                   : _imageUrls.isEmpty
-                      ? Center(child: Text('No images available'))
+                      ? Center(child: Text('select the category'))
                       : SingleChildScrollView(
                           child: Wrap(
                             spacing: 10,

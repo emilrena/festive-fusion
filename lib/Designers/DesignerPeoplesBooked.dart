@@ -372,11 +372,11 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Address: ${userDetails['address'] ?? ''}',
+                                'Address: ${userDetails['Adress'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Phone No: ${userDetails['phone_no'] ?? ''}',
+                                'Phone No: ${userDetails['mobile no'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ],

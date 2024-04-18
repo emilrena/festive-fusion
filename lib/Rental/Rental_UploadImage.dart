@@ -94,7 +94,12 @@ class _Rental_Upload_picState extends State<Rental_Upload_pic> {
             DropdownButtonFormField<String>(
               value: null,
               hint: Text('Select item...'),
-              onChanged: (value) {},
+              onChanged: (value) {
+                // Update the selected item when it changes
+                setState(() {
+                  _items = [value!];
+                });
+              },
               items: _items.map((item) {
                 return DropdownMenuItem<String>(
                   value: item,
