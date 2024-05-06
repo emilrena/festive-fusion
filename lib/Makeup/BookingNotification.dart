@@ -181,7 +181,7 @@ class _MakeupNotificationState extends State<MakeupNotification> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                bookingRequest['packageName'] ?? '',
+                                bookingRequest['package'] ?? '',
                                 style: TextStyle(fontSize: 16),
                               ),
                               SizedBox(height: 10),
@@ -194,7 +194,7 @@ class _MakeupNotificationState extends State<MakeupNotification> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Address: ${userDetails['address'] ?? ''}',
+                                'Address: ${userDetails['Adress'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 20),

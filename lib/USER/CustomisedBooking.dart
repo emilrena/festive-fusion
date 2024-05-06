@@ -24,7 +24,7 @@ class _CustomizedPageState extends State<CustomizedPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   bool isLoading = false;
-   String ?uid;
+  String? uid;
 
   @override
   void initState() {
@@ -118,6 +118,56 @@ class _CustomizedPageState extends State<CustomizedPage> {
       });
     }
   }
+
+ _showPaymentDialog(BuildContext context, String designerName, String totalAmount) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Payment Confirmation'),
+        content: Text('Do you want to pay $totalAmount to $designerName?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              // Handle cancel action
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // Handle payment action
+              // Save payment details to Firestore
+              await FirebaseFirestore.instance.collection('custom payments').add({
+                'user_id': uid,
+                'designer_id': widget.receiverId,
+                'total_amount': totalAmount,
+                'status':0,
+                // 'timestamp': DateTime.now(),
+              });
+
+              // Close the dialog
+              Navigator.of(context).pop();
+
+              // Show payment successful message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Payment successful!'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+
+              // Navigate to given page
+              Navigator.pushReplacementNamed(context, 'DesignerWork/');
+            },
+            child: Text('Pay'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -273,74 +323,80 @@ class _CustomizedPageState extends State<CustomizedPage> {
               stream: FirebaseFirestore.instance
                   .collection('custom_collection')
                   .where('designer_id', isEqualTo: widget.receiverId)
-                  .where('user_id', isEqualTo: uid) // Filter by user_id (UID from shared preferences)
+                  .where('user_id', isEqualTo: uid) // Filter
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final documents = snapshot.data!.docs;
-                return ListView.builder(
-  itemCount: documents.length,
-  itemBuilder: (context, index) {
-    final booking = documents[index];
-    final status = booking['status'];
-    final designerId = booking['designer_id'];
+                  return ListView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      final booking = documents[index];
+                      final status = booking['status'];
+                      final designerId = booking['designer_id'];
 
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('designer register').doc(designerId).get(),
-      builder: (context, designerSnapshot) {
-        if (designerSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance.collection('designer register').doc(designerId).get(),
+                        builder: (context, designerSnapshot) {
+                          if (designerSnapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
 
-        if (designerSnapshot.hasError) {
-          return Center(child: Text('Error: ${designerSnapshot.error}'));
-        }
+                          if (designerSnapshot.hasError) {
+                            return Center(child: Text('Error: ${designerSnapshot.error}'));
+                          }
 
-        if (designerSnapshot.hasData && designerSnapshot.data != null) {
-          final designerData = designerSnapshot.data!;
-          final designerName = designerData['name'];
-          final designerImageUrl = designerData['image_url'];
+                          if (designerSnapshot.hasData && designerSnapshot.data != null) {
+                            final designerData = designerSnapshot.data!;
+                            final designerName = designerData['name'];
+                            final designerImageUrl = designerData['image_url'];
 
-          // Additional details
-          final totalAmount = booking['total_amount'];
-          final description = booking['description'];
-          final deliveryDate = booking['delivery_date'];
+                            // Additional details
+                            final totalAmount = booking['total_amount'];
+                            final description = booking['description'];
+                            final deliveryDate = booking['delivery_date'];
 
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(designerImageUrl),
-              ),
-              title: Text(designerName),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (status == 1) ...[
-                    Text('Total Amount: $totalAmount'),
-                    Text('Description: $description'),
-                    Text('Delivery Date: $deliveryDate'),
-                  ]
-                ],
-              ),
-              // Add other details if needed
-              trailing: status == 1
-                  ? ElevatedButton(
-                      onPressed: () {
-                        // Handle payment
-                      },
-                      child: Text('View Total Amount'),
-                    )
-                  : null,
-            ),
-          );
-        }
+                            return Card(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage: NetworkImage(designerImageUrl),
+                                    ),
+                                    title: Text(designerName),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (status == 1) ...[
+                                          Text('Total Amount: $totalAmount'),
+                                          Text('Description: $description'),
+                                          // Text('Delivery Date: $deliveryDate'),
+                                        ]
+                                      ],
+                                    ),
+                                  ),
+                                  // Button placed below the delivery date
+                                  if (status == 1)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          _showPaymentDialog(context, designerName, totalAmount);
+                                        },
+                                        child: Text('Pay Amount'),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          }
 
-        return SizedBox.shrink();
-      },
-    );
-  },
-);
-
+                          return SizedBox.shrink();
+                        },
+                      );
+                    },
+                  );
                 }
 
                 if (snapshot.hasError) {

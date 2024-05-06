@@ -13,6 +13,7 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> bookingRequests = [];
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> payments = [];
 
+ late String id = '';
   @override
   void initState() {
     super.initState();
@@ -40,18 +41,21 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
     }
   }
 
-  Future<void> fetchPayments() async {
+ Future<void> fetchPayments() async {
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance.collection('payments').get();
+          await FirebaseFirestore.instance.collection('payments')
+          .where('user_id', isEqualTo: id) // Fetch payments of logged-in user
+          .where('type', isEqualTo: 'mehandi') // Filter payments by type
+          .get();
 
       setState(() {
         payments = snapshot.docs;
       });
 
-      print('Fetched ${payments.length} payments');
+      print('Fetched ${payments.length} mehandi payments');
     } catch (e) {
-      print('Error fetching payments: $e');
+      print('Error fetching mehandi payments: $e');
     }
   }
 
@@ -316,11 +320,11 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Address: ${userDetails['address'] ?? ''}',
+                                'Address: ${userDetails['Adress'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Phone No: ${userDetails['phone_no'] ?? ''}',
+                                'Phone No: ${userDetails['mobile no'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ],

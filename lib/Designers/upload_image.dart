@@ -103,7 +103,7 @@ class _Upload_pic_describeState extends State<Upload_pic_describe> {
                       selectedDress = value;
                     });
                   },
-                  items: ['haldi', 'mehandi', 'recepton','wedding'].map((String dress) {
+                  items: ['haldi', 'mehandi', 'reception','wedding'].map((String dress) {
                     return DropdownMenuItem<String>(
                       value: dress,
                       child: Text(dress),

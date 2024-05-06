@@ -16,6 +16,7 @@ class MakeupWorkView extends StatefulWidget {
 class _MakeupWorkViewState extends State<MakeupWorkView> {
   late List<String> _imageUrls;
   bool _isLoading = false;
+  String? _profileImageUrl;
 
   @override
   void initState() {
@@ -29,14 +30,24 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final makeupSnapshot = await FirebaseFirestore.instance
+          .collection('Makeup_register')
+          .doc(widget.makeup_id)
+          .get();
+
+      if (makeupSnapshot.exists) {
+        setState(() {
+          _profileImageUrl = makeupSnapshot['image_url'];
+        });
+      }
+
+      final imageSnapshot = await FirebaseFirestore.instance
           .collection('makeup_upload_image')
           .where('makeup_id', isEqualTo: widget.makeup_id)
           .get();
       setState(() {
         _imageUrls =
-            snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
-        print(_imageUrls);
+            imageSnapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
       });
     } catch (error) {
       print('Error loading images: $error');
@@ -69,20 +80,11 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage('Assets/p3.jpg'),
+                  backgroundImage: _profileImageUrl != null
+                      ? NetworkImage(_profileImageUrl!)
+                      : AssetImage('Assets/p3.jpg') as ImageProvider,
                   radius: 30,
                 ),
-                // IconButton(
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) {
-                //         return Makeup_Message();
-                //       }),
-                //     );
-                //   },
-                //   icon: Icon(Icons.message),
-                // )
               ],
             ),
           ),
@@ -110,7 +112,6 @@ class _MakeupWorkViewState extends State<MakeupWorkView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) {
-                        print(widget.makeup_id);
                         return MakeupPackages(makeup_id: widget.makeup_id);
                       }),
                     );

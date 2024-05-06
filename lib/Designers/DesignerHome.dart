@@ -267,15 +267,15 @@ class _DesignerHomeState extends State<DesignerHome> {
                 },
               ),
               ListTile(
-                title: Text('Reception'),
+                title: Text('reception'),
                 onTap: () {
                   Navigator.pop(context, 'reception');
                 },
               ),
               ListTile(
-                title: Text('Wedding'),
+                title: Text('wedding'),
                 onTap: () {
-                  Navigator.pop(context, 'Wedding');
+                  Navigator.pop(context, 'wedding');
                 },
               ),
             ],

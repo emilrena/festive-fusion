@@ -91,20 +91,21 @@ class _DesignerWorkState extends State<DesignerWork> {
     }
   }
 
-  Future<void> _loadDesignerImage() async {
+  Future<String> _loadDesignerImage() async {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('designer register')
           .doc(widget.designer_id)
           .get();
 
-      if (snapshot.exists) {
-        setState(() {
-          _designerImageUrl = snapshot['image_url'];
-        });
+      if (snapshot.exists && snapshot.id == widget.designer_id) {
+        return snapshot['image_url'];
+      } else {
+        return ''; // Return empty string if image URL is not found
       }
     } catch (error) {
       print('Error loading designer image: $error');
+      return ''; // Return empty string if there's an error
     }
   }
 
@@ -128,17 +129,17 @@ class _DesignerWorkState extends State<DesignerWork> {
                 },
               ),
               ListTile(
-                title: Text('Mehendi'),
+                title: Text('mehendi'),
                 onTap: () {
                   setState(() {
                     _selectedCategory = 'Bridal Dress';
-                    _selectedDressCategory = 'mehendi';
+                    _selectedDressCategory = 'mehandi';
                   });
-                  Navigator.pop(context, 'mehendi');
+                  Navigator.pop(context, 'mehandi');
                 },
               ),
               ListTile(
-                title: Text('Reception'),
+                title: Text('reception'),
                 onTap: () {
                   setState(() {
                     _selectedCategory = 'Bridal Dress';
@@ -148,13 +149,13 @@ class _DesignerWorkState extends State<DesignerWork> {
                 },
               ),
               ListTile(
-                title: Text('Wedding'),
+                title: Text('wedding'),
                 onTap: () {
                   setState(() {
                     _selectedCategory = 'Bridal Dress';
-                    _selectedDressCategory = 'Wedding';
+                    _selectedDressCategory = 'wedding';
                   });
-                  Navigator.pop(context, 'Wedding');
+                  Navigator.pop(context, 'wedding');
                 },
               ),
             ],
@@ -228,7 +229,7 @@ class _DesignerWorkState extends State<DesignerWork> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                FutureBuilder<void>(
+                FutureBuilder<String>(
                   future: _loadDesignerImage(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -236,10 +237,11 @@ class _DesignerWorkState extends State<DesignerWork> {
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
-                      if (_designerImageUrl.isNotEmpty) {
+                      String imageUrl = snapshot.data ?? '';
+                      if (imageUrl.isNotEmpty) {
                         return CircleAvatar(
                           radius: 30,
-                          backgroundImage: NetworkImage(_designerImageUrl),
+                          backgroundImage: NetworkImage(imageUrl),
                         );
                       } else {
                         return CircleAvatar(

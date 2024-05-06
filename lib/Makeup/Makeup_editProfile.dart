@@ -18,6 +18,8 @@ class _Makeup_EditProfileState extends State<Makeup_EditProfile> {
   Map<String, String>? _userData;
   File? _profileImage;
   String? _imageUrl;
+  bool _isLoading = true;
+  bool _errorFetchingData = false;
 
   @override
   void initState() {
@@ -25,26 +27,44 @@ class _Makeup_EditProfileState extends State<Makeup_EditProfile> {
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String uid = prefs.getString('uid') ?? '';
-    print('UID: $uid');
+ Future<void> _fetchUserData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? uid = prefs.getString('uid');
+  print('UID: $uid');
 
-    // Fetch user data from Firestore
-    DocumentSnapshot<Map<String, dynamic>> userSnapshot =
-        await FirebaseFirestore.instance
-            .collection('Makeup register')
-            .doc(uid)
-            .get();
-    if (userSnapshot.exists) {
-      setState(() {
-        _userData = Map<String, String>.from(userSnapshot.data() ?? {});
-        _imageUrl = _userData!['image_url'];
-      });
+  try {
+    if (uid != null) {
+      // Fetch user data from Firestore
+      DocumentSnapshot<Map<String, dynamic>> userSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Makeup register')
+              .doc(uid)
+              .get();
+      if (userSnapshot.exists) {
+        Map<String, dynamic>? userData = userSnapshot.data();
+        setState(() {
+          if (userData != null) {
+            _userData = userData.map((key, value) => MapEntry(key, value.toString()));
+            _imageUrl = _userData!['image_url'];
+          }
+        });
+      } else {
+        print('User data not found.');
+      }
     } else {
-      print('User data not found.');
+      print('UID is null.');
     }
+  } catch (error) {
+    print('Error fetching user data: $error');
+    setState(() {
+      _errorFetchingData = true;
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -53,39 +73,45 @@ class _Makeup_EditProfileState extends State<Makeup_EditProfile> {
         title: const Center(child: Text('EditProfile')),
         automaticallyImplyLeading: false,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                if (_userData != null) ...[
-                  GestureDetector(
-                    onTap: () {
-                      _selectImageForDialog();
-                    },
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : _imageUrl != null
-                              ? NetworkImage(_imageUrl!)
-                              : AssetImage(
-                                  'assets/placeholder_image.jpg') as ImageProvider<Object>?,
-                      child: _profileImage == null &&
-                              (_userData == null || _userData!['image_url'] == null)
-                          ? Icon(Icons.camera_alt, size: 30)
-                          : null,
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _errorFetchingData
+              ? Center(child: Text('Error fetching data'))
+              : SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          if (_userData != null) ...[
+                            GestureDetector(
+                              onTap: () {
+                                _selectImageForDialog();
+                              },
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundImage: _profileImage != null
+                                    ? FileImage(_profileImage!)
+                                    : _imageUrl != null
+                                        ? NetworkImage(_imageUrl!)
+                                        : AssetImage(
+                                            'assets/placeholder_image.jpg')
+                                            as ImageProvider<Object>?,
+                                child: _profileImage == null &&
+                                        (_userData == null ||
+                                            _userData!['image_url'] == null)
+                                    ? Icon(Icons.camera_alt, size: 30)
+                                    : null,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            ..._buildUserDataFields(),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10),
-                  ..._buildUserDataFields(),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showEditDialog();
@@ -110,7 +136,7 @@ class _Makeup_EditProfileState extends State<Makeup_EditProfile> {
 
     List<Widget> fields = [];
     order.forEach((key) {
-      if (_userData != null && _userData!.containsKey(key)) {
+      if (_userData!.containsKey(key)) {
         fields.add(
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -165,9 +191,11 @@ class _Makeup_EditProfileState extends State<Makeup_EditProfile> {
                           : _imageUrl != null
                               ? NetworkImage(_imageUrl!)
                               : AssetImage(
-                                  'assets/placeholder_image.jpg') as ImageProvider<Object>?,
+                                  'assets/placeholder_image.jpg')
+                                  as ImageProvider<Object>?,
                       child: _profileImage == null &&
-                              (_userData == null || _userData!['image_url'] == null)
+                              (_userData == null ||
+                                  _userData!['image_url'] == null)
                           ? Icon(Icons.camera_alt, size: 30)
                           : null,
                     ),
