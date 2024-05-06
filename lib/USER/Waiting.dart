@@ -321,7 +321,7 @@ class _WaitingState extends State<Waiting> {
             as Map<String, dynamic>;
         final deliveryDate = deliveryData['delivery_date'];
         final packageName = deliveryData['package_name'];
-        final address = deliveryData['address'];
+        final address = deliveryData['adress'];
 
         return Padding(
           padding: const EdgeInsets.all(16.0),

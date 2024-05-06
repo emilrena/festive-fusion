@@ -253,12 +253,14 @@ class _RegistrationState extends State<Registration> {
                             .add({
                           'name': Name.text,
                           'email': Email.text,
+                          'conform password':confirmPass.text,
                           'Adress': Adress.text,
                           'District': District.text,
                           'pin': Pin.text,
                           'mobile no': Mobile.text,
                           'password': password.text,
                           'gender': gender,
+                          'state': State.text,
                           'image_url': imageUrl,
                         });
               
@@ -271,7 +273,7 @@ class _RegistrationState extends State<Registration> {
                           ),
                         );
                       } catch (e) {
-                        print('Error creating designer: $e');
+                        print('Error creating user: $e');
                       }
                     },
                     child: Text('REGISTER'),

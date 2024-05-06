@@ -269,7 +269,7 @@ class _DesignerNotificationState extends State<DesignerNotification> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Address: ${userDetails['address'] ?? ''}',
+                                'Address: ${userDetails['Adress'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 20),

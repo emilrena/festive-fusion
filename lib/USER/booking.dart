@@ -104,10 +104,10 @@ class _BookedState extends State<Booked> {
   void getSavedAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      address = prefs.getString('Adress');
+      address = prefs.getString('adress');
       state = prefs.getString('state');
       pin = prefs.getString('pin');
-      district = prefs.getString('District');
+      district = prefs.getString('district');
     });
   }
 
@@ -207,7 +207,7 @@ class _BookedState extends State<Booked> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Package Description: $packageDescription',
+                      'Package Rate: $packageDescription',
                       style: TextStyle(fontSize: 16),
                     ),
                   ],

@@ -71,6 +71,22 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
       return {};
     }
   }
+  Future<Map<String, dynamic>> fetchPackageDetails(String package_id) async {
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> packageSnapshot = await FirebaseFirestore.instance
+          .collection('mehandi_package')
+          .doc(package_id)
+          .get();
+
+      final packageDetails = packageSnapshot.data() ?? {};
+      print('Fetched package details for packageId: $package_id');
+
+      return packageDetails;
+    } catch (e) {
+      print('Error fetching package details for packageId: $package_id - $e');
+      return {};
+    }
+  }
 
   Future<void> acceptBooking(String requestId) async {
     try {
@@ -138,6 +154,7 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
                 final userId = bookingRequest['user_id'];
                 final requestId = bookingRequests[index].id;
                 final status = bookingRequest['status'];
+                final packageId = bookingRequest['package_id'];
 
                 return FutureBuilder(
                   future: fetchUserDetails(userId),
@@ -168,13 +185,23 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
                                 ],
                               ),
                               SizedBox(height: 10),
-                              Text(
+                               Text(
                                 'Package Chosen:',
                                 style: TextStyle(color: Colors.grey),
                               ),
-                              Text(
-                                bookingRequest['packageName'] ?? '',
-                                style: TextStyle(fontSize: 16),
+                              FutureBuilder(
+                                future: fetchPackageDetails(packageId),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else {
+                                    final packageDetails = snapshot.data as Map<String, dynamic>;
+                                    return Text(
+                                      packageDetails['package'] ?? '',
+                                      style: TextStyle(fontSize: 16),
+                                    );
+                                  }
+                                },
                               ),
                               SizedBox(height: 10),
                               Text(
@@ -186,7 +213,7 @@ class _MehandiNotificatonState extends State<MehandiNotificaton> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                'Address: ${userDetails['address'] ?? ''}',
+                                'Address: ${userDetails['Adress'] ?? ''}',
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 20),

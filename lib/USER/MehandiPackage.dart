@@ -27,7 +27,7 @@ class _MehandiPackagesState extends State<MehandiPackages> {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('mehandi_package')
-          .where('package_id', isEqualTo: widget.mehandi_id)
+          .where('mehandi_id', isEqualTo: widget.mehandi_id)
           .get();
       setState(() {
         _packages = snapshot.docs;

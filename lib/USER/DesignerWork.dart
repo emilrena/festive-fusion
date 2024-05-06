@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festive_fusion/USER/CHAT.DART';
+import 'package:festive_fusion/USER/CustomisedBooking.dart';
 
 import 'package:festive_fusion/USER/package.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,8 @@ class DesignerWork extends StatefulWidget {
 class _DesignerWorkState extends State<DesignerWork> {
   late List<String> _imageUrls;
   bool _isLoading = false;
-  String ?_selectedCategory;
-  String ?_selectedDressCategory;
+  String? _selectedCategory;
+  String? _selectedDressCategory;
   String _designerImageUrl = '';
   late String _senderId;
   late Timestamp _timestamp;
@@ -30,11 +31,12 @@ class _DesignerWorkState extends State<DesignerWork> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory ;
+    _selectedCategory;
     _selectedDressCategory;
     _loadImages();
-    _loadDesignerImage();
+    // _loadDesignerImage();
     _getSenderId();
+    _loadDesignerImage();
   }
 
   // Fetch senderId from shared preferences and include timestamp
@@ -50,44 +52,44 @@ class _DesignerWorkState extends State<DesignerWork> {
   }
 
   Future<void> _loadImages() async {
-  setState(() {
-    _isLoading = true;
-  });
+    setState(() {
+      _isLoading = true;
+    });
 
-  try {
-    QuerySnapshot snapshot;
-    if (_selectedCategory != null && _selectedDressCategory != null) {
-      snapshot = await FirebaseFirestore.instance
-          .collection('designer_upload_image')
-          .where('designer_id', isEqualTo: widget.designer_id)
-          .where('category', isEqualTo: _selectedCategory!)
-          .where('dress', isEqualTo: _selectedDressCategory!)
-          .get();
-    } else if (_selectedCategory != null) {
-      snapshot = await FirebaseFirestore.instance
-          .collection('designer_upload_image')
-          .where('designer_id', isEqualTo: widget.designer_id)
-          .where('category', isEqualTo: _selectedCategory!)
-          .get();
-    } else {
-      snapshot = await FirebaseFirestore.instance
-          .collection('designer_upload_image')
-          .where('designer_id', isEqualTo: widget.designer_id)
-          .get();
+    try {
+      QuerySnapshot snapshot;
+      if (_selectedCategory != null && _selectedDressCategory != null) {
+        snapshot = await FirebaseFirestore.instance
+            .collection('designer_upload_image')
+            .where('designer_id', isEqualTo: widget.designer_id)
+            .where('category', isEqualTo: _selectedCategory!)
+            .where('dress', isEqualTo: _selectedDressCategory!)
+            .get();
+      } else if (_selectedCategory != null) {
+        snapshot = await FirebaseFirestore.instance
+            .collection('designer_upload_image')
+            .where('designer_id', isEqualTo: widget.designer_id)
+            .where('category', isEqualTo: _selectedCategory!)
+            .get();
+      } else {
+        snapshot = await FirebaseFirestore.instance
+            .collection('designer_upload_image')
+            .where('designer_id', isEqualTo: widget.designer_id)
+            .get();
+      }
+
+      setState(() {
+        _imageUrls =
+            snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+      });
+    } catch (error) {
+      print('Error loading images: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    setState(() {
-      _imageUrls =
-          snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
-    });
-  } catch (error) {
-    print('Error loading images: $error');
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
 
   Future<void> _loadDesignerImage() async {
     try {
@@ -226,16 +228,35 @@ class _DesignerWorkState extends State<DesignerWork> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('Assets/p3.jpg'),
-                  radius: 30,
+                FutureBuilder<void>(
+                  future: _loadDesignerImage(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      if (_designerImageUrl.isNotEmpty) {
+                        return CircleAvatar(
+                          radius: 30,
+                          backgroundImage: NetworkImage(_designerImageUrl),
+                        );
+                      } else {
+                        return CircleAvatar(
+                          radius: 30,
+                          child: Icon(Icons
+                              .person), // Placeholder icon if image is not available
+                        );
+                      }
+                    }
+                  },
                 ),
                 IconButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatScreen(
+                        builder: (context) => CustomizedPage (
                           receiverId: widget.designer_id,
                         ),
                       ),

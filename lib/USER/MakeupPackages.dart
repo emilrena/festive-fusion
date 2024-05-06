@@ -27,7 +27,7 @@ class _MakeupPackagesState extends State<MakeupPackages> {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('makeup_package')
-          .where('package_id', isEqualTo: widget.makeup_id)
+          .where('makeup_id', isEqualTo: widget.makeup_id)
           .get();
       setState(() {
         _packages = snapshot.docs;

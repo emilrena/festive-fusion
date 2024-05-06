@@ -200,7 +200,7 @@ class _DesignerHomeState extends State<DesignerHome> {
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return DesignerMessage();
+                        return DesignerEnquiry();
                       }));
                     },
                     child: Text(
@@ -239,6 +239,7 @@ class _DesignerHomeState extends State<DesignerHome> {
                     ),
             ),
           ],
+          
         ),
       ),
     );
@@ -287,7 +288,8 @@ class _DesignerHomeState extends State<DesignerHome> {
       setState(() {
         _selectedDressCategory = selectedDressCategory;
         _loadImages();
-      });
+      }
+      );
     }
   }
 }

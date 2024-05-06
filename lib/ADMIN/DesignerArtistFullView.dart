@@ -125,7 +125,7 @@ class _DesignerFullProfileState extends State<DesignerFullProfile> {
                         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0), backgroundColor: Colors.red,
                       ),
                       child: Text(
-                        'Block Designer',
+                        'BLOCK',
                         style: TextStyle(fontSize: 16.0),
                       ),
                     ),

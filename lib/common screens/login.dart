@@ -369,20 +369,23 @@ if (widget.type == 'makeup') {
                       ],
                     )),
                     TextFormField(
-                      controller: Pass,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Feild is empty';
-                        }
-                      },
-                      decoration: InputDecoration(
-                          fillColor: Color.fromARGB(255, 224, 206, 221),
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40))),
-                          hintText: ('ENTER YOUR PASSWORD')),
-                    ),
+  controller: Pass,
+  obscureText: true, // Set this to true to show dots
+  validator: (value) {
+    if (value!.isEmpty) {
+      return 'Field is empty';
+    }
+  },
+  decoration: InputDecoration(
+    fillColor: Color.fromARGB(255, 224, 206, 221),
+    filled: true,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(40))
+    ),
+    hintText: 'ENTER YOUR PASSWORD',
+  ),
+),
+
                   Row(
   
   mainAxisAlignment: MainAxisAlignment.end,
